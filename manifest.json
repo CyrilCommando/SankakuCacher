@@ -1,0 +1,30 @@
+{
+  "name": "SankakuCacher",
+  "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. More functionality soon.",
+  "version": "1.0",
+  "author": "CyrilCommando",
+  "manifest_version": 2,
+  "permissions": ["storage", "downloads", "tabs", "activeTab", "background"],
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "icons": {
+    "16": "icon.png",
+    "48": "squared48.png",
+    "128": "squared.png" 
+  },
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "SankakuCacher",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chan.sankakucomplex.com/post/*"
+      ],
+      "js": ["jquery-3.4.1.min.js", "content.js"]
+    }
+  ],
+  "background": {
+    "scripts": [ "background.js" ]
+  }
+}
