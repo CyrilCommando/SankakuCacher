@@ -1,7 +1,13 @@
 // background.js
 function openLinkInBrowser()
 {
-  chrome.tabs.create({url: "https://chan.sankakucomplex.com"})
+  chrome.storage.local.get("newwindow", function (result) { 
+    if (result.newwindow)
+    {
+      chrome.windows.create({url: "https://chan.sankakucomplex.com", state: "maximized"})
+    }
+    else chrome.tabs.create({url: "https://chan.sankakucomplex.com"});
+  })
 }
 
 //document.getElementById("link").click();
@@ -23,73 +29,96 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     //     break;
     // }
 
-    if (request.message === "chan")
-    {
-      openLinkInBrowser();
-    }
-    else if (request.message === "settoinstance")
-    {
+
+    switch (request.message) {
+      case "chan":
+
+        openLinkInBrowser();
+        break;
+
+      case "settoinstance":
+
         positiveinstance = true; 
-    }
-    else if (request.message === "link")
-    {
+        break;
 
-      var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];
+      case "alert":
+        alert(request.value)
+        break;
+
+      case "link":
+        
+        var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];
       
-      if (includeshttps == "https")
-      {
-        request.url = request.url.substring(6)
-      } 
-
-    var name = request.url.substr(35, 36)
-    
-    //var place = name[33] + name[34] + name[35]
-
-    if (name[33] + name[34] + name[35] === "web")
-    {
-      name = name + "m"
-    }
-
-    var svfld ="SankakuCacher/"
-
-
-
-    chrome.storage.local.get("savefolder", function(result) {
-      if (result.savefolder == "SankakuCacher")
-      {
-        //break;
-      }
-      else {
-
-        if (result.savefolder.substr(0, 1) == "/") {
-          alert(result.savefolder.substr(0, 1))
-          result.savefolder = result.savefolder.substr(1);
+        if (includeshttps == "https")
+        {
+          request.url = request.url.substring(6)
         } 
-        svfld = result.savefolder + "/"}
-    })
-    
-    chrome.storage.local.get("enabled", function(result) {
-      enabled = result.enabled;
-      if (name[33] + name[34] + name[35] === "webm" || "mp4")
-      {
-        chrome.storage.local.get("mp4swebms", function(result) {
-          if (result.mp4swebms == true)
-          {
-            //continue;
-          }
-          else{}
-        })
-      }
+  
+        var name = request.url.substr(35, 36)
       
-      if ((enabled == true) || (positiveinstance == true))
-      {
-        chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
-        positiveinstance = false;
-      }
-      else{positiveinstance = false;}
-    })
+        //var place = name[33] + name[34] + name[35]
+  
+        if (name[33] + name[34] + name[35] === "web")
+        {
+          name = name + "m"
+        }
+  
+        
+        var svfld ="SankakuCacher/"
+  
+  
+  
+        chrome.storage.local.get("savefolder", function(result) {
+          if (result.savefolder == "SankakuCacher")
+          {
+            //break;
+          }
+          else 
+          {
 
-  } });
+            //check if the input filename has a slash in it
+            if (result.savefolder.substr(0, 1) == "/") 
+            {
+              alert(result.savefolder.substr(0, 1))
+              result.savefolder = result.savefolder.substr(1);
+            } 
+
+            if (result.savefolder.substr(-1, 1) == "/")
+            {
+              alert(result.savefolder.substr(-1, 1))
+              result.savefolder = result.savefolder.substr(-1,) 
+            }
+
+          svfld = result.savefolder + "/"}
+          })
+      
+          chrome.storage.local.get("enabled", function(result) {
+            enabled = result.enabled;
+            if (name[33] + name[34] + name[35] === "webm" || "mp4")
+            {
+              chrome.storage.local.get("mp4swebms", function(result) {
+                if (result.mp4swebms == true)
+                {
+                  //continue;
+                }
+                else{}
+              })
+            }
+        
+            if ((enabled == true) || (positiveinstance == true))
+            {
+              chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+              positiveinstance = false;
+            }
+            else{positiveinstance = false;}
+          })
+          break;
+
+        default:
+
+          break;
+    }
+});
 
 // Called when the user clicks on the browser action.
 chrome.browserAction.onClicked.addListener(function(tab) {

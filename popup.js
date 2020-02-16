@@ -3,7 +3,10 @@ go();
 var enabledattr = document.getElementById("enabled");
 var arrangefilesattr = document.getElementById("arrangefiles");
 var savefolderattr = document.getElementById("savefolder");
+var autofavattr = document.getElementById("autofav");
 
+/*Open in New Window*/ document.getElementById("newwindow").onchange = function() {doc_onchanged(document.getElementById("newwindow"))}
+/*autofav onchange*/document.getElementById("autofav").onchange = function() {doc_onchanged(autofavattr)}
 /* Enabled onchange*/document.getElementById("enabled").onchange = function() {doc_onchanged(enabledattr)};
 /*MP4's/WEBM's onchange*/document.getElementById("mp4swebms").onchange = function() {doc_onchanged(document.getElementById("mp4swebms"))}
 /*Arrange Files onchange*/document.getElementById("arrangefiles").onchange = function() {doc_onchanged(arrangefilesattr)};
@@ -16,6 +19,12 @@ var savefolderattr = document.getElementById("savefolder");
 /*Chan onclick*/document.getElementById("chan").onclick = function() {sendMessage()};
 /*Search Tags onclick*/document.getElementById("searchtags").onclick = function() {openLinkWithTags()};
 /*SankakuIcon onclick*/document.getElementById("SankakuIcon").onclick = function() {sendMessage()};
+
+$("#tagstosearch").keyup(function(event) {
+    if (event.keyCode === 13) {
+        $("#searchtags").click();
+    }
+});
 
 
 function makehttpReq()
@@ -71,34 +80,36 @@ function sendMessage2()
 
 function go(){
 
-        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch"], function(result) {
+        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow"], function(result) {
             console.log('extension enabled: ' + result.enabled)
             console.log('arrangefiles value currently is ' + result.arrangefiles)
             console.log('savefolder value currently is ' + result.savefolder);
             console.log('previous search value currently is ' + result.prevsearch);
             setthethings(result.enabled, result.arrangefiles, result.savefolder);
-            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch);
+            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow);
           })
 }
 
-function update_options_page(n1, n2, n3, n4)
+function update_options_page(n1, n2, n3, n4, n5, n6)
 {
     $("#enabled").attr("checked", n1);
     $("#arrangefiles").attr("checked", n2);
     $("#savefolder").val(n3);
     $("#tagstosearch").val(n4);
+    $("#autofav").attr("checked", n5)
+    $("#newwindow").attr("checked", n6)
 }
 
 function delete_all_settings()
 {
-    chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch"])
-    alert("settings deleted")
+    chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow"])
+    chrome.runtime.sendMessage({"message": "alert", value: "settings deleted"})
 }
 
 function default_settings()
 {
-    chrome.storage.local.set({"enabled": true, "mp4swebms": true, "arrangefiles": false, "savefolder": "SankakuCacher"})
-    alert("Settings set to default")
+    chrome.storage.local.set({"enabled": true, "mp4swebms": true, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false})
+    chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 
 function doc_onchanged(htmlelement){
@@ -120,9 +131,20 @@ function doc_onchanged(htmlelement){
             break;
         }
         case "mp4swebms":
+
             chrome.storage.local.set({"mp4swebms": htmlelement.value})
             break;
 
+        case "autofav":
+
+            chrome.storage.local.set({"autofav": htmlelement.checked})
+            break;
+            
+        case "newwindow":
+
+            chrome.storage.local.set({"newwindow": htmlelement.checked})
+            break;
+            
     }
     //var x = document.getElementById("savefolder");
     //chrome.storage.local.set({"savefolder": htmlelement.value})
@@ -136,19 +158,19 @@ function setthethings(n1, n2, n3){
     //alert("SankakuCacher save dir is " + n3);
     if ((n1 == undefined) && (n2 == undefined))
     {
-    chrome.storage.local.set({"enabled": true, "arrangefiles": false, "savefolder": "SankakuCacher"}, alert("SankakuCacher first-run options initialize, please re-open the page"));
+    chrome.storage.local.set({"enabled": true, "arrangefiles": false, "savefolder": "SankakuCacher"}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher first-run options initialize, please re-open the page"}));
     }
     else if (n1 == null || undefined)
     {
-        chrome.storage.local.set({"enabled": true}, alert("SankakuCacher Enabled parameter missing, defaulting to enabled"));
+        chrome.storage.local.set({"enabled": true}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher Enabled parameter missing, defaulting to enabled"}));
     }
     else if (n2 == null || undefined)
     {
-        chrome.storage.local.set({"arrangefiles": false}, alert("SankakuCacher arrangefiles parameter corrupted/missing, setting to default false"));
+        chrome.storage.local.set({"arrangefiles": false}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher arrangefiles parameter corrupted/missing, setting to default false"}));
     }
     else if (n3 == null || undefined)
     {   
-        chrome.storage.local.set({"savefolder": "SankakuCacher"}, alert("SankakuCacher savefolder parameter missing/corrupted, setting to default SankakuCacher"));
+        chrome.storage.local.set({"savefolder": "SankakuCacher"}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher savefolder parameter missing/corrupted, setting to default SankakuCacher"}));
     } 
 }
 

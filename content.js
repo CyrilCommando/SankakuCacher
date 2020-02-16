@@ -2,13 +2,31 @@ getTheGodDamnLink();
 
 addDownloadButton();
 
+function favoriteDownloaded()
+{
+chrome.storage.local.get("autofav", function(result)
+{
+  if (result.autofav == true)
+  {
+    Favorite.create(19712056); return false;
+    //$("#DownloadButton").click(function() { $(".favoriteIcon").trigger("click") })
+    //$("#DownloadButton").click(function() { $("#headerthumbs").click(); })
+    //$("#DownloadButton").click(function() { $("#headerthumbs ul li a").trigger("click") } )
+  } 
+  else{}
+})
+}
+
+
+
+
 function addDownloadButton()
 {
 
   var div = $("<div></div>");
   div.attr("style", "padding-top: 250px;")
-  var element = $("<input>").attr("type", "button").attr("value", "Download").click(getTheGodDamnLink2)
-  var lowerelement = $("<input>").attr("type", "button").attr("value", "Download").click(getTheGodDamnLink2)
+  var element = $("<input>").attr("type", "button").attr("value", "Download").attr("id", "DownloadButton").click(getTheGodDamnLink2)
+  var lowerelement = $("<input>").attr("type", "button").attr("value", "Download").attr("id", "DownloadButton2").click(getTheGodDamnLink2)
   div.append(element)
 
   // $("#post-content").before( "<div id=\"dlbutton\" style=\"padding-top: 250px\;\> <input type=\"button\" value=\"Download\"\> </div>");
@@ -19,10 +37,12 @@ function addDownloadButton()
   $("#post-content").attr("style", "padding-top: 0px;")
 
   $("#post-content").after(lowerelement)
+
+  favoriteDownloaded();
 } 
 
 function getTheGodDamnLink()
-{
+  {
   var v = $("#image").attr("src");
   var y = $("#image-link").attr("href");
 
@@ -38,28 +58,28 @@ function getTheGodDamnLink()
   }
 
   function getTheGodDamnLink2()
-{
-  var v = $("#image").attr("src");
-  var y = $("#image-link").attr("href");
-  var z = $("#image-link").attr("src");
+  {
+    var v = $("#image").attr("src");
+    var y = $("#image-link").attr("href");
+    var z = $("#image-link").attr("src");
 
-    if (y === undefined)
-    {
-      chrome.runtime.sendMessage({message: "settoinstance"})
-      chrome.runtime.sendMessage({"message": "link", url: v})
-    }
+      if (y === undefined)
+      {
+        chrome.runtime.sendMessage({message: "settoinstance"})
+        chrome.runtime.sendMessage({"message": "link", url: v})
+      }
 
-    else if ((v === undefined) && (y === undefined))
-    {
-      chrome.runtime.sendMessage({message: "settoinstance"})
-      chrome.runtime.sendMessage({"message": "link", url: z})
-    }
+      else if ((v === undefined) && (y === undefined))
+      {
+        chrome.runtime.sendMessage({message: "settoinstance"})
+        chrome.runtime.sendMessage({"message": "link", url: z})
+      }
 
-    else
-    {
-      chrome.runtime.sendMessage({message: "settoinstance"})
-      chrome.runtime.sendMessage({"message": "link", url: y})
-    }
+      else
+      {
+        chrome.runtime.sendMessage({message: "settoinstance"})
+        chrome.runtime.sendMessage({"message": "link", url: y})
+      }
   }
 
   //chrome.downloads.download({url: y, saveAs: false})
