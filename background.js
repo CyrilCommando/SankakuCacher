@@ -46,6 +46,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
       case "link":
+        //alert(request.url) ////////////////////////
         
         var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];
       
@@ -54,7 +55,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           request.url = request.url.substring(6)
         } 
   
-        var name = request.url.substr(35, 36)
+        var name = request.url.substr(34, 36)
       
         //var place = name[33] + name[34] + name[35]
   
@@ -107,6 +108,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         
             if ((enabled == true) || (positiveinstance == true))
             {
+              //alert("https:" + request.url)
+              //alert(svfld + name)
               chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
               positiveinstance = false;
             }

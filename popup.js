@@ -108,7 +108,7 @@ function delete_all_settings()
 
 function default_settings()
 {
-    chrome.storage.local.set({"enabled": true, "mp4swebms": true, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false})
+    chrome.storage.local.set({"enabled": true, "mp4swebms": true, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true})
     chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 
@@ -138,6 +138,10 @@ function doc_onchanged(htmlelement){
         case "autofav":
 
             chrome.storage.local.set({"autofav": htmlelement.checked})
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {message: "change_autofav_variable"})
+            }) 
+            
             break;
             
         case "newwindow":
