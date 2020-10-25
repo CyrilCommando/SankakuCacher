@@ -80,17 +80,17 @@ function sendMessage2()
 
 function go(){
 
-        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow"], function(result) {
+        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms"], function(result) {
             console.log('extension enabled: ' + result.enabled)
             console.log('arrangefiles value currently is ' + result.arrangefiles)
             console.log('savefolder value currently is ' + result.savefolder);
             console.log('previous search value currently is ' + result.prevsearch);
             setthethings(result.enabled, result.arrangefiles, result.savefolder);
-            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow);
+            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms);
           })
 }
 
-function update_options_page(n1, n2, n3, n4, n5, n6)
+function update_options_page(n1, n2, n3, n4, n5, n6, n7)
 {
     $("#enabled").attr("checked", n1);
     $("#arrangefiles").attr("checked", n2);
@@ -98,6 +98,7 @@ function update_options_page(n1, n2, n3, n4, n5, n6)
     $("#tagstosearch").val(n4);
     $("#autofav").attr("checked", n5)
     $("#newwindow").attr("checked", n6)
+    $("#mp4swebms").attr("checked", n7)
 }
 
 function delete_all_settings()
@@ -132,7 +133,7 @@ function doc_onchanged(htmlelement){
         }
         case "mp4swebms":
 
-            chrome.storage.local.set({"mp4swebms": htmlelement.value})
+            chrome.storage.local.set({"mp4swebms": htmlelement.checked})
             break;
 
         case "autofav":
@@ -162,7 +163,7 @@ function setthethings(n1, n2, n3){
     //alert("SankakuCacher save dir is " + n3);
     if ((n1 == undefined) && (n2 == undefined))
     {
-    chrome.storage.local.set({"enabled": true, "arrangefiles": false, "savefolder": "SankakuCacher"}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher first-run options initialize, please re-open the page"}));
+    chrome.storage.local.set({"enabled": true, "arrangefiles": false, "savefolder": "SankakuCacher", "newwindow": true, "mp4swebms": true}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher first-run options initialize, please re-open the page"}));
     }
     else if (n1 == null || undefined)
     {

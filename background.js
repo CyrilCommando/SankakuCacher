@@ -12,7 +12,7 @@ function openLinkInBrowser()
 
 //document.getElementById("link").click();
 
-var positiveinstance;
+var positiveinstance = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
@@ -69,7 +69,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   
   
   
-        chrome.storage.local.get("savefolder", function(result) {
+        getData('savefolder').then(function(result) {
           if (result.savefolder == "SankakuCacher")
           {
             //break;
@@ -93,27 +93,41 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           svfld = result.savefolder + "/"}
           })
       
-          chrome.storage.local.get("enabled", function(result) {
+          getData('enabled').then(function(result) {
             enabled = result.enabled;
-            if (name[33] + name[34] + name[35] === "webm" || "mp4")
+            if (name[33] + name[34] + name[35] + name[36] === "webm" || name[33] + name[34] + name[35] === "mp4")
             {
-              chrome.storage.local.get("mp4swebms", function(result) {
-                if (result.mp4swebms == true)
+              getData('mp4swebms').then(function(result) {
+                if (result.mp4swebms == true && positiveinstance == false && enabled == true)
                 {
-                  //continue;
+                    chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+                    positiveinstance = false;
+                }
+                else if (positiveinstance == true)
+                {
+                  if ((enabled == true) || (positiveinstance == true))
+                  {
+                    //alert("https:" + request.url)
+                    //alert(svfld + name)
+                    chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+                    positiveinstance = false;
+                  }
+                  else{positiveinstance = false;}
                 }
                 else{}
-              })
+              });
             }
-        
-            if ((enabled == true) || (positiveinstance == true))
+            else if (name[33] + name[34] + name[35] + name[36] != "webm" || name[33] + name[34] + name[35] != "mp4")
             {
-              //alert("https:" + request.url)
-              //alert(svfld + name)
-              chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
-              positiveinstance = false;
+              if ((enabled == true) || (positiveinstance == true))
+              {
+                //alert("https:" + request.url)
+                //alert(svfld + name)
+                chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+                positiveinstance = false;
+              }
+              else{positiveinstance = false;}
             }
-            else{positiveinstance = false;}
           })
           break;
 
@@ -122,6 +136,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           break;
     }
 });
+
+function getData(sKey) {
+  return new Promise(function(resolve, reject) {
+    chrome.storage.local.get(sKey, function(result) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError.message);
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
 
 // Called when the user clicks on the browser action.
 chrome.browserAction.onClicked.addListener(function(tab) {
