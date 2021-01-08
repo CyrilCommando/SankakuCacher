@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head><style> #SankakuIcon {height: 40px; position: absolute; left: 167px; top: 1px;}</style></head> 
+  <head><style> body{width: 197px;} #SankakuIcon {height: 40px; position: absolute; left: 167px; top: 1px;}</style> <link rel="stylesheet" href="style.css"></head> 
   <body>
       <a href="https://www.chan.sankakucomplex.com">
       <img src="squared.png" id="SankakuIcon" alt="SankakuIcon"> </a>
@@ -8,9 +8,13 @@
       <a id="chan" href="https://www.chan.sankakucomplex.com">Go to the site:</a> <br> <br>
       <input id = "DownloadThis" type ="button" value="Download This"> <br> <br>
       
-      New Window: <input id="newwindow" type="checkbox"> <br> <br>
+      New Window: <input id="newwindow" type="checkbox" title="When site shortcut is clicked, open in a new window"> <br> <br>
       Automatically favorite downloaded images: <input id="autofav" type="checkbox"> 
+      <!-- <input id="autofavinclude" type="checkbox" style="position: relative; left: 94px" title="Include autodownload images"> !-->
       <br> 
+      <br>
+      Favorite on middle-click: <input id="middleclickfav" type="checkbox"> 
+      <br>
       <br>
       <b>Auto-Download options:</b> <br>
     (Auto-Download:)Enabled: <input id="enabled" type="checkbox"> <br>
@@ -36,8 +40,8 @@
     <br>
     <input id="deletesettings" type="button" value = "Delete Settings">
     <br> <br> 
-    <input id="defaultsettings" type="button" value = "Default Settings"><br> <br>
-    <input id="deleteimages" type="button" value = "Delete All Downloaded Images">
+    <input id="defaultsettings" type="button" value = "Default Settings"><br> 
+    <!-- <input id="deleteimages" type="button" value = "Delete All Downloaded Images"> !-->
     </form>
   </body>
     <script type="text/javascript" src= "jquery-3.4.1.min.js"></script>

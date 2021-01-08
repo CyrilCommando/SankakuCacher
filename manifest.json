@@ -16,14 +16,11 @@
     "default_title": "SankakuCacher",
     "default_popup": "popup.html"
   },
-  "content_scripts": [
+  "content_scripts": [ 
     {
-      "matches": [
-        "https://chan.sankakucomplex.com/post/*"
-      ],
+      "matches": ["https://chan.sankakucomplex.com/post/*", "https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/", "https://s.sankakucomplex.com/data/*"],
       "js": ["jquery-3.4.1.min.js", "content.js"]
-    }
-  ],
+    } ],
   "background": {
     "scripts": [ "background.js" ]
   }

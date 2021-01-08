@@ -45,8 +45,18 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         alert(request.value)
         break;
 
+      case "fuckgoogle":
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {message :tabs[0].url}, undefined)
+      }) 
+      break;
+
       case "link":
         //alert(request.url) ////////////////////////
+        
+        chrome.tabs.getSelected(tab => {
+
+        if (tab.url != "https://chan.sankakucomplex.com/") {
         
         var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];
       
@@ -90,7 +100,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               result.savefolder = result.savefolder.substr(-1,) 
             }
 
-          svfld = result.savefolder + "/"}
+          svfld = result.savefolder + "/"
+        
+          }
           })
       
           getData('enabled').then(function(result) {
@@ -123,12 +135,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               {
                 //alert("https:" + request.url)
                 //alert(svfld + name)
-                chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
-                positiveinstance = false;
+                getData('advanced_settings_object').then(function(result) {
+                  if (result.advanced_settings_object.character == true)
+                  {
+                    svfld = svfld + request.character_tag + "/"
+                  }
+                  if (result.advanced_settings_object.date == true)
+                  {
+                    svfld = svfld + request.date + "/"
+                  }
+                  if ((result.advanced_settings_object.character == false) && (result.advanced_settings_object.date == false))
+                  {
+                    // chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+                    // positiveinstance = false;
+                  }
+                  chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+                  positiveinstance = false;
+                })
               }
               else{positiveinstance = false;}
             }
           })
+        } else{} });
           break;
 
         default:
