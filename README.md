@@ -10,10 +10,10 @@ automatically download images sankakucomplex
 Preview
 
 Hold click on a thumbnail to bring up a preview.
-![alt text](https://i.imgur.com/y0KAbDt.gif)
+![alt text](https://i.imgur.com/GRgM1Jf.gif)
 
 Download buttons above and below content.
-![alt text](https://i.imgur.com/x7Lmzkr.gif)
+![alt text](https://i.imgur.com/uCRQhKT.gif)
 
 Automatically favorite images you choose to download.
 ![alt text](https://i.imgur.com/6clAxCs.gif)
