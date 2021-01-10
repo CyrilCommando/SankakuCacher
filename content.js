@@ -197,7 +197,7 @@ function apply()
 {
 setTimeout(() => {
   apply();
-  console.log("apply")
+  //console.log("apply")
 }, 500);
 $("div#content").find("img.preview").off("mouseenter mouseleave")
 $("div#content").find("img.preview").hover(setPreviewImage, unsetPreviewImage)
@@ -382,7 +382,7 @@ function preventdefaultthumblink()
 
 
     if (result.middleclickfav == true) {
-    console.log("result was true")
+    //console.log("result was true")
     
     var thumblinks = Array.prototype.slice.call(document.getElementsByClassName("thumblink"))
 
@@ -425,6 +425,10 @@ function getImageTags()
       if (index == 0) 
       {
         highest = this_number;
+        lowesttag = element;
+        tagname = ($(element).find(":first-child").text())
+        tagname = tagname.substr(0, tagname.length - 1)
+        console.log(tagname)
       }
       else if (this_number <= highest)
       {
@@ -432,7 +436,7 @@ function getImageTags()
           lowesttag = element;
           tagname = ($(element).find(":first-child").text())
           tagname = tagname.substr(0, tagname.length - 1)
-          console.log($(element).find(":first-child").text())
+          console.log(tagname)
 
       }
       else //(this_number >= highest) 

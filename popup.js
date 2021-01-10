@@ -26,13 +26,13 @@ var x = Array.prototype.slice.call(document.getElementsByTagName("a"))
 
 x.forEach(element => {
     if (element.id != "advl"){
-        element.onclick = function(event){
-        event.preventDefault()
-        if(element.id == "chan")
-        {
-            sendMessage();
-        }
-        }
+  element.onclick = function(event){
+      event.preventDefault()
+      if(element.id == "chan")
+      {
+          sendMessage();
+      }
+    }
   }
 });
 
@@ -129,7 +129,7 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8)
 function delete_all_settings()
 {
     chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "middleclickfav", "advanced_settings_object"])
-    chrome.runtime.sendMessage({"message": "alert", value: "settings deleted"})
+    //chrome.runtime.sendMessage({"message": "alert", value: "settings deleted"})
 }
 
 function default_settings()
@@ -195,19 +195,23 @@ function setthethings(n1, n2, n3){
     //alert("SankakuCacher save dir is " + n3);
     if ((n1 == undefined) && (n2 == undefined))
     {
-    chrome.storage.local.set({"enabled": true, "arrangefiles": false, "savefolder": "SankakuCacher", "newwindow": true, "mp4swebms": true}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher first-run options initialize, please re-open the page"}));
+        default_settings();
+        //chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher first-run options initialize, please re-open the page"})
     }
     else if (n1 == null || undefined)
     {
-        chrome.storage.local.set({"enabled": true}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher Enabled parameter missing, defaulting to enabled"}));
+        default_settings()
+        //chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher Enabled parameter missing, defaulting to enabled"})
     }
     else if (n2 == null || undefined)
     {
-        chrome.storage.local.set({"arrangefiles": false}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher arrangefiles parameter corrupted/missing, setting to default false"}));
+        default_settings()
+        //chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher arrangefiles parameter corrupted/missing, setting to default false"})
     }
     else if (n3 == null || undefined)
     {   
-        chrome.storage.local.set({"savefolder": "SankakuCacher"}, chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher savefolder parameter missing/corrupted, setting to default SankakuCacher"}));
+        default_settings()
+        //chrome.runtime.sendMessage({"message": "alert", value: "SankakuCacher savefolder parameter missing/corrupted, setting to default SankakuCacher"})
     } 
 }
 
