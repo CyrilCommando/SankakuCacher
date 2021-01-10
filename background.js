@@ -81,6 +81,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             {
                 if (newResult.mp4swebms == true && positiveinstance == false && enabled == true)
                 {
+                  if (newResult.advanced_settings_object.character == true)
+                  {
+                    svfld = svfld + request.character_tag + "/"
+                  }
+                  if (newResult.advanced_settings_object.date == true)
+                  {
+                    svfld = svfld + request.date + "/"
+                  }
                     chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
                     positiveinstance = false;
                 }
@@ -88,6 +96,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 {
                   if ((enabled == true) || (positiveinstance == true))
                   {
+                    if (newResult.advanced_settings_object.character == true)
+                    {
+                      svfld = svfld + request.character_tag + "/"
+                    }
+                    if (newResult.advanced_settings_object.date == true)
+                    {
+                      svfld = svfld + request.date + "/"
+                    }
                     chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
                     positiveinstance = false;
                   }
@@ -99,7 +115,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             {
               if ((enabled == true) || (positiveinstance == true))
               {
-                alert(newResult.advanced_settings_object.character)
                   if (newResult.advanced_settings_object.character == true)
                   {
                     svfld = svfld + request.character_tag + "/"
