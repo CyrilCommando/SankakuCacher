@@ -22,6 +22,20 @@ var autofavattr = document.getElementById("autofav");
 /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
 
+var x = Array.prototype.slice.call(document.getElementsByTagName("a"))
+
+x.forEach(element => {
+    if (element.id != "advl"){
+        element.onclick = function(event){
+        event.preventDefault()
+        if(element.id == "chan")
+        {
+            sendMessage();
+        }
+        }
+  }
+});
+
 class AdvancedSettingsObject
 {
     constructor(param1 = false, param2 = false) {

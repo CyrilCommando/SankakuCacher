@@ -111,7 +111,7 @@ function makeVideoPlayer(e)
 
   //create video player
   var preview = $("<video></video>");
-  $(preview).attr("style", "max-width: 663px; max-height: 540px; border: 4px solid #bdbdbd;")
+  $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 4px solid #bdbdbd;")
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_popup")
   $(preview).attr("referrerpolicy", "no-referrer")
@@ -162,7 +162,7 @@ function makeVideoPlayer(e)
   var div = $("<div></div>").attr({"style": "width: 0px; height: 0px;"})
   $(div).attr("id", "video_container_div")
   $(div).append($("<meta></meta>").attr({"name": "referrer", "content": "no-referrer"}))
-  $(div).attr("style", "max-width: 663px; max-height: 540px;")
+  $(div).attr("style", "max-width: 970px; max-height: 580px;")
   $(div).append(preview)
 
   //append preview
@@ -276,7 +276,7 @@ function addPreviewImg(e)
   thumbreswidth = parseInt($(e.currentTarget).attr("width"))
 
   var preview = $("<img></img>");
-  $(preview).attr("style", "max-width: 663px; max-height: 540px; border: 4px solid #bdbdbd;") 
+  $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 4px solid #bdbdbd;") 
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_popup")
   $(preview).attr("referrerpolicy", "no-referrer")
