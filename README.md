@@ -25,6 +25,14 @@ automatically download images sankakucomplex
 #### Options menu with detailed control of all options
 ![alt text](https://i.imgur.com/h1kks3p.gif)
 
+## How to use SankakuCacher?
+You'll need to download a full zip of the source code from the master branch or a release in the releases tab.
+Extract the "SankakuCacher1.X" folder somewhere on your computer.
+Enable "developer mode" in the top right of Chrome's or Edge's extensions menu.
+Click "Load unpacked" in the top left.
+Select the SankakuCacher folder you just extracted.
+And pin the extension!
+
 ### Coming soon
 Mass-download tags
 
