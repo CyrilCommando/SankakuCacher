@@ -1,5 +1,24 @@
 // background.js
 
+browser.runtime.onInstalled.addListener(function(details)
+{
+  default_settings();
+})
+
+class AdvancedSettingsObject
+{
+    constructor(param1 = false, param2 = false) {
+        this.character = param1;
+        this.date = param2;
+    }
+}
+
+function default_settings()
+{
+    var aso = new AdvancedSettingsObject();
+    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso})
+}
+
 var positiveinstance = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -20,8 +39,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
       case "fuckgoogle":
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, {message: tabs[0].url}, undefined)
+        browser.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          browser.tabs.sendMessage(tabs[0].id, {message: tabs[0].url}, undefined)
       }) 
       break;
 
@@ -29,10 +48,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       
         chrome.storage.local.get(["savefolder", "mp4swebms", "enabled", "advanced_settings_object"], function(newResult) { 
 
-        chrome.tabs.getSelected(tab => {
+        browser.tabs.query({active: true}).then(tab => {
 
           //do a proper regex for that then
-          if (tab.url != "https://chan.sankakucomplex.com/") 
+          if (tab[0].url != "https://chan.sankakucomplex.com/") 
           {
           
             var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];

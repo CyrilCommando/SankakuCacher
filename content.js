@@ -50,7 +50,7 @@ chrome.storage.local.get(["autofav"], function(result)
 function prepare()
 {
   popup_image_container = $("<div></div>").attr({"style": "height: 0px;", "id": "popup_image_container"})
-  preview_popup_image = $("<div></div>").attr({"style": "position: relative; left: -1187px; z-index: 111111; display: inline-block;", "id": "preview_popup_image"})
+  preview_popup_image = $("<div></div>").attr({"style": "position: relative; left: -0px; z-index: 111111; display: inline-block;", "id": "preview_popup_image"})
   preview_image_image = $("<div></div>").attr({"id": "preview_image_image"})
   $(preview_popup_image).append(preview_image_image)
   $(popup_image_container).append(preview_popup_image)
@@ -96,7 +96,7 @@ function xmlhttpReq(pid, e)
 function makeVideoPlayer(e)
 {
   //remove if it exists (it shouldn't)
-  $("#preview_popup_image").css("left", "-1187px")  
+  $("#preview_popup_image").css("left", "-0px")  
   $(".preview_popup").remove()
   $("#video_container_div").remove()
   $("#preview_close_button").remove()
@@ -197,7 +197,7 @@ function apply()
 {
 setTimeout(() => {
   apply();
-  console.log("apply")
+  //console.log("apply")
 }, 500);
 $("div#content").find("img.preview").off("mouseenter mouseleave")
 $("div#content").find("img.preview").hover(setPreviewImage, unsetPreviewImage)
@@ -257,7 +257,7 @@ function setPreviewImage(e)
 /**add preview image to container*/
 function addPreviewImg(e)
 {
-  $("#preview_popup_image").css("left", "-1187px")  
+  $("#preview_popup_image").css("left", "-0px")  
   $(".preview_popup").remove()
   $("#video_container_div").remove()
   $("#preview_close_button").remove()
@@ -322,7 +322,7 @@ function addPreviewImg(e)
 function removePreviewImg(e)
 {
 
-  $("#preview_popup_image").css("left", "-1187px")  
+  $("#preview_popup_image").css("left", "-0px")  
   $(".preview_popup").remove()
   $("#video_container_div").remove()
   $("#preview_close_button").remove()
@@ -382,7 +382,7 @@ function preventdefaultthumblink()
 
 
     if (result.middleclickfav == true) {
-    console.log("result was true")
+    //console.log("result was true")
     
     var thumblinks = Array.prototype.slice.call(document.getElementsByClassName("thumblink"))
 
@@ -425,6 +425,10 @@ function getImageTags()
       if (index == 0) 
       {
         highest = this_number;
+        lowesttag = element;
+        tagname = ($(element).find(":first-child").text())
+        tagname = tagname.substr(0, tagname.length - 1)
+        console.log(tagname)
       }
       else if (this_number <= highest)
       {
@@ -432,7 +436,7 @@ function getImageTags()
           lowesttag = element;
           tagname = ($(element).find(":first-child").text())
           tagname = tagname.substr(0, tagname.length - 1)
-          console.log($(element).find(":first-child").text())
+          console.log(tagname)
 
       }
       else //(this_number >= highest) 
