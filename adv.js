@@ -7,7 +7,7 @@ var setsobj;
 
 class AdvancedSettingsObject
 {
-    constructor(param1, param2) {
+    constructor(param1 = false, param2 = false) {
         this.character = param1;
         this.date = param2;
     }
@@ -19,14 +19,14 @@ function doc_onchanged(htmlelement){
         case "character":
         {
             characterenabled = htmlelement.checked;
-            setsobj = new AdvancedSettingsObject(characterenabled, dateenabled)
+            setsobj = new AdvancedSettingsObject(characterenabled, document.getElementById("date").checked)
             chrome.storage.local.set({"advanced_settings_object": setsobj})
             break;
         }
         case "date":
         {
             dateenabled = htmlelement.checked;
-            setsobj = new AdvancedSettingsObject(characterenabled, dateenabled)
+            setsobj = new AdvancedSettingsObject(document.getElementById("character").checked, dateenabled)
             chrome.storage.local.set({"advanced_settings_object": setsobj})
             break;
         }  

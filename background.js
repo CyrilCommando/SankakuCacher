@@ -1,34 +1,8 @@
 // background.js
-function openLinkInBrowser()
-{
-  chrome.storage.local.get("newwindow", function (result) { 
-    if (result.newwindow)
-    {
-      chrome.windows.create({url: "https://chan.sankakucomplex.com", state: "maximized"})
-    }
-    else chrome.tabs.create({url: "https://chan.sankakucomplex.com"});
-  })
-}
-
-//document.getElementById("link").click();
 
 var positiveinstance = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-
-
-    //cs.sankakucomplex.com/data/07/93/07931420dae514273fcc74d558cf1d78.jpg?e=1569160039&m=BpaLQUW5X4YC1cAlWLnr4Q
-    //cs.sankakucomplex.com/data/48/e7/48e7fcc8474d2ba8c04500a3e5b34401.png?e=1573833330&m=zm9Pk4o5f2WvA3--hK9XfA
-
-    // switch (request.message) {
-    //   case "chan":
-    //     openLinkInBrowser();
-    //     break;
-    
-    //   default:
-    //     break;
-    // }
-
 
     switch (request.message) {
       case "chan":
@@ -47,70 +21,65 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       case "fuckgoogle":
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, {message :tabs[0].url}, undefined)
+          chrome.tabs.sendMessage(tabs[0].id, {message: tabs[0].url}, undefined)
       }) 
       break;
 
       case "link":
-        //alert(request.url) ////////////////////////
-        
+      
+        chrome.storage.local.get(["savefolder", "mp4swebms", "enabled", "advanced_settings_object"], function(newResult) { 
+
         chrome.tabs.getSelected(tab => {
 
-        if (tab.url != "https://chan.sankakucomplex.com/") {
-        
-        var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];
-      
-        if (includeshttps == "https")
-        {
-          request.url = request.url.substring(6)
-        } 
-  
-        var name = request.url.substr(34, 36)
-      
-        //var place = name[33] + name[34] + name[35]
-  
-        if (name[33] + name[34] + name[35] === "web")
-        {
-          name = name + "m"
-        }
-  
-        
-        var svfld ="SankakuCacher/"
-  
-  
-  
-        getData('savefolder').then(function(result) {
-          if (result.savefolder == "SankakuCacher")
+          //do a proper regex for that then
+          if (tab.url != "https://chan.sankakucomplex.com/") 
           {
-            //break;
-          }
-          else 
-          {
-
-            //check if the input filename has a slash in it
-            if (result.savefolder.substr(0, 1) == "/") 
+          
+            var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];
+          
+            if (includeshttps == "https")
             {
-              alert(result.savefolder.substr(0, 1))
-              result.savefolder = result.savefolder.substr(1);
+              request.url = request.url.substring(6)
             } 
-
-            if (result.savefolder.substr(-1, 1) == "/")
-            {
-              alert(result.savefolder.substr(-1, 1))
-              result.savefolder = result.savefolder.substr(-1,) 
-            }
-
-          svfld = result.savefolder + "/"
-        
-          }
-          })
       
-          getData('enabled').then(function(result) {
-            enabled = result.enabled;
+            var name = request.url.substr(34, 36)
+      
+            if (name[33] + name[34] + name[35] === "web")
+            {
+              name = name + "m"
+            }
+      
+            
+            var svfld ="SankakuCacher/"
+      
+            
+            if (newResult.savefolder == "SankakuCacher")
+            {
+              //break;
+            }
+            else 
+            {
+              //check if the input filename has a slash in it
+              if (newResult.savefolder.substr(0, 1) == "/") 
+              {
+                alert(newResult.savefolder.substr(0, 1))
+                newResult.savefolder = newResult.savefolder.substr(1);
+              } 
+
+              if (newResult.savefolder.substr(-1, 1) == "/")
+              {
+                alert(newResult.savefolder.substr(-1, 1))
+                newResult.savefolder = newResult.savefolder.substr(-1,) 
+              }
+
+            svfld = newResult.savefolder + "/"
+          
+            }
+              
+            enabled = newResult.enabled;
             if (name[33] + name[34] + name[35] + name[36] === "webm" || name[33] + name[34] + name[35] === "mp4")
             {
-              getData('mp4swebms').then(function(result) {
-                if (result.mp4swebms == true && positiveinstance == false && enabled == true)
+                if (newResult.mp4swebms == true && positiveinstance == false && enabled == true)
                 {
                     chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
                     positiveinstance = false;
@@ -119,60 +88,66 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 {
                   if ((enabled == true) || (positiveinstance == true))
                   {
-                    //alert("https:" + request.url)
-                    //alert(svfld + name)
                     chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
                     positiveinstance = false;
                   }
                   else{positiveinstance = false;}
                 }
                 else{}
-              });
-            }
+            } //if is webm/mp4
             else if (name[33] + name[34] + name[35] + name[36] != "webm" || name[33] + name[34] + name[35] != "mp4")
             {
               if ((enabled == true) || (positiveinstance == true))
               {
-                //alert("https:" + request.url)
-                //alert(svfld + name)
-                getData('advanced_settings_object').then(function(result) {
-                  if (result.advanced_settings_object.character == true)
+                alert(newResult.advanced_settings_object.character)
+                  if (newResult.advanced_settings_object.character == true)
                   {
                     svfld = svfld + request.character_tag + "/"
                   }
-                  if (result.advanced_settings_object.date == true)
+                  if (newResult.advanced_settings_object.date == true)
                   {
                     svfld = svfld + request.date + "/"
                   }
-                  if ((result.advanced_settings_object.character == false) && (result.advanced_settings_object.date == false))
+                  if ((newResult.advanced_settings_object.character == false) && (newResult.advanced_settings_object.date == false))
                   {
                     // chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
                     // positiveinstance = false;
                   }
                   chrome.downloads.download({url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
                   positiveinstance = false;
-                })
               }
               else{positiveinstance = false;}
-            }
-          })
-        } else{} });
-          break;
+            } //if not webm/mp4
+          } /*if url*/ else{} ////////callback fucking heck 
+        }); //chrome.tabs.getSelected
+      }) //chrome.storage.local.get
+        break;
 
-        default:
+      default:
 
-          break;
+        break;
     }
 });
 
+function openLinkInBrowser()
+{
+  chrome.storage.local.get("newwindow", function (newResult) { 
+    if (newResult.newwindow)
+    {
+      chrome.windows.create({url: "https://chan.sankakucomplex.com", state: "maximized"})
+    }
+    else chrome.tabs.create({url: "https://chan.sankakucomplex.com"});
+  })
+}
+
 function getData(sKey) {
   return new Promise(function(resolve, reject) {
-    chrome.storage.local.get(sKey, function(result) {
+    chrome.storage.local.get(sKey, function(newResult) {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
         reject(chrome.runtime.lastError.message);
       } else {
-        resolve(result);
+        resolve(newResult);
       }
     });
   });

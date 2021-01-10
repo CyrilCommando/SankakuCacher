@@ -1,60 +1,52 @@
+//get the tab url
 chrome.runtime.sendMessage({"message": "fuckgoogle"})
+
+//listener to tab URL
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.message != "https://chan.sankakucomplex.com/")
+  {
+    getImageTags();
+  }
+}
+)
 
 clearbs();
 
-function clearbs() {
-setTimeout(() => {
-  $("div[style*='-webkit-tap-highlight-color: transparent !important; background: none !important; border: 0px !important; display: block !important; height: 100vh !important; left: 0px !important; margin: 0px !important; outline: 0px !important; padding: 0px !important; position: fixed !important; top: 0px !important; width: 100vw !important; z-index: 2147483647 !important;'").remove();
-  $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647;'").remove();
-  $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647 !important;'").remove();
-  $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
-  clearbs();
-}, 1000);
-}
-
-$("head").append( $("meta").attr({"content": "no-referrer", "name": "referrer"}) )
-
-//$("#header").after($("<img>").attr("src", "https://s.sankakucomplex.com/data/00/12/00120841727b9e1ad63a70d9d461e4f6.jpg?e=1609773527&m=i910QNZ1m-VnyYgdy9K-3A"))
+//$("head").append( $("meta").attr({"content": "no-referrer", "name": "referrer"}) )
 
 var operatingthumbnail;
-
-var isPreviewTimeoutGoing;
-
-var timeout;
-
-var isPopupPreviewTimeoutGoing;
-
-var hovertimeout;
 
 var holdclicktimeout;
 
 var hasHeldDownClick;
 
-// document.onmouseup = function (e) {
-//   hasHeldDownClick = false;
-// }
-
-// document.onmousedown = function(e) {
-//   if (e.buttons == 1) {
-//     hasHeldDownClick = true;
-//     e.preventDefault();
-//     setTimeout(() => {
-//       if (hasHeldDownClick)
-//       {
-//       try {
-//         addPreviewImg(operatingthumbnail)
-//       } catch (error) {
-//         console.log("weren't hovering over a thumbnail")
-//       }
-//       }
-//     }, 1000);
-//   }
-// };
-
 apply();
 
 prepare();
 
+getTheGodDamnLink();
+
+addDownloadButton();
+
+var charactertag;
+
+var dt;
+
+aparse();
+
+chrome.storage.local.get(["autofav"], function(result)
+{
+  if (result.autofav == true)
+  {
+    addscript();
+  }
+  else if (result.autofav == false)
+  {
+    addscript2();
+  }
+})
+
+/**prepare DOM for preview*/
 function prepare()
 {
   popup_image_container = $("<div></div>").attr({"style": "height: 0px;", "id": "popup_image_container"})
@@ -65,32 +57,27 @@ function prepare()
   $("div#news-ticker").before(popup_image_container)
 }
 
+//make XMLHttpRequest with PID and image DOM element
 function xmlhttpReq(pid, e)
 {
-//   $.ajax({
-//     url: "https://chan.sankakucomplex.com/post/show/23537167", 
-//     cache: false,
-//     success: function(response) {
-//       $(response).find("#content")
-//         //alert(response); // works as expected (returns all html)
-//         // returns [object Object]
-//     }
-// });
   var xhr = new XMLHttpRequest();
+
   xhr.onload = function() {
-    //console.log(this.responseXML.title);
     console.log("xhr SENT")
   }
+
   xhr.open("GET", "https://chan.sankakucomplex.com/post/show/"+pid);
   xhr.responseType = "document";
   xhr.send();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
-      //console.log($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href"))
+
       //log image url
       console.log("image link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
+
       //log video url
       console.log("video link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
+
       //if image link is undefined
       if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
       {
@@ -101,7 +88,6 @@ function xmlhttpReq(pid, e)
       else{
         $(".preview_popup").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
       }
-      //newxmlhttpReq("https:" + $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href"))
       
     }
 }
@@ -109,120 +95,113 @@ function xmlhttpReq(pid, e)
 
 function makeVideoPlayer(e)
 {
-  var div = $("<div></div>").attr({"style": "width: 0px; height: 0px;"})
+  //remove if it exists (it shouldn't)
+  $("#preview_popup_image").css("left", "-1187px")  
+  $(".preview_popup").remove()
+  $("#video_container_div").remove()
+  $("#preview_close_button").remove()
 
-  var preview = $("<video></video>");
+  //get position of thumb
   var topposition = e.currentTarget.getBoundingClientRect().top + window.scrollY;
   var bottomposition = e.currentTarget.getBoundingClientRect().bottom + window.scrollY;
   var leftposition = e.currentTarget.getBoundingClientRect().left;
   var rightposittion = e.currentTarget.getBoundingClientRect().right;
-  thumbresheight = parseInt($(e.currentTarget).attr("height")) // post id = ($(e.currentTarget).parent.attr("href").substr(10,)) 
+  thumbresheight = parseInt($(e.currentTarget).attr("height")) 
   thumbreswidth = parseInt($(e.currentTarget).attr("width"))
 
-  //widthvalue
-  leftposition -= this.width * 0.5
-  //verticalposition = bottomposition - thumbresheight + 2;
-  verticalposition = topposition - this.height * 1.0;
-  horizontalposition = leftposition //- thumbreswidth * 0.5;
-
-  if (thumbresheight > thumbreswidth)
-  {
-    // horizontalposition -= thumbreswidth * 0.1
-  }
-  //console.log(xhr.responseXML)
-  $(preview).attr("style", "position: absolute; left: "+horizontalposition+"px; top: "+verticalposition+"px; width: 450px; max-width: 450px; max-height: 442px; z-index: 11111; border: 4px solid #bdbdbd;")
+  //create video player
+  var preview = $("<video></video>");
+  $(preview).attr("style", "max-width: 663px; max-height: 540px; border: 4px solid #bdbdbd;")
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_popup")
   $(preview).attr("referrerpolicy", "no-referrer")
   $(preview).attr("controls", "")
   $(preview).attr("autoplay", "")
   $(preview).attr("loop", "")
-  $(preview).attr("muted", true)
+  $(preview).attr("muted", "")
 
-  $(preview).on("load", function() { console.log(this.width + 'x' + this.height)})
+  //assign proper preview position on load
+  $(preview).on("progress", function() 
+  {
+    console.log("preview size: "+$(this).width() + 'x' + $(this).height()); 
 
-  $(div).append($("meta").attr({"name": "referrer", "content": "no-referrer"}))
-  $(div).attr("style", "position: absolute; left: "+horizontalposition+"px; top: "+verticalposition+"px; width: 450px; max-width: 450px; max-height: 442px; z-index: 11111; border: 4px solid #bdbdbd;")
+    var h = topposition; 
+    h -= $(this).height(); 
+    h -= 8; 
+    //assign vertical position
+    //check if vertical position is out of bounds
+    if (h <0)
+    {
+      h = 0 + window.scrollY;
+      $("#preview_popup_image").css("top", h); 
+    }
+    else{$("#preview_popup_image").css("top", h); }
+
+    var lp = leftposition; 
+    lp -= $(this).width() * 0.5; 
+    lp += thumbreswidth * 0.5; 
+    //assign horizontal position
+    //check if horizontal position is out of bounds
+    if (lp<0)
+    {
+      lp = 0;
+      $("#preview_popup_image").css("left", lp);
+    }
+    else if(lp+$(this).width()>$(window).width())
+    {
+      lp = $(window).width() - $(this).width()
+      $("#preview_popup_image").css("left", lp);
+    }
+    else{$("#preview_popup_image").css("left", lp);}
+
+    //fix preview_close_button position
+    $("#preview_close_button").css("bottom", $(this).height() + 4)
+  })
+
+  //make metadata div
+  var div = $("<div></div>").attr({"style": "width: 0px; height: 0px;"})
+  $(div).attr("id", "video_container_div")
+  $(div).append($("<meta></meta>").attr({"name": "referrer", "content": "no-referrer"}))
+  $(div).attr("style", "max-width: 663px; max-height: 540px;")
   $(div).append(preview)
 
-  $("#content").after(div)
+  //append preview
+  $("#preview_image_image").append(div)
+
+  //append close button
+  var cb = createPreviewCloseButton();
+  $("#preview_image_image").append(cb)
 }
 
-function newxmlhttpReq(imageurl)
+function createPreviewCloseButton()
 {
-//   $.ajax({
-//     url: "https://chan.sankakucomplex.com/post/show/23537167", 
-//     cache: false,
-//     success: function(response) {
-//       $(response).find("#content")
-//         //alert(response); // works as expected (returns all html)
-//         // returns [object Object]
-//     }
-// });
-  var xhr = new XMLHttpRequest();
-  xhr.onload = function() {
-    //console.log(this.responseXML.title);
-  }
-  xhr.open("GET", imageurl);
-  //xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-  xhr.responseType = "document";
-  xhr.send();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      console.log(imageurl)
-      console.log(this.responseXML)
-      console.log($(this.responseXML.body).find("img").attr("src"))
-    }
-}
+  x = $("<div></div>").attr({"id": "preview_close_button", "style": "position: relative; left: 4px; bottom: 26px; width: fit-content;"})
+  y = $("<input>").attr({"type": "button", "value": "x", "style": "padding: 0px; width: 34px; height: 20px;"})
+  $(y).on("click", function(e) {removePreviewImg();})
+  $(x).append(y)
+  return x;
 }
 
-function getResOfThumb(element)
-{
-  
-}
-
+/**
+ * 
+ * @param {Image} image 
+ * @returns {string} postID
+ */
 function getPostIdOfHoveredImage(image)
 {
   return $(image).parent().parent().attr("id").substr(1,)
 }
 
+/**apply event handlers to thumbnails on screen*/
 function apply()
 {
 setTimeout(() => {
   apply();
   console.log("apply")
-}, 1000);
+}, 500);
 $("div#content").find("img.preview").off("mouseenter mouseleave")
 $("div#content").find("img.preview").hover(setPreviewImage, unsetPreviewImage)
 $("div#sp1").remove();
-
-// $(".thumblink").off("contextmenu")
-// $(".thumblink").contextmenu(function(e) {
-//   if (e.buttons == 5 || 1)
-//   {
-//     console.log("contextmenu buttons was "+e.buttons)
-//     e.preventDefault();
-//     // try {
-//     //   addPreviewImg(operatingthumbnail)
-//     // } catch (error) {
-//     //   console.log("weren't hovering over a thumbnail")
-//     // }
-//   }
-// })
-
-// $(".thumblink").off("click")
-// $(".thumblink").click(function(e) {
-//   // console.log("click buttons was "+e.buttons)
-//   if (e.buttons == 6 || 2)
-//   {
-//     e.preventDefault();
-//       // try {
-//       //   addPreviewImg(operatingthumbnail)
-//       // } catch (error) {
-//       //   console.log("weren't hovering over a thumbnail")
-//       // }
-//   }
-// })
 
 $(".thumblink").off("mousedown")
 $(".thumblink").on("mousedown", function(e)
@@ -236,6 +215,7 @@ $(".thumblink").on("mousedown", function(e)
         $(e.currentTarget).on("click", function(e){console.log("we made it here boys"); e.preventDefault(); hasHeldDownClick = false; $(e.currentTarget).off("click")})
         try 
         {
+          setCssOnElement(operatingthumbnail)
           addPreviewImg(operatingthumbnail)
         } 
         catch (error) 
@@ -256,6 +236,14 @@ $(".thumblink").on("mouseup", function(e)
 
 }
 
+function setCssOnElement(element)
+{
+  $(element.currentTarget).css({"transition": "outline 0.5s cubic-bezier(0, -2.37, 0.02, 4.64) 0s", "outline": "4px solid springgreen", "animation-delay": "0.5s", "animation-duration": "0.1s", "animation-name": "continue"})
+  setTimeout(() => {
+    $(element.currentTarget).css({"transition": "", "outline": "", "animation-delay": "", "animation-duration": "", "animation-name": ""})
+  }, 500);
+}
+
 function unsetPreviewImage(e)
 {
   operatingthumbnail = undefined;
@@ -266,74 +254,69 @@ function setPreviewImage(e)
   operatingthumbnail = e;
 }
 
-function timeoutonhover(e)
-{
-  isPopupPreviewTimeoutGoing = true;
-  hovertimeout = setTimeout(() => {
-    addPreviewImg(e);
-  }, 1000);
-}
-
+/**add preview image to container*/
 function addPreviewImg(e)
 {
   $("#preview_popup_image").css("left", "-1187px")  
   $(".preview_popup").remove()
-  // if (isPreviewTimeoutGoing)
-  // {
-  //   clearTimeout(timeout);
-  // }
-  // else if ((isPreviewTimeoutGoing && isPopupPreviewTimeoutGoing) || (isPopupPreviewTimeoutGoing && isPreviewTimeoutGoing == false)){
-  // operatingthumbnail = e.currentTarget;
-  // isPreviewTimeoutGoing = false;
-  // console.log($(e.currentTarget).parent().attr("href"))
+  $("#video_container_div").remove()
+  $("#preview_close_button").remove()
+
   postid = getPostIdOfHoveredImage(e.currentTarget)
   console.log(postid)
-  //xhr = 
-  //newxmlhttpReq() 
+
   xmlhttpReq(postid, e);
-  //console.log(e.currentTarget.getBoundingClientRect().top)
-  var preview = $("<img></img>");
+
+  //thumb position and preview size
   var topposition = e.currentTarget.getBoundingClientRect().top + window.scrollY;
   var bottomposition = e.currentTarget.getBoundingClientRect().bottom + window.scrollY;
   var leftposition = e.currentTarget.getBoundingClientRect().left;
   var rightposittion = e.currentTarget.getBoundingClientRect().right;
-  thumbresheight = parseInt($(e.currentTarget).attr("height")) // post id = ($(e.currentTarget).parent.attr("href").substr(10,)) 
+  thumbresheight = parseInt($(e.currentTarget).attr("height")) 
   thumbreswidth = parseInt($(e.currentTarget).attr("width"))
 
-  //widthvalue
-  //leftposition -= parseInt($(".preview_popup").height()) * 0.5;
-  //console.log($(".preview_popup").height())
-
-  //verticalposition = bottomposition - thumbresheight + 2;
-
-  //final height value
-  //verticalposition = topposition - parseInt($(".preview_popup").height()) * 1.0;
-
-  //final width value
-  //horizontalposition = leftposition //- thumbreswidth * 0.5;
-  
-  thumbmiddle = leftposition + thumbreswidth * 0.5;
-
-  previewmiddle = thumbmiddle;
-
-  if (thumbresheight > thumbreswidth)
-  {
-    // horizontalposition -= thumbreswidth * 0.1
-  }
-  //console.log(xhr.responseXML)                                                                            position: absolute; left: -1187px; z-index: 11111; 
-  $(preview).attr("style", "max-width: 663px; max-height: 540px; border: 4px solid #bdbdbd;") //472 //442 //540 //width 486 //width 450 //width 560 //width 663
+  var preview = $("<img></img>");
+  $(preview).attr("style", "max-width: 663px; max-height: 540px; border: 4px solid #bdbdbd;") 
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_popup")
   $(preview).attr("referrerpolicy", "no-referrer")
 
-  //assign the preview image widtth
+  //assign preview image position
   $(preview).on("load", function() 
   {
-    console.log("preview size: "+this.width + 'x' + this.height); var h= topposition; h -= this.height; h -= 8; $("#preview_popup_image").css("top", h); var lp = leftposition; lp -= this.width * 0.5; lp += thumbreswidth * 0.5; $("#preview_popup_image").css("left", lp);  //$(".preview_popup").attr()
+    console.log("preview size: "+this.width + 'x' + this.height);
+    var h= topposition; 
+    h -= this.height; 
+    h -= 8; 
+    if (h <0)
+    {
+      h = 0 + window.scrollY;
+      $("#preview_popup_image").css("top", h); 
+    }
+    else{$("#preview_popup_image").css("top", h); }
+    
+    var lp = leftposition; 
+    lp -= this.width * 0.5; 
+    lp += thumbreswidth * 0.5; 
+    if (lp<0)
+    {
+      lp = 0;
+      $("#preview_popup_image").css("left", lp);
+    }
+    else if(lp+$(this).width()>$(window).width())
+    {
+      lp = $(window).width() - $(this).width()
+      $("#preview_popup_image").css("left", lp);
+    }
+    else{$("#preview_popup_image").css("left", lp);}
   })
 
+  //append preview
   $("#preview_image_image").append(preview)
-//}
+
+  //append close button
+  var cb = createPreviewCloseButton();
+  $("#preview_image_image").append(cb)
 }
 
 function removePreviewImg(e)
@@ -341,45 +324,21 @@ function removePreviewImg(e)
 
   $("#preview_popup_image").css("left", "-1187px")  
   $(".preview_popup").remove()
-  // if(isPopupPreviewTimeoutGoing)
-  // {
-  //   clearTimeout(hovertimeout)
-  //   isPopupPreviewTimeoutGoing = false;
-  // }
-
-  
-  // isPreviewTimeoutGoing = true;
-  // timeout = setTimeout(() => {
-  //   if (isPreviewTimeoutGoing)
-  //   {
-  //   //// $("#preview_popup_image").css("left", "-1187px")  
-  //   //// $(".preview_popup").remove()
-  //   isPreviewTimeoutGoing = false;
-  //   }
-  //   else{}
-  // }, 1500);
+  $("#video_container_div").remove()
+  $("#preview_close_button").remove()
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.message != "https://chan.sankakucomplex.com/")
-  {
-    getImageTags();
+function clearbs() {
+  setTimeout(() => {
+    $("div[style*='-webkit-tap-highlight-color: transparent !important; background: none !important; border: 0px !important; display: block !important; height: 100vh !important; left: 0px !important; margin: 0px !important; outline: 0px !important; padding: 0px !important; position: fixed !important; top: 0px !important; width: 100vw !important; z-index: 2147483647 !important;'").remove();
+    $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647;'").remove();
+    $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647 !important;'").remove();
+    $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
+    clearbs();
+  }, 1000);
   }
-}
-)
 
-getTheGodDamnLink();
-
-addDownloadButton();
-
-//addInvisibleScriptButton();
-
-var charactertag;
-
-var dt;
-
-aparse();
-
+/**add script button for adding fav class and creatting relative create function for IMG element*/
 function addInvisibleScriptButton(post_id, element)
 {
   post_id = post_id;
@@ -401,6 +360,7 @@ function addInvisibleScriptButton(post_id, element)
   document.body.appendChild(button);
 }
 
+/**parse entire dom for thumbnail elements and apply custom */
 function aparse() {
 
   setTimeout(() => {
@@ -422,51 +382,33 @@ function preventdefaultthumblink()
 
 
     if (result.middleclickfav == true) {
-      console.log("result was true")
+    console.log("result was true")
+    
     var thumblinks = Array.prototype.slice.call(document.getElementsByClassName("thumblink"))
+
     thumblinks.forEach(element => {
 
       //get post id of element
       var pid = $(element).parent().attr("id").substr(1,)
-      //change button script to match post id upon hovering for each element
-      //$(element).hover(function () {$("#invisiblescriptbutton").attr("onclick", "middleclickfav("+pid+");")}, function () {$("#invisiblescriptbutton").removeAttr("onclick")})
 
       //when clicking thumbnail element
       element.onauxclick = (e => { 
         e.preventDefault()
-        // chrome.storage.local.get("middleclickfav", () => 
-        //   {
-            
-        //   })
+
+        //for each thumblink apply auxclick
         if(e.button == 1)
           {//alert("how did it get here")
             addInvisibleScriptButton(pid, element);
             $("#invisiblescriptbutton").trigger("click")
-            //$(element).attr("onauxclick", "middleclickfav("+pid+");")
             console.log("middleclick")
-            //addmiddleclickscript(pid);
           }
         $("#invisiblescriptbutton").remove();
       })
     });     }   else{}    }) //////////////////////CALLBACK FUCKING HECK
 }
 
-// addmiddleclickscript();
 
-chrome.storage.local.get(["autofav"], function(result)
-{
-  if (result.autofav == true)
-  {
-    addscript();
-  }
-  else if (result.autofav == false)
-  {
-    addscript2();
-  }
-})
-
-
-
+/**get image tags (if url ==) */
 function getImageTags()
 {
   elearr = Array.prototype.slice.call(document.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
@@ -474,39 +416,39 @@ function getImageTags()
   var highest;
   var lowesttag;
   var tagname;
-//character tags
-for (let index = 0; index < elearr.length; index++) {
-  element = elearr[index];
-  console.log($(element).find("span span").text())
-  this_number = parseInt($(element).find("span span").text())
-  //if ((this_number >= highest) || (index == 0))
-    if (index == 0) 
-    {
-      highest = this_number;
-    }
-    else if (this_number <= highest)
-    {
-        highest = this_number;
-        lowesttag = element;
-        tagname = ($(element).find(":first-child").text())
-        tagname = tagname.substr(0, tagname.length - 1)
-        console.log($(element).find(":first-child").text())
 
-    }
-    else //(this_number >= highest) 
-    {
-    }
-}
+  //character tags (find lowest)
+  for (let index = 0; index < elearr.length; index++) {
+    element = elearr[index];
+    console.log($(element).find("span span").text())
+    this_number = parseInt($(element).find("span span").text())
+      if (index == 0) 
+      {
+        highest = this_number;
+      }
+      else if (this_number <= highest)
+      {
+          highest = this_number;
+          lowesttag = element;
+          tagname = ($(element).find(":first-child").text())
+          tagname = tagname.substr(0, tagname.length - 1)
+          console.log($(element).find(":first-child").text())
+
+      }
+      else //(this_number >= highest) 
+      {
+      }
+  }
 console.log(highest + " " + tagname)
 charactertag = tagname;
 
 //date
 //if (ds == enabled)
-{
-  date = new Date();
-  time = createTime(date.getDate(), date.getMonth() +1, date.getFullYear())
-  dt = time;
-}
+
+date = new Date();
+time = createTime(date.getDate(), date.getMonth() +1, date.getFullYear())
+dt = time;
+
 
 }
 
@@ -516,33 +458,12 @@ function createTime(day, m, y)
   return time;
 }
 
-function addmiddleclickscript(post_id)
-{
-  post_id = post_id;
-  // alert(post_id)
 
-
-  var script = document.createElement("script");
-  script.id = "midlclickfavsets"
-  script.innerHTML = "middleclickfav = function(){var post_id = " + post_id + "; Favorite.create(post_id)}"
-  document.body.appendChild(script);
-}
-
-
-
-
-
-
+/** adds autofav enabled script */
+   
 function addscript()
 {
-  // var script = $("<script> </script>")
-  // script.attr("src", "autofavscript.js")
-  // script.attr("type", "text/javascript") 
-
-  // $("head").append(script);
-
   post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
-  // alert(post_id)
 
 
   var script = document.createElement("script");
@@ -555,13 +476,11 @@ function addscript()
 
 
 
-
+/** adds autofav disabled script */
 
 function addscript2()
 {
   post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
-  // alert(post_id)
-
 
   var script = document.createElement("script");
   script.id = "autofavscript"
@@ -575,7 +494,7 @@ function addscript2()
 
 
 
-
+/** adds download buttons to content */
 function addDownloadButton()
 {
 
@@ -585,9 +504,6 @@ function addDownloadButton()
   var lowerbutton = $("<input>").attr("type", "button").attr("value", "Download").attr("id", "DownloadButton2").click(getTheGodDamnLink2).attr("onclick", "customfavfunction();")
 
   div.append(button)
-
-  // $("#post-content").before( "<div id=\"dlbutton\" style=\"padding-top: 250px\;\> <input type=\"button\" value=\"Download\"\> </div>");
-  // var element = $("<input>").type("button").text("Download").onclick(getTheGodDamnLink2).style("padding-top: 250px;")
   
   $("#post-content").before(div);
 
@@ -596,99 +512,80 @@ function addDownloadButton()
   $("#post-content").after(lowerbutton)
 } 
 
+/**get the link to src image URL (on /post/show/*) */
 function getTheGodDamnLink()
-  {
+{
   var v = $("#image").attr("src");
   var y = $("#image-link").attr("href");
 
-    if (y === undefined)
-    {
-      chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
-    }
-
-    else
-    {
-      chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
-    }
-  }
-
-  function getTheGodDamnLink2()
+  if (y === undefined)
   {
-    // alert("here is where it is!")
-    // console.log("here is where it also is!")
-    var v = $("#image").attr("src");
-    var y = $("#image-link").attr("href");
-    var z = $("#image-link").attr("src");
-
-      if (y === undefined)
-      {
-        chrome.runtime.sendMessage({message: "settoinstance"})
-        chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
-      }
-
-      else if ((v === undefined) && (y === undefined))
-      {
-        chrome.runtime.sendMessage({message: "settoinstance"})
-        chrome.runtime.sendMessage({"message": "link", url: z, character_tag: charactertag, date: dt})
-      }
-
-      else
-      {
-        chrome.runtime.sendMessage({message: "settoinstance"})
-        chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
-      }
+    chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
   }
 
-  //chrome.downloads.download({url: y, saveAs: false})
-  //sendMessage − chrome.runtime.sendMessage(string extensionId, any message, object options, function responseCallback)
+  else
+  {
+    chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
+  }
+}
 
-    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-      if( request.message == "acquirelink" ) {
-        getTheGodDamnLink2();
-      }
-      if (request.message == "urlresp")
+  /**get the link to src image URL (on /post/show/* if image is maximized && || instance download) */
+function getTheGodDamnLink2()
+{
+  var v = $("#image").attr("src");
+  var y = $("#image-link").attr("href");
+  var z = $("#image-link").attr("src");
+
+  if (y === undefined)
+  {
+    chrome.runtime.sendMessage({message: "settoinstance"})
+    chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
+  }
+
+  else if ((v === undefined) && (y === undefined))
+  {
+    chrome.runtime.sendMessage({message: "settoinstance"})
+    chrome.runtime.sendMessage({"message": "link", url: z, character_tag: charactertag, date: dt})
+  }
+
+  else
+  {
+    chrome.runtime.sendMessage({message: "settoinstance"})
+    chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
+  }
+}
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+
+  if( request.message == "acquirelink" ) {
+    getTheGodDamnLink2();
+  }
+
+  if (request.message == "urlresp")
+  {
+    console.log(request.tab.url)
+    console.log("SankakuCacherX")
+  }
+
+  if (request.message == "change_autofav_variable")
+  {
+    chrome.storage.local.get(['autofav'], function(result) {
+      
+      if (result.autofav == true)
       {
-        console.log(request.tab.url)
-        console.log("SankakuCacherX")
+        $("#autofavscript").remove();
+        addscript();
       }
-      if (request.message == "change_autofav_variable")
+
+      else if (result.autofav == false)
       {
-        // alert("content listener");
-        chrome.storage.local.get(['autofav'], function(result) {
-          if (result.autofav == true)
-          {
-            //document.body.lastChild.remove();
-            $("#autofavscript").remove();
-            addscript();
-          }
-          else if (result.autofav == false)
-          {
-            //document.body.lastChild.remove();
-            $("#autofavscript").remove();
-            addscript2();
-          }
-        })
-        // chrome.runtime.sendMessage({"message": "alert", "value": "content listener"});
+        $("#autofavscript").remove();
+        addscript2();
       }
-      // if (request.message == "change_middleclick_variable")
-      // {
-      //   // alert("content listener");
-      //   chrome.storage.local.get(['middleclickfav'], function(result) {
-      //     if (result.middleclickfav == true)
-      //     {
-      //       $("#invisiblescriptbutton").remove();
-      //       addscript();
-      //     }
-      //     else if (result.middleclickfav == false)
-      //     {
-      //       $("#invisiblescriptbutton").remove();
-      //       addscript2();
-      //     }
-      //   })
-      //   // chrome.runtime.sendMessage({"message": "alert", "value": "content listener"});
-      // }
-    }
-  );
+    })
+  }
+}
+);
 
   "<div id=\"dlbutton\" style=\"padding-top: 250px\;\> <input type=\"button\" value=\"Download\"\> </div>"
   
