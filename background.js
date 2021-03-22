@@ -1,9 +1,35 @@
 // background.js
 
-browser.runtime.onInstalled.addListener(function(details)
+chrome.runtime.onInstalled.addListener(function(details)
 {
   default_settings();
+  // chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "downloadbuttonId", onclick: function ()
+  // {
+  //   console.log("fuck me mommy")
+  //   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  //     chrome.tabs.sendMessage(tabs[0].id, {message: "context_menu_clicked_download"})
+  // }) 
+  // }
+  // , 
+  // title:"Download"})
 })
+
+chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "downloadbuttonId", onclick: function ()
+{
+  
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {message: "context_menu_clicked_download"})
+}) 
+}
+, 
+title:"Download"})
+
+chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "historymenubuttonId", onclick: function ()
+{
+  chrome.tabs.create({url: chrome.extension.getURL("/history/history.html")})
+}
+, 
+title:"History"})
 
 class AdvancedSettingsObject
 {
@@ -29,6 +55,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         openLinkInBrowser();
         break;
 
+      case "setpostid":
+
+        break;
+
       case "settoinstance":
 
         positiveinstance = true; 
@@ -39,8 +69,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
       case "fuckgoogle":
-        browser.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          browser.tabs.sendMessage(tabs[0].id, {message: tabs[0].url}, undefined)
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+          chrome.tabs.sendMessage(tabs[0].id, {message: tabs[0].url}, undefined)
       }) 
       break;
 
@@ -48,10 +78,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       
         chrome.storage.local.get(["savefolder", "mp4swebms", "enabled", "advanced_settings_object"], function(newResult) { 
 
-        browser.tabs.query({active: true}).then(tab => {
+        chrome.tabs.getSelected(tab => {
 
           //do a proper regex for that then
-          if (tab[0].url != "https://chan.sankakucomplex.com/") 
+          //fuck it
+          if ((tab.url != "https://chan.sankakucomplex.com/") || (tab.url == "https://chan.sankakucomplex.com/"))
           {
           
             var includeshttps = request.url[0] + request.url[1] + request.url[2] + request.url[3] + request.url[4];

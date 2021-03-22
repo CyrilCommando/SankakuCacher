@@ -10,16 +10,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 }
 )
 
-var context_menu_pid = undefined;
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  if (request.message == "context_menu_clicked_download")
-  {
-    console.log("f m s")
-    xmlhttpReq(context_menu_pid, operatingthumbnail, false, true);
-  }
-})
-
 clearbs();
 
 //$("head").append( $("meta").attr({"content": "no-referrer", "name": "referrer"}) )
@@ -29,8 +19,6 @@ var operatingthumbnail;
 var holdclicktimeout;
 
 var hasHeldDownClick;
-
-console.log(chrome.extension.getURL("/history/history.html"))
 
 apply();
 
@@ -45,8 +33,6 @@ var charactertag;
 var dt;
 
 aparse();
-
-var downloadLink;
 
 chrome.storage.local.get(["autofav"], function(result)
 {
@@ -68,8 +54,8 @@ function prepare()
   $("div#news-ticker").before(preview_parent_container)
 }
 
-/**make XMLHttpRequest with PID and image DOM element (2nd var UNUSED)*/
-function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
+//make XMLHttpRequest with PID and image DOM element
+function xmlhttpReq(pid, e)
 {
   var xhr = new XMLHttpRequest();
 
@@ -89,207 +75,47 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
       //log video url
       console.log("video link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
 
-      //if image link is undefined (if not an image)
+      //if image link is undefined
       if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
       {
-        if (isPreview)
-        {
-          $("#preview-all_container").remove()
-          makeVideoPlayer(e)
-          $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
-        }
+        //$(".preview_image_or_video_tag").remove()
+        $("#preview-all_container").remove()
+        makeVideoPlayer(e)
+        $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
         //preview source link
         var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
         var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
       
-        //download link for videos (unused probably)
-        downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-      }
-      else{
-        if (isPreview)
-        {
-          $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
-        }
-        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
-        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
-      
-        //download link for images
         if (y === undefined)
         {
-          downloadLink = v
+          //downloadbutton = this
         }
       
         else
         {
-          downloadLink = y
+          //downloadbutton = this
         }
+      }
+      else{
+        $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
       }
       
-      if (isContextMenu)
-      {
-        getTheGodDamnLink3()
-      }
     }
 }
-}
-
-function createHistoryMenuEntry(postid)
-{
-  let ifExistsEntry = false;
-  b64image = createBase64Image()
-  var options = {}
-  options[''+postid]= b64image;
-  console.log(options)
-  imagedataentry = new ImageDataEntry(b64image)
-  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/post/show/"+postid)
-  chrome.storage.local.get(["Previewed"], function(result) {
-    try {
-      operlist = new History(result.Previewed.list);
-      var iteration = 1;
-      operlist.list.forEach(historyEntry => {
-        if (historyEntry.pid == postid)
-        {
-          console.log("history entry exists. removing & adding")
-          operlist.list.splice(operlist.list.indexOf(historyEntry), 1)
-          operlist.list.push(entry)
-        }
-        else if (historyEntry.pid != postid)
-        {
-          if (iteration + 1 > operlist.list.length)
-          {
-            console.log("added new history entry to history db")
-            operlist.list.push(entry)
-          }
-          else
-          {
-            console.log("at least sometihng worked")
-            iteration += 1
-          }
-        }
-      });
-    } catch (error) {
-      console.log(error)
-      console.log("first time menu list creation")
-      operlist = new History([]);
-      operlist.list.push(entry)
-    }
-    chrome.storage.local.set({"Previewed": operlist})
-  })
-  // chrome.storage.local.remove(postid, function(x){console.log("removed "+postid)})
-  chrome.storage.local.get([postid], function(result){
-    if ((result[postid] == undefined) || (result[postid] == "data:,"))
-    {
-      chrome.storage.local.set(options, function(x){console.log("set "+postid)})
-    }
-    else if ((result[postid] != undefined) || (result[postid] != "data:,"))
-    {
-      console.log("post id "+postid+" appears to already exist in database. not overwriting")
-    }
-  })
-}
-
-class DatabaseLookupTable
-{
-
-}
-
-class ImageDataEntry
-{
-  constructor(pid, base64)
-  {
-    //this.pid = pid
-    this.b64image = base64
-  }
-}
-
-class ListEntry 
-{
-    constructor (pid, date, posturl)
-    {
-        this.pid = pid
-        this.date = date
-        this.posturl = posturl
-    }
-}
-
-class History
-{
-    constructor (list)
-    {
-        this.list = list;
-    }
-}
-
-/**create base 64 image from preview tab */
-function createBase64Image() {
-  // Create an empty canvas element
-  var img = document.getElementsByClassName("preview_image_or_video_tag")[0]
-  img.crossOrigin = "anonymous";
-  var canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
-
-  // Copy the image contents to the canvas
-  var ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-
-  // Get the data-URL formatted image
-  // Firefox supports PNG and JPEG. You could check img.src to
-  // guess the original format, but be aware the using "image/jpg"
-  // will re-encode the image.
-  var dataURL = canvas.toDataURL("image/png");
-  console.log("b64 img created")
-  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
-
-var isFullscreen = false;
-
-var isNotFullscreenDimensionsHeight;
-var isNotFullscreenDimensionsWidth;
-var isNotFullscreenPositionVertical;
-var isNotFullscreenPositionHorizontal;
-
-function toggleFullscreen()
-{
-  if (isFullscreen)
-  {
-    undoFullScreen()
-  }
-  else if (!isFullscreen)
-  {
-    makeFullScreen()
-  }
-}
-
-function makeFullScreen()
-{
-  $("#preview-all_container").attr("style", "position: fixed; display: flex; background-color: #0808089e; height: 100vh; width: 100%; justify-content: center; align-items: center; z-index: 111111;")
-  $(".preview_image_or_video_tag").attr("style", "max-height: 100vh; max-width: 100%; border: 4px solid #bdbdbd;")
-  $("#preview-image_container").attr("style", "width: fit-content;")
-  isFullscreen = true;
-}
-
-function undoFullScreen()
-{
-  $("#preview-all_container").attr("style", "position: relative;  z-index: 111111; display: inline-block; left: "+ isNotFullscreenPositionHorizontal +"px; top: "+ isNotFullscreenPositionVertical +"px;")
-  $("#preview-image_container").attr("style", "")
-  $(".preview_image_or_video_tag").attr("style", "border: 4px solid #bdbdbd; max-height: " + isNotFullscreenDimensionsHeight + "px; max-width: " + isNotFullscreenDimensionsWidth + "px;")
-  isFullscreen = false;
 }
 
 function makeVideoPlayer(e)
 {
   //remove if it exists (it shouldn't)
-  removePreview()
+  $("#preview-all_container").remove()
 
-    
   preview_all_container = $("<div></div>").attr({"style": "position: relative; left: -1187px; z-index: 111111; display: inline-block;", "id": "preview-all_container"})
 
   //get position of thumb
   var topposition = e.currentTarget.getBoundingClientRect().top + window.scrollY;
   var bottomposition = e.currentTarget.getBoundingClientRect().bottom + window.scrollY;
   var leftposition = e.currentTarget.getBoundingClientRect().left;
-  var rightposittion = e.currentTarget.getBoundingClientRect().right;
+  var rightposition = e.currentTarget.getBoundingClientRect().right;
   thumbresheight = parseInt($(e.currentTarget).attr("height")) 
   thumbreswidth = parseInt($(e.currentTarget).attr("width"))
 
@@ -340,70 +166,40 @@ function makeVideoPlayer(e)
     else{$("#preview-all_container").css("left", lp);}
 
     //fix preview-close_button position
-    $("#preview-close_button").css("bottom", $(this).height() + 4)
+    $("#preview-close_button").css("bottom", $(this).height() + 4) //weird fix
   })
 
-  //make metadata div //video container div & append video element to it
+  //make metadata div //preview-video_container
   var div = $("<div></div>").attr({"style": "width: 0px; height: 0px;"})
   $(div).attr("id", "preview-video_container")
   $(div).append($("<meta></meta>").attr({"name": "referrer", "content": "no-referrer"}))
   $(div).attr("style", "max-width: 970px; max-height: 580px;")
+
+  //append video tag to preview-video_container
   $(div).append(preview)
 
-  //append close button to video container
+  //append close button to preview-video_container
   var cb = createPreviewCloseButton();
   $(div).append(cb)
-  
-  //append preview
+
+  //append preview-video_container to preview-all_container
   $(preview_all_container).append(div)
 
-  //append all
+  //append preview-tag_box to preview-all_container
+  
+  //append close button to preview-all_container
+
+  //append all container to preview-parent_container
   $("#preview-parent_container").append(preview_all_container)
 }
-/**only for videos now */
+
 function createPreviewCloseButton()
 {
   x = $("<div></div>").attr({"id": "preview-close_button", "style": "position: relative; left: 4px; bottom: 26px; width: fit-content;"})
   y = $("<input>").attr({"type": "button", "value": "x", "style": "padding: 0px; width: 34px; height: 20px;"})
-  $(y).on("click", function(e) {removePreview();})
+  $(y).on("click", function(e) {removePreviewImg();})
   $(x).append(y)
   return x;
-}
-
-//
-function createPreviewMenuBar()
-{
-  var div = $("<div></div>").attr({"id": "preview-menu_bar", "style": "display: flex;justify-content: space-between; max-height: 25px; margin-top: -25px;"}) //position: relative;bottom: 25px;
-  cb = createMenuBarCloseButton();
-  dlb = createMenuBarDownloadButton();
-  fsb = createMenuBarFullscreenButton();
-  $(div).append(cb, dlb, fsb)
-  return div;
-}
-
-function createMenuBarFullscreenButton()
-{
-  i = $("<img>").attr({"src": chrome.extension.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(toggleFullscreen)
-  return i
-}
-
-function createMenuBarDownloadButton()
-{
-  i = $("<img>").attr({"src": chrome.extension.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(getTheGodDamnLink3)
-  return i;
-}
-
-function createMenuBarCloseButton()
-{
-  y = $("<input>").attr({"type": "button", "value": "x", "style": "padding: 0px; width: 34px; height: 20px;", "id": "close_button"})
-  $(y).on("click", function(e) {removePreview();})
-  return y;
-}
-//
-
-function generateBase64Entry()
-{
-  
 }
 
 /**
@@ -449,17 +245,6 @@ $(".thumblink").on("mousedown", function(e)
       }
     }, 500);
   }
-  if (e.buttons == 2)
-  {
-    let postid = getPostIdOfHoveredImage(operatingthumbnail.currentTarget)
-    console.log(postid)
-  
-    context_menu_pid = postid;
-
-    //chrome.runtime.sendMessage({"message": "setpostid", pid: postid})
-
-    //xmlhttpReq(postid, operatingthumbnail, false, true);
-  }
 })
 
 $(".thumblink").off("mouseup")
@@ -492,8 +277,8 @@ function setPreviewImage(e)
 /**add preview image to container*/
 function addPreviewImg(e)
 {
-  removePreview()
-    
+  $("#preview-all_container").remove()
+  
   preview_all_container = $("<div></div>").attr({"style": "position: relative; left: -1187px; z-index: 111111; display: inline-block;", "id": "preview-all_container"})
   preview_image_container = $("<div></div>").attr({"id": "preview-image_container"})
 
@@ -506,7 +291,7 @@ function addPreviewImg(e)
   var topposition = e.currentTarget.getBoundingClientRect().top + window.scrollY;
   var bottomposition = e.currentTarget.getBoundingClientRect().bottom + window.scrollY;
   var leftposition = e.currentTarget.getBoundingClientRect().left;
-  var rightposittion = e.currentTarget.getBoundingClientRect().right;
+  var rightposition = e.currentTarget.getBoundingClientRect().right;
   thumbresheight = parseInt($(e.currentTarget).attr("height")) 
   thumbreswidth = parseInt($(e.currentTarget).attr("width"))
 
@@ -520,84 +305,58 @@ function addPreviewImg(e)
   $(preview).on("load", function() 
   {
     console.log("preview size: "+this.width + 'x' + this.height);
-    isNotFullscreenDimensionsHeight = this.height;
-    isNotFullscreenDimensionsWidth = this.width;
-    //
-
-    //calc top pos
     var h= topposition; 
     h -= this.height; 
     h -= 8; 
-
     //assign vertical position
     //check if vertical position is out of bounds
     if (h <0)
     {
       h = 0 + window.scrollY;
       $("#preview-all_container").css("top", h); 
-      isNotFullscreenPositionVertical = h;
     }
-    else{$("#preview-all_container").css("top", h); isNotFullscreenPositionVertical = h; }
+    else{$("#preview-all_container").css("top", h); }
     
-    //
-
-    
-    //
-
-    //calc vert pos
     var lp = leftposition; 
     lp -= this.width * 0.5; 
     lp += thumbreswidth * 0.5; 
-
     //assign horizontal position
     //check if horizontal position is out of bounds
     if (lp<0)
     {
       lp = 0;
       $("#preview-all_container").css("left", lp);
-      isNotFullscreenPositionHorizontal = lp;
     }
     else if(lp+$(this).width()>$(window).width())
     {
       lp = $(window).width() - $(this).width()
-      lp-=8
+      lp -= 8
       $("#preview-all_container").css("left", lp);
-      isNotFullscreenPositionHorizontal = lp;
     }
-    else{$("#preview-all_container").css("left", lp); isNotFullscreenPositionHorizontal = lp;}
-
-    createHistoryMenuEntry(postid)
-
-    //
+    else{$("#preview-all_container").css("left", lp);}
   })
 
-  //append image DOM element to image container
+  //append image tag to preview-image_container
   $(preview_image_container).append(preview)
 
-  //append close button to preview image container
-  // var cb = createPreviewCloseButton();
-  // $(preview_image_container).append(cb)
+  //append close button to preview-image_container
+  var cb = createPreviewCloseButton();
+  $(preview_image_container).append(cb)
 
-  //append menu bar to preview image container
-  mb = createPreviewMenuBar()
-  $(preview_image_container).append(mb)
-
-  //append preview image container to all container
+  //append preview-image_container to preview-all_container
   $(preview_all_container).append(preview_image_container)
 
-  //append all
+  //append preview-tag_box to preview-all_container
+
+  //append close button to preview-all_container
+
+  //append all container to preview-parent_container
   $("#preview-parent_container").append(preview_all_container)
 }
 
-/**remove preview-all_container */
-function removePreview(e)
+function removePreviewImg(e)
 {
   $("#preview-all_container").remove()
-  isFullscreen = false;
-  isNotFullscreenDimensionsHeight = undefined;
-  isNotFullscreenDimensionsWidth = undefined;
-  isNotFullscreenPositionVertical = undefined;
-  isNotFullscreenPositionHorizontal = undefined;
 }
 
 function clearbs() {
@@ -647,7 +406,6 @@ x.forEach(element => {
 preventdefaultthumblink();
 }
 
-/**prevent default thumblink behavior and handle */
 function preventdefaultthumblink()
 {
   chrome.storage.local.get(["middleclickfav"], function(result) {
@@ -830,15 +588,6 @@ function getTheGodDamnLink2()
     chrome.runtime.sendMessage({message: "settoinstance"})
     chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
   }
-}
-
-function getTheGodDamnLink3()
-{
-  console.log("success")
-  console.log(downloadLink)
-  
-    chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "link", url: downloadLink, character_tag: charactertag, date: dt})
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
