@@ -7,7 +7,7 @@
     vertical-align: middle;
     align-self: center;
     transform-origin: center;
-    transition: transform 20ms ease-in-out;
+    transition: transform 60ms ease-in-out;
 }
 
 #header div
@@ -20,13 +20,22 @@
     width: 84px;
 }
 
-.thumbs img:hover
+/* .thumbs img:hover
 {
     outline: 3px solid yellow;
     transform: scale(2.2);
-}
+} */
 
 div#header div {
     width: 154.64px;
     text-align: center;
+}
+
+#mppane {
+    line-height: 0px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    flex-flow: wrap-reverse;
+    flex-direction: row-reverse;
 }

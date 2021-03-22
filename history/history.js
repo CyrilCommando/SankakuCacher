@@ -2,11 +2,185 @@ base64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAMgCAYAAAD/YBzEAAAg
 
 //image64ToImage();
 
-createImagefromUrl(base64)
+//var toggled=false;
+
+var dynamicobjectobject = {};
+
+document.getElementById("menu").onchange = populateList
+
+populateList()
+
+// createImagefromUrl(base64)
+
+function getHistoryMenuEntries()
+{
+  chrome.storage.local.get(["Previewed"], function(result) {
+      operlist = new History(result.Previewed.list);
+      operlist.list.forEach(historyEntry => {
+        console.log(historyEntry)
+      });
+  })
+}
+
+class History
+{
+    constructor (list)
+    {
+        this.list = list;
+    }
+}
+
+function createPreviewMenuBar()
+{
+  var div = $("<div></div>").attr({"id": "preview-menu_bar", "style": "display: flex;justify-content: space-between; max-height: 25px; margin-top: -54px;"}) //position: relative;bottom: 25px;
+  dlb = createMenuBarDownloadButton();
+  fsb = createMenuBarFullscreenButton();
+  $(div).append(dlb, fsb)
+  return div;
+}
+
+function createMenuBarDownloadButton()
+{
+  i = $("<img>").attr({"src": chrome.extension.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(console.log("fuckyourmommy"))
+  return i;
+}
+
+function createMenuBarFullscreenButton()
+{
+  i = $("<img>").attr({"src": chrome.extension.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(console.log("thats a nice placeholder dude"))
+  return i
+}
+
+function checkSize(e)
+{
+  // e = document.getElementById(e.id)
+  console.log("checksize")
+  var h = e.getBoundingClientRect().top + window.scrollY
+  var lp = e.getBoundingClientRect().left
+  var rp = e.getBoundingClientRect().right
+  console.log(h)
+  console.log(lp)
+  thumbresheight = e.height * 2.6
+  thumbreswidth = e.width * 2.6
+  
+  // h -= this.height; 
+  // h -= 8; 
+
+    //assign vertical position
+    //check if vertical position is out of bounds
+    if (h <0)
+    {
+      $(e).css("top", Math.abs(h-10)); 
+      //isNotFullscreenPositionVertical = h;
+    }
+    else
+    {
+      //$(e).css("top", h); //isNotFullscreenPositionVertical = h; 
+    }
+    
+    //
+
+    
+    //
+
+    //calc hori pos
+    // lp -= this.width * 0.5; 
+    // lp += thumbreswidth * 0.5; 
+
+    //assign horizontal position
+    //check if horizontal position is out of bounds
+    if (lp<0)
+    {
+      $(e).css("left", Math.abs(lp-10));
+      //isNotFullscreenPositionHorizontal = lp;
+    }
+    else if(lp+thumbreswidth>$(window).width())
+    {
+      newvalue = Math.abs(rp - $(window).width())
+      $(e).css("right", newvalue +8);
+      //isNotFullscreenPositionHorizontal = lp;
+    }
+    else
+    {
+      //$(e).css("left", lp); //isNotFullscreenPositionHorizontal = lp;
+    }
+}
+
+function toggleTransform(element)
+{
+  var toggled = false;
+  for (const key in dynamicobjectobject) {
+    if (key == element.id) 
+    {
+      toggled = dynamicobjectobject[key];
+    }
+    else if (key != element.id)
+    {
+      continue;
+    }
+  }
+  if (!toggled)
+  {
+    $(element).attr("style", "outline: 3px solid yellow; transform: scale(2.6); position: relative;")
+    //toggled=true;
+    addDynamicToggledVariableToObject(element.id, true)
+    setTimeout(() => {
+      checkSize(element)
+    }, 65);
+  }
+  else if (toggled)
+  {
+    $(element).attr("style", "")
+    //toggled=false;
+    addDynamicToggledVariableToObject(element.id, false)
+  }
+}
+
+function addDynamicToggledVariableToObject(id, toggled)
+{
+  dynamicobjectobject[id] = toggled;
+}
+
+function populateList()
+{
+  while (document.getElementById("mppane").firstChild) {
+    document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
+  }
+  var x = document.getElementById("menu").value
+  console.log(x)
+  chrome.storage.local.get([x], function(result){
+    console.log(result)
+    try {
+      result[x].list.forEach(obj => {
+        image = new Image();
+        image.id = obj.pid
+        parent_div = $("<div></div>").attr("id", obj.pid+"_parent")
+        $(parent_div).append(image)
+        $("#mppane").append(parent_div)
+        updateImagewithBase64(obj.pid)
+      });
+      var eles = Array.prototype.slice.call(document.getElementsByTagName("img"))
+
+      eles.forEach(element => {
+        element.onclick = function() {toggleTransform(element)}
+      });
+    } catch (error) {
+      console.log(error)
+      console.log("history list not defined")
+    }
+  })
+}
+
+function updateImagewithBase64(pid)
+{
+  chrome.storage.local.get([pid], function(result){
+    console.log(result)
+    document.getElementById(pid).src = "data:image/png;base64,"+result[pid];
+  })
+}
 
 function createImagefromUrl(url)
 {
-    url = url
     image = new Image();
     image.src = url;
     image.onload = function() {
@@ -14,8 +188,8 @@ function createImagefromUrl(url)
         var x = Array.prototype.slice.call(document.getElementsByTagName("img"))
 
         x.forEach(element => {
-        element.onclick = function() {window.open(this.src)}
-});
+          element.onclick = function() {toggleTransform(element)}
+        });
     }
 }
 
