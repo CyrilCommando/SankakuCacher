@@ -45,11 +45,63 @@ function default_settings()
     chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso})
 }
 
+function xmlhttpReq(url)
+{
+  var xhr = new XMLHttpRequest();
+
+  xhr.onload = function() {
+    console.log("xhr SENT")
+  }
+
+  xhr.open("GET", url);
+  xhr.responseType = "document";
+  xhr.send();
+  xhr.onreadystatechange = function() {
+    if (this.readyState == 4) {
+
+      //if image link is undefined (if not an image)
+      if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
+      {
+        //preview source link
+        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
+        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
+      
+        //download link for videos (unused probably)
+        downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
+        wow_A_Function(downloadLink)
+      }
+      else{
+        
+        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
+        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
+      
+        //download link for images
+        if (y === undefined)
+        {
+          downloadLink = v
+          wow_A_Function(downloadLink)
+        }
+      
+        else
+        {
+          downloadLink = y
+          wow_A_Function(downloadLink)
+        }
+      }
+    }
+}
+}
+
 var positiveinstance = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     switch (request.message) {
+
+      case "xhr":
+        xmlhttpReq(request.link)
+        break;
+      
       case "chan":
 
         openLinkInBrowser();
@@ -227,3 +279,61 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.sendMessage(activeTab.id, {"message": "clicked_browser_action"});
   });
 });
+
+function wow_A_Function(download_link)
+{
+  chrome.storage.local.get(["savefolder", "advanced_settings_object"], function(newResult) { 
+
+    chrome.tabs.getSelected(tab => {
+
+      //do a proper regex for that then
+      //fuck it
+      if ((tab.url != "https://chan.sankakucomplex.com/") || (tab.url == "https://chan.sankakucomplex.com/"))
+      {
+      
+        var includeshttps = download_link[0] + download_link[1] + download_link[2] + download_link[3] + download_link[4];
+      
+        if (includeshttps == "https")
+        {
+          download_link = download_link.substring(6)
+        } 
+  
+        var name = download_link.substr(34, 36)
+  
+        if (name[33] + name[34] + name[35] === "web")
+        {
+          name = name + "m"
+        }
+  
+        
+        var svfld ="SankakuCacher/"
+  
+        
+        if (newResult.savefolder == "SankakuCacher")
+        {
+          //break;
+        }
+        else 
+        {
+          //check if the input filename has a slash in it
+          if (newResult.savefolder.substr(0, 1) == "/") 
+          {
+            alert(newResult.savefolder.substr(0, 1))
+            newResult.savefolder = newResult.savefolder.substr(1);
+          } 
+
+          if (newResult.savefolder.substr(-1, 1) == "/")
+          {
+            alert(newResult.savefolder.substr(-1, 1))
+            newResult.savefolder = newResult.savefolder.substr(-1,) 
+          }
+
+        svfld = newResult.savefolder + "/"
+      
+        }
+
+        chrome.downloads.download({url: "https:" + download_link, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
+      } /*if url*/ else{} ////////callback fucking heck 
+    }); //chrome.tabs.getSelected
+  }) //chrome.storage.local.get
+}

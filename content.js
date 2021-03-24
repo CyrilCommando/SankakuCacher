@@ -7,6 +7,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   {
     getImageTags();
   }
+  if (request.message.match("(https:\/\/chan\.sankakucomplex\.com\/post\/show\/)[1-9]*"))
+  {
+    if ($(document.getElementById("image")).is("img"))
+    {
+      document.getElementById("image").crossOrigin = "anonymous"
+      setTimeout(() => {
+        createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage")
+      }, 500);
+    }
+  }
 }
 )
 
@@ -133,18 +143,25 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
 }
 }
 
-function createHistoryMenuEntry(postid)
+/**
+ * 
+ * @param {string} postid 
+ * @param {string} menu 
+ * @param {string} type 
+ * type "postpage", "preview" or "download"
+ */
+function createHistoryMenuEntry(postid, menu, type)
 {
   let ifExistsEntry = false;
-  b64image = createBase64Image()
+  b64image = createBase64Image(type)
   var options = {}
   options[''+postid]= b64image;
   console.log(options)
   imagedataentry = new ImageDataEntry(b64image)
   entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/post/show/"+postid)
-  chrome.storage.local.get(["Previewed"], function(result) {
+  chrome.storage.local.get([menu], function(result) {
     try {
-      operlist = new History(result.Previewed.list);
+      operlist = new History(result[menu].list);
       var iteration = 1;
       operlist.list.forEach(historyEntry => {
         if (historyEntry.pid == postid)
@@ -173,7 +190,9 @@ function createHistoryMenuEntry(postid)
       operlist = new History([]);
       operlist.list.push(entry)
     }
-    chrome.storage.local.set({"Previewed": operlist})
+    var sets = {}
+    sets[menu] = operlist
+    chrome.storage.local.set(sets)
   })
   // chrome.storage.local.remove(postid, function(x){console.log("removed "+postid)})
   chrome.storage.local.get([postid], function(result){
@@ -221,9 +240,16 @@ class History
 }
 
 /**create base 64 image from preview tab */
-function createBase64Image() {
+function createBase64Image(type) {
   // Create an empty canvas element
-  var img = document.getElementsByClassName("preview_image_or_video_tag")[0]
+  if (type == "postpage")
+  {
+    var img = document.getElementById("image")
+  }
+  else if (type == "preview")
+  {
+    var img = document.getElementsByClassName("preview_image_or_video_tag")[0]
+  }
   img.crossOrigin = "anonymous";
   var canvas = document.createElement("canvas");
   canvas.width = img.naturalWidth;
@@ -566,7 +592,7 @@ function addPreviewImg(e)
     }
     else{$("#preview-all_container").css("left", lp); isNotFullscreenPositionHorizontal = lp;}
 
-    createHistoryMenuEntry(postid)
+    createHistoryMenuEntry(postid, "Previewed", "preview")
 
     //
   })
