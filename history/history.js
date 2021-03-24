@@ -6,9 +6,20 @@ base64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAAMgCAYAAAD/YBzEAAAg
 
 var dynamicobjectobject = {};
 
+var image_postid;
+
 document.getElementById("menu").onchange = populateList
 
 populateList()
+
+chrome.contextMenus.remove("Hide")
+
+chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Hide", onclick: function ()
+{
+  editHistoryMenuEntry(document.getElementById("menu").value, image_postid, true)
+}
+, 
+title:"Hide"})
 
 // createImagefromUrl(base64)
 
@@ -22,6 +33,23 @@ function getHistoryMenuEntries()
   })
 }
 
+function editHistoryMenuEntry(menu, postid, hidden)
+{
+  chrome.storage.local.get([menu], function(result) {
+      operlist = new History(result[menu].list);
+      operlist.list.forEach(historyEntry => {
+        if (historyEntry.pid == postid)
+        {
+          historyEntry.hidden = hidden
+          mObj = {}
+          mObj[''+menu]= operlist;
+          chrome.storage.local.set(mObj)
+          console.log("hid "+postid+": "+hidden)
+        }
+      });
+  })
+}
+
 class History
 {
     constructor (list)
@@ -30,24 +58,31 @@ class History
     }
 }
 
-function createPreviewMenuBar()
+function createPreviewMenuBar(posturl)
 {
-  var div = $("<div></div>").attr({"id": "preview-menu_bar", "style": "display: flex;justify-content: space-between; max-height: 25px; margin-top: -54px;"}) //position: relative;bottom: 25px;
-  dlb = createMenuBarDownloadButton();
-  fsb = createMenuBarFullscreenButton();
-  $(div).append(dlb, fsb)
+  var div = $("<div></div>").attr({"class": "preview-menu_bar"}) //position: relative;bottom: 25px;
+  dlb = createMenuBarDownloadButton(posturl);
+  //fsb = createMenuBarFullscreenButton();
+  ob = createMenuBarOpenButton(posturl)
+  $(div).append(dlb, ob)
   return div;
 }
 
-function createMenuBarDownloadButton()
+function createMenuBarDownloadButton(posturl)
 {
-  i = $("<img>").attr({"src": chrome.extension.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(console.log("fuckyourmommy"))
+  i = $("<img>").attr({"src": chrome.extension.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(function(){chrome.runtime.sendMessage({"message": "xhr", "link": posturl})})
   return i;
 }
 
 function createMenuBarFullscreenButton()
 {
   i = $("<img>").attr({"src": chrome.extension.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(console.log("thats a nice placeholder dude"))
+  return i
+}
+
+function createMenuBarOpenButton(posturl)
+{
+  i = $("<img>").attr({"src": chrome.extension.getURL("open.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "open_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "open_button"})}).click(function(){chrome.tabs.create({url: posturl})})
   return i
 }
 
@@ -121,7 +156,8 @@ function toggleTransform(element)
   }
   if (!toggled)
   {
-    $(element).attr("style", "outline: 3px solid yellow; transform: scale(2.6); position: relative;")
+    $(element).attr("style", "transform: scale(2.6); position: relative; z-index: 2;")
+    var img = $(element).children("img").attr("style", "outline: 3px solid yellow;")
     //toggled=true;
     addDynamicToggledVariableToObject(element.id, true)
     setTimeout(() => {
@@ -131,6 +167,7 @@ function toggleTransform(element)
   else if (toggled)
   {
     $(element).attr("style", "")
+    $(element).children("img").attr("style", "")
     //toggled=false;
     addDynamicToggledVariableToObject(element.id, false)
   }
@@ -152,17 +189,32 @@ function populateList()
     console.log(result)
     try {
       result[x].list.forEach(obj => {
-        image = new Image();
-        image.id = obj.pid
-        parent_div = $("<div></div>").attr("id", obj.pid+"_parent")
-        $(parent_div).append(image)
-        $("#mppane").append(parent_div)
-        updateImagewithBase64(obj.pid)
+        if (!obj.hidden)
+        {
+          image = new Image();
+          image.id = obj.pid
+          image.className = "preview_image"
+          parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
+          $(parent_div).append(image)
+          $("#mppane").append(parent_div)
+          updateImagewithBase64(obj.pid)
+          mb = createPreviewMenuBar(obj.posturl)
+          $("#"+obj.pid+"_parent").append(mb)
+        }
+        else{console.log("hid "+obj.pid)}
       });
-      var eles = Array.prototype.slice.call(document.getElementsByTagName("img"))
+      var eles = Array.prototype.slice.call(document.getElementsByClassName("preview_image"))
 
       eles.forEach(element => {
-        element.onclick = function() {toggleTransform(element)}
+        element.onclick = function() {toggleTransform(element.parentElement)}
+      });
+      Array.prototype.slice.call(document.getElementsByClassName("preview_image")).forEach(element => {
+        $(element).mousedown(function(e){
+          if (e.which == 3)
+          {
+            image_postid = e.currentTarget.id;
+          }
+        })
       });
     } catch (error) {
       console.log(error)

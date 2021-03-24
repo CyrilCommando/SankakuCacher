@@ -39,3 +39,19 @@ div#header div {
     flex-flow: wrap-reverse;
     flex-direction: row-reverse;
 }
+
+.preview-menu_bar
+{
+    display: flex;
+    justify-content: space-between;
+    height: 0;
+    position: relative;
+    bottom: 40px;
+}
+
+.preview-parent_div
+{
+    align-self: center;
+    transform-origin: center;
+    transition: transform 60ms ease-in-out;
+}
