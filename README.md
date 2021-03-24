@@ -3,7 +3,7 @@ Chrome extension that does a couple things for chan.sankakucomplex.com
 
 automatically download images sankakucomplex
 
-## SankakuCacher is a browser extension that aims to enable you with rich history and archival options (or, cache if you will) for all images you browse on chan.sankakucomplex.com, and some QoL improvements.
+## SankakuCacher is a browser extension that aims to provide you with rich history and archival options (or, cache if you will) for all images you browse on chan.sankakucomplex.com, plus some QoL improvements.
 
 # Features:
 
@@ -35,5 +35,3 @@ And pin the extension!
 
 ### Coming soon
 Mass-download tags
-
-History menu
