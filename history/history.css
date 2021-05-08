@@ -1,6 +1,6 @@
 .thumbs img
 {
-    margin: 30px 20px 30px 20px;
+    /* margin: 30px 20px 30px 20px; */
     max-height: 338px;
     max-width: 337px;
     display: inline-block;
@@ -36,8 +36,8 @@ div#header div {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    flex-flow: wrap-reverse;
-    flex-direction: row-reverse;
+    /* flex-flow: wrap-reverse; */
+    /* flex-direction: row-reverse; */
 }
 
 .preview-menu_bar
@@ -46,7 +46,7 @@ div#header div {
     justify-content: space-between;
     height: 0;
     position: relative;
-    bottom: 40px;
+    bottom: 10px;
 }
 
 .preview-parent_div
@@ -54,4 +54,23 @@ div#header div {
     align-self: center;
     transform-origin: center;
     transition: transform 60ms ease-in-out;
+    margin: 30px 20px 30px 20px;
+}
+
+#pageselect
+{
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+.page_number_select
+{
+display: inline-block;
+color: #91dbfe;
+font-size: 16px;
+margin-left: 3px;
+margin-right: 3px;
+text-decoration: none;
+height: fit-content;
 }
