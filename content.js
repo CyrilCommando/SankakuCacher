@@ -11,10 +11,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   {
     if ($(document.getElementById("image")).is("img"))
     {
-      document.getElementById("image").crossOrigin = "anonymous"
-      setTimeout(() => {
-        createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage")
-      }, 500);
+      //document.getElementById("image").crossOrigin = "anonymous"
+      var img = $("<img></img>").attr({"src": document.getElementById("image").src, "crossOrigin": "anonymous", "id": "canvasimg", "style": "display: none;"}).on("load", function(e){createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage")})
+      $("#image").after(img)
     }
   }
 }
@@ -179,7 +178,7 @@ function createHistoryMenuEntry(postid, menu, type)
           }
           else
           {
-            console.log("at least sometihng worked")
+            console.log("searching through history entries")
             iteration += 1
           }
         }
@@ -244,13 +243,13 @@ function createBase64Image(type) {
   // Create an empty canvas element
   if (type == "postpage")
   {
-    var img = document.getElementById("image")
+    var img = document.getElementById("canvasimg")
   }
   else if (type == "preview")
   {
     var img = document.getElementsByClassName("preview_image_or_video_tag")[0]
+    img.crossOrigin = "anonymous";
   }
-  img.crossOrigin = "anonymous";
   var canvas = document.createElement("canvas");
   canvas.width = img.naturalWidth;
   canvas.height = img.naturalHeight;
@@ -632,6 +631,8 @@ function clearbs() {
     $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647;'").remove();
     $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647 !important;'").remove();
     $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
+    $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
+    $(".eww").remove()
     clearbs();
   }, 1000);
   }
