@@ -12,6 +12,8 @@ var pages_added = false;
 
 var page_image_limit = 50 //999999999999;
 
+var transform_ratio = window.outerWidth / 738
+
 document.getElementById("menu").onchange = function(e) {
   pages_added = false; 
   populateList()
@@ -112,6 +114,9 @@ function createMenuBarOpenButton(posturl)
   return i
 }
 
+/**
+ * takes div & checks size
+ */
 function checkSize(e)
 {
   // e = document.getElementById(e.id)
@@ -122,20 +127,44 @@ function checkSize(e)
   var bp = e.getBoundingClientRect().bottom
   console.log(h)
   console.log(lp)
+ 
+  var maxheight = 338
+  var maxwidth = 337
+
+  //if width is greater than height
+  if (e.firstChild.width > e.firstChild.height)
+  {
+    var use = e.firstChild.width
+    var remainder = e.firstChild.height % maxheight
+  }
+  //if height is greater than width
+  else if (e.firstChild.width < e.firstChild.height)
+  {
+    var use = e.firstChild.height
+    var remainder = e.firstChild.width % maxwidth
+  }
+
+  var transformed_image_height = e.firstChild.height * transform_ratio + ((3 * transform_ratio) * 2)
+  var transformed_image_width = e.firstChild.width * transform_ratio + ((3 * transform_ratio) * 2)
+
+  var maxheight_post_transform = maxheight * transform_ratio
+  var maxwidth_post_transform = maxwidth * transform_ratio
+
   
   // h -= this.height; 
   // h -= 8; 
 
     //assign vertical position
     //check if vertical position is out of bounds
-    if (2.6* e.firstChild.height /4>h)
+    //(treat size as box)
+    if ((transform_ratio * e.firstChild.height - e.firstChild.height) / 2 > h)
     {                       //219.7                  156           54.925
-      $(e).css("top", (2.6* e.firstChild.height /4) - (h - 2.6 * e.firstChild.height / 4 / 4) + 4.8); 
+      $(e).css("top", Math.abs(((transformed_image_height - e.firstChild.height) / 2) - h) ) 
       //isNotFullscreenPositionVertical = h;
     }
-    else if(bp + (e.firstChild.height * 2.6 /4) >window.innerHeight)
+    else if(bp + (transform_ratio * e.firstChild.height - e.firstChild.height /2 ) >window.innerHeight)
     {
-      $(e).css("bottom", Math.abs(bp + 58 + 2.6* e.firstChild.height /4 - window.innerHeight));
+      $(e).css("bottom", Math.abs(bp + (transformed_image_height - e.firstChild.height) /2 - window.innerHeight));
       //isNotFullscreenPositionHorizontal = lp;
     }
     else
@@ -154,14 +183,14 @@ function checkSize(e)
 
     //assign horizontal position
     //check if horizontal position is out of bounds
-    if (2.6* e.firstChild.width /4>lp)
+    if ((transform_ratio* e.firstChild.width - e.firstChild.width) /2 > lp)
     {
-      $(e).css("left", (2.6* e.firstChild.width /4) - (lp - 2.6 * e.firstChild.width / 4 / 4) + 4.8);
+      $(e).css("left", Math.abs((transformed_image_width - e.firstChild.width) / 2) - lp)
       //isNotFullscreenPositionHorizontal = lp;
     }
-    else if(rp + (e.firstChild.width * 2.6 /4) >$(window).width())
+    else if(rp + (transform_ratio * e.firstChild.width - e.firstChild.width) /2 >$(window).width())
     {
-      $(e).css("right", Math.abs(rp + 58 + 2.6* e.firstChild.width /4 - $(window).width()));
+      $(e).css("right", Math.abs(rp + (transformed_image_width - e.firstChild.width) /2 - $(window).width()));
       //isNotFullscreenPositionHorizontal = lp;
     }
     else
@@ -170,6 +199,9 @@ function checkSize(e)
     }
 }
 
+/**
+ * takes a div & checks transform
+ */
 function toggleTransform(element)
 {
   var toggled = false;
@@ -185,7 +217,7 @@ function toggleTransform(element)
   }
   if (!toggled)
   {
-    $(element).attr("style", "transform: scale(2.6); position: relative; z-index: 2;")
+    $(element).attr("style", "transform: scale("+transform_ratio+"); position: relative; z-index: 2;")
     var img = $(element).children("img").attr("style", "outline: 3px solid yellow;")
     //toggled=true;
     addDynamicToggledVariableToObject(element.id, true)
