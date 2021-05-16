@@ -79,6 +79,10 @@ anchors.forEach(element => {
         event.preventDefault()
         if(element.innerText != current_page)
         {
+          anchors.forEach(numbertwo => {
+            $(numbertwo).attr("style", "")
+          });
+          $(element).attr("style", "text-decoration: underline;")
           current_page = element.innerText;
           populateList(element.innerText)
         }
@@ -162,7 +166,7 @@ function checkSize(e)
       $(e).css("top", Math.abs(((transformed_image_height - e.firstChild.height) / 2) - h) ) 
       //isNotFullscreenPositionVertical = h;
     }
-    else if(bp + (transform_ratio * e.firstChild.height - e.firstChild.height /2 ) >window.innerHeight)
+    else if(bp + (transform_ratio * e.firstChild.height - e.firstChild.height ) /2 >window.innerHeight)
     {
       $(e).css("bottom", Math.abs(bp + (transformed_image_height - e.firstChild.height) /2 - window.innerHeight));
       //isNotFullscreenPositionHorizontal = lp;
@@ -239,6 +243,9 @@ function addDynamicToggledVariableToObject(id, toggled)
   dynamicobjectobject[id] = toggled;
 }
 
+/**
+ * populates list & adds pages
+ */
 function populateList(selectedpage = 1)
 {
   while (document.getElementById("mppane").firstChild) {
@@ -246,35 +253,28 @@ function populateList(selectedpage = 1)
   }
   var x = document.getElementById("menu").value
   console.log(x)
+  //get array by menu selected
   chrome.storage.local.get([x], function(result){
-    console.log(result)
+    //console.log(result)
     try {
+      //sort array by date
       result[x].list.sort(function(a, b){return b.date - a.date});
+      //add pages by length / page_image_limit
       try
       {
-        if (result[x].list.length / page_image_limit > 1)
-        {
           var pagecount = Math.ceil(result[x].list.length/page_image_limit)
           if (!pages_added){
             pages_added = true;
             addpages(pagecount)
+            $("#PageNumberId_1").attr("style", "text-decoration: underline;")
           }
-        }
-        else if (result[x].list.length / page_image_limit < 1)
-        {
-          var pagecount = Math.ceil(result[x].list.length/page_image_limit)
-          if (!pages_added)
-          {
-            pages_added = true;
-            addpages(pagecount)
-          }
-        }
       }
       catch(eeeeee)
       {
         console.log(eeeeee)
       }
 
+      //god fuck i hate the way indexes are counted
       var beginning_index = selectedpage * page_image_limit - page_image_limit - 1;
       var newarray;
       if (beginning_index < 0)
@@ -339,7 +339,7 @@ apply_to_anchors();
 function updateImagewithBase64(pid)
 {
   chrome.storage.local.get([pid], function(result){
-    console.log(result)
+    //console.log(result)
     document.getElementById(pid).src = "data:image/png;base64,"+result[pid];
   })
 }
