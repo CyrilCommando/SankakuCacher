@@ -24,7 +24,7 @@
   "content_scripts": [ 
     {
       "matches": ["https://chan.sankakucomplex.com/post/*", "https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/", "https://s.sankakucomplex.com/data/*"],
-      "js": ["jquery-3.4.1.min.js", "content.js"]
+      "js": ["jquery-3.4.1.min.js", "httprequest.js", "content.js"]
     } ],
   "background": {
     "scripts": ["jquery-3.4.1.min.js", "background.js" ]
