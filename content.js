@@ -77,71 +77,6 @@ function prepare()
   $("div#news-ticker").before(preview_parent_container)
 }
 
-/**make XMLHttpRequest with PID and image DOM element (2nd var UNUSED)*/
-function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
-{
-  var xhr = new XMLHttpRequest();
-
-  xhr.onload = function() {
-    console.log("xhr SENT")
-  }
-
-  xhr.open("GET", "https://chan.sankakucomplex.com/post/show/"+pid);
-  xhr.responseType = "document";
-  xhr.send();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-
-      //log image url
-      console.log("image link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
-
-      //log video url
-      console.log("video link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
-
-      //if image link is undefined (if not an image)
-      if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
-      {
-        if (isPreview)
-        {
-          $("#preview-all_container").remove()
-          makeVideoPlayer(e)
-          $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
-        }
-        //preview source link
-        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
-        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
-      
-        //download link for videos (unused probably)
-        downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-      }
-      else{
-        if (isPreview)
-        {
-          $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
-        }
-        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
-        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
-      
-        //download link for images
-        if (y === undefined)
-        {
-          downloadLink = v
-        }
-      
-        else
-        {
-          downloadLink = y
-        }
-      }
-      
-      if (isContextMenu)
-      {
-        getTheGodDamnLink3()
-      }
-    }
-}
-}
-
 /**
  * 
  * @param {string} postid 
@@ -327,7 +262,6 @@ function makeVideoPlayer(e)
   $(preview).attr("controls", "")
   $(preview).attr("autoplay", "")
   $(preview).attr("loop", "")
-  $(preview).attr("muted", "")
 
   //assign proper preview position on load
   $(preview).on("progress", function() 
@@ -384,6 +318,8 @@ function makeVideoPlayer(e)
 
   //append all
   $("#preview-parent_container").append(preview_all_container)
+
+  document.getElementsByClassName("preview_image_or_video_tag")[0].muted = true;
 }
 /**only for videos now */
 function createPreviewCloseButton()
@@ -633,6 +569,7 @@ function clearbs() {
     $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
     $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
     $(".eww").remove()
+    $("iframe").remove()
     clearbs();
   }, 1000);
   }
