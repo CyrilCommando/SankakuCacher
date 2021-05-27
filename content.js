@@ -1,3 +1,5 @@
+console.log("content script injected")
+
 //get the tab url
 chrome.runtime.sendMessage({"message": "fuckgoogle"})
 
@@ -237,6 +239,9 @@ function undoFullScreen()
   isFullscreen = false;
 }
 
+/**
+ * make & append video player
+ */
 function makeVideoPlayer(e)
 {
   //remove if it exists (it shouldn't)
@@ -561,6 +566,9 @@ function removePreview(e)
   isNotFullscreenPositionHorizontal = undefined;
 }
 
+/**
+ * clears ads
+ */
 function clearbs() {
   setTimeout(() => {
     $("div[style*='-webkit-tap-highlight-color: transparent !important; background: none !important; border: 0px !important; display: block !important; height: 100vh !important; left: 0px !important; margin: 0px !important; outline: 0px !important; padding: 0px !important; position: fixed !important; top: 0px !important; width: 100vw !important; z-index: 2147483647 !important;'").remove();
@@ -570,6 +578,9 @@ function clearbs() {
     $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
     $(".eww").remove()
     $("iframe").remove()
+    console.log("SankakuCacher: set localstorage")
+    localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
+    localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
     clearbs();
   }, 1000);
   }
@@ -796,6 +807,9 @@ function getTheGodDamnLink2()
   }
 }
 
+/**
+ * download from preview or context menu
+ */
 function getTheGodDamnLink3()
 {
   console.log("success")
