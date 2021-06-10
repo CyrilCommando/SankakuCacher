@@ -14,17 +14,34 @@ var page_image_limit = 50 //999999999999;
 
 var transform_ratio = window.outerWidth / 738
 
-var transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * 0.35)
+var transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * 0.18)
+
+var history_entry_list;
+
+var search_bar;
+
+var sb_text;
+
+var timeout;
+
+var timeout2;
+
+var lessthan5mssincelastkeypressed = false;
 
 document.getElementById("menu").onchange = function(e) {
   pages_added = false; 
   populateList()
-  while (document.getElementById("pageselect").firstChild) {
-    document.getElementById("pageselect").removeChild(document.getElementById("pageselect").firstChild);
-  }
 }
 
 populateList()
+
+document.getElementById("sb").oninput = function(e) {
+  if (e.target.value == "") {
+    search_bar = false; sb_text = e.target.value; populateList(); 
+  } else {
+    search_bar = true; sb_text = e.target.value; populateList(1, true);
+  }
+  }
 
 chrome.contextMenus.remove("Hide")
 
@@ -86,7 +103,7 @@ anchors.forEach(element => {
           });
           $(element).attr("style", "text-decoration: underline;")
           current_page = element.innerText;
-          populateList(element.innerText)
+          populateList(element.innerText, search_bar)
         }
         }
 });
@@ -235,7 +252,7 @@ function addDynamicToggledVariableToObject(id, toggled)
 /**
  * populates list & adds pages
  */
-function populateList(selectedpage = 1)
+function populateList(selectedpage = 1, sb = false)
 {
   while (document.getElementById("mppane").firstChild) {
     document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
@@ -244,38 +261,69 @@ function populateList(selectedpage = 1)
   console.log(x)
   //get array by menu selected
   chrome.storage.local.get([x], function(result){
-    //console.log(result)
+    while (document.getElementById("mppane").firstChild) {
+      document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
+    }
+    history_entry_list = result
+    console.log(result)
     try {
       //sort array by date
       result[x].list.sort(function(a, b){return b.date - a.date});
+      
       //add pages by length / page_image_limit
-      try
+      if (!sb)
       {
-          var pagecount = Math.ceil(result[x].list.length/page_image_limit)
           if (!pages_added){
             pages_added = true;
-            addpages(pagecount)
+            addpages(Math.ceil(result[x].list.length/page_image_limit))
             $("#PageNumberId_1").attr("style", "text-decoration: underline;")
           }
-      }
-      catch(eeeeee)
-      {
-        console.log(eeeeee)
-      }
+        }
 
       //god fuck i hate the way indexes are counted
-      var beginning_index = selectedpage * page_image_limit - page_image_limit - 1;
-      var newarray;
-      if (beginning_index < 0)
+
+      if (sb)
       {
-        beginning_index = 0, newarray = result[x].list.slice(beginning_index, beginning_index + page_image_limit)
+        var excluded_items_array = {};
+        excluded_items_array.list = [];
+        result[x].list.forEach(em => {
+          try {
+            em.tags.forEach(tag => {
+              if (tag.tag.match("("+sb_text+")"))
+              {
+                if(!excluded_items_array.list.includes(em))
+                {
+                  excluded_items_array.list.push(em)
+                }
+              }
+            });
+          } catch (error) {
+            console.log ("many images don't have tags! old version images must be updated if you want to search for them by tags!")
+          }
+        });
       }
-      else if (beginning_index > 0)
+
+      if (sb)
       {
-        newarray = result[x].list.slice(beginning_index + 1, beginning_index + page_image_limit + 1)
+        addpages(Math.ceil(excluded_items_array.list.length/page_image_limit))
       }
-      else{}
-      newarray.forEach(obj => {
+
+      if (sb)
+      {
+        var use_array = excluded_items_array
+      }
+
+      if(!sb)
+      {
+        var use_array = result[x]
+      }
+
+      if (sb_text == "")
+      {
+        addpages(Math.ceil(result[x].list.length/page_image_limit))
+      }
+
+      return_Limited_Array(selectedpage, use_array).forEach(obj => {
         if (!obj.hidden)
         {
           image = new Image();
@@ -290,11 +338,15 @@ function populateList(selectedpage = 1)
         }
         else{console.log("hid "+obj.pid)}
       });
-      var eles = Array.prototype.slice.call(document.getElementsByClassName("preview_image"))
 
-      eles.forEach(element => {
+      //assign transform to images
+      var preview_images = Array.prototype.slice.call(document.getElementsByClassName("preview_image"))
+
+      preview_images.forEach(element => {
         element.onclick = function() {toggleTransform(element.parentElement)}
       });
+
+      //track which image to hide
       Array.prototype.slice.call(document.getElementsByClassName("preview_image")).forEach(element => {
         $(element).mousedown(function(e){
           if (e.which == 3)
@@ -303,6 +355,7 @@ function populateList(selectedpage = 1)
           }
         })
       });
+      
     } catch (error) {
       console.log(error)
       console.log("history list not defined")
@@ -310,8 +363,31 @@ function populateList(selectedpage = 1)
   })
 }
 
+/**
+ * return array limited by pagenumber & shuffled by selectedpage
+ */
+function return_Limited_Array(selectedpage, result)
+{
+  var beginning_index = selectedpage * page_image_limit - page_image_limit - 1;
+  var newarray;
+  if (beginning_index < 0)
+  {
+    beginning_index = 0, newarray = result.list.slice(beginning_index, beginning_index + page_image_limit)
+    return newarray
+  }
+  else if (beginning_index > 0)
+  {
+    newarray = result.list.slice(beginning_index + 1, beginning_index + page_image_limit + 1)
+    return newarray
+  }
+  else{}
+}
+
 function addpages(pagecount)
 {
+  while (document.getElementById("pageselect").firstChild) {
+    document.getElementById("pageselect").removeChild(document.getElementById("pageselect").firstChild);
+  }
 let elementarray = [];
 for (let index = 0; index < pagecount; index++) 
 {
