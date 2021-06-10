@@ -1,5 +1,11 @@
 console.log("content script injected")
 
+try {
+  document.getElementById("image").muted=true 
+} catch (oh_no_it_wasnt_there_what_a_surprise_whatever_will_i_do) {
+  
+}
+
 //get the tab url
 chrome.runtime.sendMessage({"message": "fuckgoogle"})
 
@@ -7,14 +13,14 @@ chrome.runtime.sendMessage({"message": "fuckgoogle"})
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message != "https://chan.sankakucomplex.com/")
   {
-    getImageTags();
+    getHighestCharacterTag();
   }
   if (request.message.match("(https:\/\/chan\.sankakucomplex\.com\/post\/show\/)[1-9]*"))
   {
     if ($(document.getElementById("image")).is("img"))
     {
       //document.getElementById("image").crossOrigin = "anonymous"
-      var img = $("<img></img>").attr({"src": document.getElementById("image").src, "crossOrigin": "anonymous", "id": "canvasimg", "style": "display: none;"}).on("load", function(e){createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage")})
+      var img = $("<img></img>").attr({"src": document.getElementById("image").src, "crossOrigin": "anonymous", "id": "canvasimg", "style": "display: none;"}).on("load", function(e){createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)})
       $("#image").after(img)
     }
   }
@@ -55,6 +61,8 @@ var charactertag;
 
 var dt;
 
+var xhr_received_page;
+
 aparse();
 
 var downloadLink;
@@ -86,7 +94,7 @@ function prepare()
  * @param {string} type 
  * type "postpage", "preview" or "download"
  */
-function createHistoryMenuEntry(postid, menu, type)
+function createHistoryMenuEntry(postid, menu, type, page)
 {
   let ifExistsEntry = false;
   b64image = createBase64Image(type)
@@ -94,7 +102,7 @@ function createHistoryMenuEntry(postid, menu, type)
   options[''+postid]= b64image;
   console.log(options)
   imagedataentry = new ImageDataEntry(b64image)
-  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/post/show/"+postid)
+  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/post/show/"+postid, getImageTags(page))
   chrome.storage.local.get([menu], function(result) {
     try {
       operlist = new History(result[menu].list);
@@ -159,11 +167,12 @@ class ImageDataEntry
 
 class ListEntry 
 {
-    constructor (pid, date, posturl)
+    constructor (pid, date, posturl, tags)
     {
         this.pid = pid
         this.date = date
         this.posturl = posturl
+        this.tags = tags
     }
 }
 
@@ -532,7 +541,7 @@ function addPreviewImg(e)
     }
     else{$("#preview-all_container").css("left", lp); isNotFullscreenPositionHorizontal = lp;}
 
-    createHistoryMenuEntry(postid, "Previewed", "preview")
+    createHistoryMenuEntry(postid, "Previewed", "preview", xhr_received_page)
 
     //
   })
@@ -656,8 +665,30 @@ function preventdefaultthumblink()
 }
 
 
+function getImageTags(body)
+{
+  var charactertags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
+  var seriestags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-copyright"))
+  var artisttags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-artist"))
+  var genretags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-genre"))
+  var tag_array = [];
+  charactertags.forEach(element => {
+    tag_array.push ({"type": "character_tag", "tag": $(element).find("a").text().slice (0, -1)})
+  });
+  seriestags.forEach(element => {
+    tag_array.push ({"type": "copyright_tag", "tag": $(element).find("a").text().slice (0, -1)})
+  });
+  artisttags.forEach(element => {
+    tag_array.push ({"type": "artist_tag", "tag": $(element).find("a").text().slice (0, -1)})
+  });
+  genretags.forEach(element => {
+    tag_array.push ({"type": "genre_tag", "tag": $(element).find("a").text().slice (0, -1)})
+  });
+  return tag_array
+}
+
 /**get image tags (if url ==) */
-function getImageTags()
+function getHighestCharacterTag()
 {
   elearr = Array.prototype.slice.call(document.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
 

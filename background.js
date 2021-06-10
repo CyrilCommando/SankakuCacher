@@ -31,6 +31,13 @@ chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://ch
 , 
 title:"History"})
 
+chrome.contextMenus.create({contexts: ["browser_action"], documentUrlPatterns: [], id: "settingsmenubuttonId", onclick: function ()
+{
+  chrome.tabs.create({url: chrome.extension.getURL("/settings/settings.html")})
+}
+, 
+title:"Settings"})
+
 class AdvancedSettingsObject
 {
     constructor(param1 = false, param2 = false) {
@@ -98,6 +105,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     switch (request.message) {
 
+      //download from history menu
       case "xhr":
         xmlhttpReq(request.link)
         break;
@@ -122,7 +130,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       case "fuckgoogle":
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          chrome.tabs.sendMessage(tabs[0].id, {message: tabs[0].url}, undefined)
+          chrome.tabs.sendMessage(sender.tab.id, {message: sender.tab.url}, undefined)
       }) 
       break;
 

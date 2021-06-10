@@ -13,7 +13,7 @@ var autofavattr = document.getElementById("autofav");
 /*Save Folder onchange*/document.getElementById("savefolder").onchange = function() {doc_onchanged(savefolderattr)};
 /*Delete Settings onclick*/document.getElementById("deletesettings").onclick = function() {delete_all_settings()};
 /*Delete Images onclick*/ //document.getElementById("deleteimages").onclick = function() {delete_all_images()};
-/*Default Settings onlick*/document.getElementById("defaultsettings").onclick = function() {default_settings(enabledattr, arrangefilesattr, savefolderattr)};
+/*Default Settings onlick*/document.getElementById("defaultsettings").onclick = function() {default_settings()};
 /*Open Folder onclick*/document.getElementById("openfolder").onclick = function() {chrome.downloads.showDefaultFolder()};
 /*Download This onclick*/document.getElementById("DownloadThis").onclick = function() {sendMessage2()};
 /*Chan onclick*/document.getElementById("chan").onclick = function() {sendMessage()};
@@ -21,6 +21,11 @@ var autofavattr = document.getElementById("autofav");
 /*SankakuIcon onclick*/document.getElementById("SankakuIcon").onclick = function() {sendMessage()};
 /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
+
+/*limit onchange */ document.getElementById("limit").onchange = function() {doc_onchanged(document.getElementById("limit"))};
+/*concurrent limit onchange */ document.getElementById("concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("concurrentlimit"))};
+/*offset onchange */ document.getElementById("offset").onchange = function() {doc_onchanged(document.getElementById("offset"))};
+/*Download Button onclick*/document.getElementById("downloadbutton").onclick = function() {sendMessage()};
 
 var x = Array.prototype.slice.call(document.getElementsByTagName("a"))
 
@@ -90,6 +95,9 @@ function openLinkWithTags()
     chrome.tabs.create({url: `https://chan.sankakucomplex.com/?tags=${concatenated}&commit=Search`})
 }
 
+/**
+ * send message to background script to open chan in a new tab
+ */
 function sendMessage()
 {
     chrome.runtime.sendMessage({message: "chan"})
@@ -104,17 +112,17 @@ function sendMessage2()
 
 function go(){
 
-        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav"], function(result) {
+        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav", "mass_download_limit", "mass_download_concurrentlimit", "mass_download_offset"], function(result) {
             console.log('extension enabled: ' + result.enabled)
             console.log('arrangefiles value currently is ' + result.arrangefiles)
             console.log('savefolder value currently is ' + result.savefolder);
             console.log('previous search value currently is ' + result.prevsearch);
             setthethings(result.enabled, result.arrangefiles, result.savefolder);
-            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav);
+            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav, result.mass_download_limit, result.mass_download_concurrentlimit, result.mass_download_offset);
           })
 }
 
-function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8)
+function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11)
 {
     $("#enabled").attr("checked", n1);
     $("#arrangefiles").attr("checked", n2);
@@ -124,6 +132,9 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8)
     $("#newwindow").attr("checked", n6)
     $("#mp4swebms").attr("checked", n7)
     $("#middleclickfav").attr("checked", n8)
+    $("#limit").val(n9);
+    $("#concurrentlimit").val(n10);
+    $("#offset").val(n11);
 }
 
 function delete_all_settings()
@@ -137,7 +148,7 @@ function delete_all_settings()
 function default_settings()
 {
     var aso = new AdvancedSettingsObject();
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso})
+    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 50, "mass_download_concurrentlimit": 15, "mass_download_offset": 0})
     chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 
@@ -183,6 +194,21 @@ function doc_onchanged(htmlelement){
             // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             //     chrome.tabs.sendMessage(tabs[0].id, {message: "change_middleclick_variable"})
             // }) 
+            break;
+
+        case "limit":
+            
+            chrome.storage.local.set({"mass_download_limit": htmlelement.value})
+            break;
+            
+        case "concurrentlimit":
+            
+            chrome.storage.local.set({"mass_download_concurrentlimit": htmlelement.value})
+            break;
+
+        case "offset":
+            
+            chrome.storage.local.set({"mass_download_offset": htmlelement.value})
             break;
     }
     //var x = document.getElementById("savefolder");
