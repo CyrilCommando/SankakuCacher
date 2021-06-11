@@ -13,7 +13,7 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
 
-      xhr_received_page = this.responseXML.body
+      xhr_received_page = this.responseXML
 
       //log image url
       console.log("image link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
