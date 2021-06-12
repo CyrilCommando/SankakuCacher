@@ -25,9 +25,6 @@ automatically download images sankakucomplex
 #### Options menu with detailed control of all options
 ![alt text](https://i.imgur.com/h1kks3p.gif)
 
-#### Full-featured history menu with image expansion, search bar, full-res download buttons, & open in new tab buttons
-![alt text](https://i.imgur.com/BRJqMb7.gif)
-
 ## How to use SankakuCacher?
 You'll need to download a full zip of the source code from the master branch or a release in the releases tab.
 Extract the "SankakuCacher1.X" folder somewhere on your computer.
