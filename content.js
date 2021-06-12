@@ -684,6 +684,9 @@ function getImageTags(body)
   genretags.forEach(element => {
     tag_array.push ({"type": "genre_tag", "tag": $(element).find("a").text().slice (0, -1)})
   });
+  tag_array.forEach(element => {
+    element.tag = element.tag.replace(/ /g, "_")
+  });
   return tag_array
 }
 
