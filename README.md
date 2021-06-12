@@ -25,7 +25,7 @@ automatically download images sankakucomplex
 #### Options menu with detailed control of all options
 ![alt text](https://i.imgur.com/h1kks3p.gif)
 
-#### History menu with search bar, on-click image expansion, full-res download buttons, & open in new tab buttons
+#### Full-featured history menu with image expansion, search bar, full-res download buttons, & open in new tab buttons
 ![alt text](https://i.imgur.com/BRJqMb7.gif)
 
 ## How to use SankakuCacher?
