@@ -14,7 +14,9 @@ var page_image_limit = 50 //999999999999;
 
 var transform_ratio = window.outerWidth / 738
 
-var transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * 0.18)
+var ws_transform_ratio = 0.60
+
+var transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * ws_transform_ratio)
 
 var history_entry_list;
 
@@ -37,6 +39,7 @@ populateList()
 
 document.getElementById("sb").oninput = function(e) {
   if (e.target.value == "") {
+    pages_added = false;
     search_bar = false; sb_text = e.target.value; populateList(); 
   } else {
     search_bar = true; sb_text = e.target.value; populateList(1, true);
@@ -103,7 +106,7 @@ anchors.forEach(element => {
           });
           $(element).attr("style", "text-decoration: underline;")
           current_page = element.innerText;
-          populateList(element.innerText, search_bar)
+          populateList(element.innerText, search_bar, true)
         }
         }
 });
@@ -208,6 +211,8 @@ function checkSize(e)
  */
 function toggleTransform(element)
 {
+  transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * ws_transform_ratio)
+  transform_ratio = 3.0//window.outerWidth / 738
   var toggled = false;
   for (const key in dynamicobjectobject) {
     if (key == element.id) 
@@ -223,9 +228,29 @@ function toggleTransform(element)
   {
     if (element.firstChild.width > element.firstChild.height)
     {
+      //while bigger than the screen (height)
+      while (element.firstChild.height * transform_ratio_ws + ((3 * transform_ratio_ws) * 2) > window.innerHeight) {
+        transform_ratio_ws -= 0.01
+      }
+      //while bigger than the screen (width)
+      while (element.firstChild.width * transform_ratio_ws + ((3 * transform_ratio_ws) * 2) > window.innerWidth) {
+        transform_ratio_ws -= 0.01
+      }
+      //while bigger than full image res
+      while (element.firstChild.width * transform_ratio_ws + ((3 * transform_ratio_ws) * 2) > element.firstChild.naturalWidth) {
+        transform_ratio_ws -= 0.01
+      }
       $(element).attr("style", "transform: scale("+transform_ratio_ws+"); position: relative; z-index: 2;")
     }
     else{
+      //while bigger than the screen
+      while (element.firstChild.height * transform_ratio + ((3 * transform_ratio) * 2) > window.innerHeight) {
+        transform_ratio -= 0.01
+      }
+      //while bigger than full image res
+      while (element.firstChild.height * transform_ratio + ((3 * transform_ratio) * 2) > element.firstChild.naturalHeight) {
+        transform_ratio -= 0.01
+      }
       $(element).attr("style", "transform: scale("+transform_ratio+"); position: relative; z-index: 2;")
     }
     var img = $(element).children("img").attr("style", "outline: 3px solid yellow;")
@@ -252,7 +277,7 @@ function addDynamicToggledVariableToObject(id, toggled)
 /**
  * populates list & adds pages
  */
-function populateList(selectedpage = 1, sb = false)
+function populateList(selectedpage = 1, sb = false, sbpersistent = false)
 {
   while (document.getElementById("mppane").firstChild) {
     document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
@@ -276,7 +301,6 @@ function populateList(selectedpage = 1, sb = false)
           if (!pages_added){
             pages_added = true;
             addpages(Math.ceil(result[x].list.length/page_image_limit))
-            $("#PageNumberId_1").attr("style", "text-decoration: underline;")
           }
         }
 
@@ -286,14 +310,14 @@ function populateList(selectedpage = 1, sb = false)
       {
         var excluded_items_array = {};
         excluded_items_array.list = [];
-        result[x].list.forEach(em => {
+        result[x].list.forEach(HistoryMenuEntry => {
           try {
-            em.tags.forEach(tag => {
+            HistoryMenuEntry.tags.forEach(tag => {
               if (tag.tag.match("("+sb_text+")"))
               {
-                if(!excluded_items_array.list.includes(em))
+                if(!excluded_items_array.list.includes(HistoryMenuEntry))
                 {
-                  excluded_items_array.list.push(em)
+                  excluded_items_array.list.push(HistoryMenuEntry)
                 }
               }
             });
@@ -303,7 +327,7 @@ function populateList(selectedpage = 1, sb = false)
         });
       }
 
-      if (sb)
+      if ((sb == true) && (sbpersistent == false))
       {
         addpages(Math.ceil(excluded_items_array.list.length/page_image_limit))
       }
@@ -318,10 +342,10 @@ function populateList(selectedpage = 1, sb = false)
         var use_array = result[x]
       }
 
-      if (sb_text == "")
-      {
-        addpages(Math.ceil(result[x].list.length/page_image_limit))
-      }
+      // if (sb_text == "")
+      // {
+      //   addpages(Math.ceil(result[x].list.length/page_image_limit))
+      // }
 
       return_Limited_Array(selectedpage, use_array).forEach(obj => {
         if (!obj.hidden)
@@ -398,6 +422,10 @@ elementarray.forEach(item => {
 });
 
 apply_to_anchors();
+
+$("#PageNumberId_1").attr("style", "text-decoration: underline;")
+
+current_page = 1;
 
 }
 
