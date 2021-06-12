@@ -310,10 +310,15 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
       {
         var excluded_items_array = {};
         excluded_items_array.list = [];
+        var split_strings_array = sb_text.split(/ +/)
+        var tagvpairstagarray = [];
+
         result[x].list.forEach(HistoryMenuEntry => {
+
           try {
+
             HistoryMenuEntry.tags.forEach(tag => {
-              if (tag.tag.match("("+sb_text+")"))
+              if (tag.tag.match("(^"+split_strings_array[0]+")"))
               {
                 if(!excluded_items_array.list.includes(HistoryMenuEntry))
                 {
@@ -321,10 +326,29 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
                 }
               }
             });
+            
           } catch (error) {
             console.log ("many images don't have tags! old version images must be updated if you want to search for them by tags!")
           }
+
         });
+
+        // excluded_items_array.list.forEach(HistoryMenuItem => {
+
+        //   HistoryMenuItem.tags.forEach(tag => {
+
+        //     tagvpairstagarray.push(tag.tag)
+            
+        //   });
+
+        // });
+
+        console.log(excluded_items_array.list)
+
+        excluded_items_array.list = returnFilteredArray(excluded_items_array.list, split_strings_array)
+
+        console.log(excluded_items_array.list)
+
       }
 
       if ((sb == true) && (sbpersistent == false))
@@ -386,6 +410,51 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
     }
   })
 }
+
+/**
+ * arr = HistoryMenuEntry List 
+ * tag_arr = tag list
+ */
+function returnFilteredArray (arr, tag_arr) {
+
+  return arr.filter(arrayitem => {
+    var tag_match_count = 0;
+
+    //tag array
+    for (let index = 0; index < tag_arr.length; index++) {
+      
+      const tag = tag_arr[index];
+
+      //tags in history item
+      for (let index = 0; index < arrayitem.tags.length; index++) {
+        const tag_obj = arrayitem.tags[index];
+        if(tag_obj.tag.match("(^"+tag+")")) 
+        {
+          tag_match_count ++; 
+          break;
+        }
+      }
+
+    }    
+
+    if (tag_match_count == tag_arr.length)
+    {
+      return true;
+    }
+      
+      // Loops again if arritm[key] is an array (for material attribute).
+      
+      // if (Array.isArray(arritm[filter])) 
+      // {
+      //   return arritm[filter].some(keyEle => tag_arr[filter].includes(keyEle));
+      // }
+
+      // return tag_arr[tag].includes(arritm.tags.tag[tag]);
+    
+
+  });
+
+};
 
 /**
  * return array limited by pagenumber & shuffled by selectedpage
