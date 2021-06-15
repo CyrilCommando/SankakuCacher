@@ -1,17 +1,19 @@
-/**make XMLHttpRequest with PID and image DOM element (2nd var UNUSED)*/
+/**make XMLHttpRequest with PID and image DOM element (2nd var UNUSED) ((DOUBLE SYKE IT ACTUALLY IS USED!!! FUCK*/
 function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
 {
   var xhr = new XMLHttpRequest();
 
   xhr.onload = function() {
-    console.log("xhr SENT")
+    // console.log("xhr SENT")
   }
 
   xhr.open("GET", "https://chan.sankakucomplex.com/post/show/"+pid);
   xhr.responseType = "document";
   xhr.send();
+  return new Promise(function (resolve, reject) {
   xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
+    if (this.readyState !== 4) return;
+    if (this.status >= 200 && this.status < 300) {
 
       xhr_received_page = this.responseXML
 
@@ -61,6 +63,12 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
       {
         getTheGodDamnLink3()
       }
+      resolve(this.responseXML)
+    }
+    else{
+      console.log("request failed")
+      reject("failed")
     }
 }
+});
 }

@@ -1,7 +1,7 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. More functionality soon.",
-  "version": "1.6",
+  "version": "1.7",
   "author": "CyrilCommando",
   "web_accessible_resources": [
     "animation.css",
@@ -24,7 +24,7 @@
   "content_scripts": [ 
     {
       "matches": ["https://chan.sankakucomplex.com/post/*", "https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/", "https://s.sankakucomplex.com/data/*"],
-      "js": ["jquery-3.4.1.min.js", "httprequest.js", "content.js"]
+      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTags.js", "content.js"]
     } ],
   "background": {
     "scripts": ["jquery-3.4.1.min.js", "background.js" ]

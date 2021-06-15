@@ -104,6 +104,10 @@ var positiveinstance = false;
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     switch (request.message) {
+      
+      case "reload":
+        chrome.tabs.reload(sender.tab.id)
+        break;
 
       //download from history menu
       case "xhr":
@@ -130,7 +134,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       case "fuckgoogle":
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-          chrome.tabs.sendMessage(sender.tab.id, {message: sender.tab.url}, undefined)
+          chrome.tabs.sendMessage(sender.tab.id, {message: sender.tab.url, tSender: sender.tab.id}, undefined)
       }) 
       break;
 

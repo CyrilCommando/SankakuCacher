@@ -11,6 +11,16 @@ chrome.runtime.sendMessage({"message": "fuckgoogle"})
 
 //listener to tab URL
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+
+  if ( ( seconds(localStorage.getItem("plustitial"+"_last_run")) ) || ( seconds(localStorage.getItem("prestitial"+"_last_run")) ) )
+  {
+    localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
+    localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
+    chrome.runtime.sendMessage({message: "reload"})
+  }
+
+  mutationObserver.observe(document, observerOptions)
+
   if (request.message != "https://chan.sankakucomplex.com/")
   {
     getHighestCharacterTag();
@@ -27,6 +37,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 }
 )
 
+const mutationObserverTargetNode = document.querySelector("#someElement");
+const observerOptions = {
+  childList: true,
+  // attributes: true,
+
+  // Omit (or set to false) to observe only changes to the parent node
+  subtree: true
+}
+
+var mutationObserver = new MutationObserver(clearb)
+
 var context_menu_pid = undefined;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
@@ -37,7 +58,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
   }
 })
 
-clearbs();
+// clearbs();
 
 //$("head").append( $("meta").attr({"content": "no-referrer", "name": "referrer"}) )
 
@@ -78,6 +99,21 @@ chrome.storage.local.get(["autofav"], function(result)
     addscript2();
   }
 })
+
+function seconds(localStorageLastSetTimeInMilliseconds, interval = 21600) {
+  //Math.round(((new Date()).getTime() - parseInt(timeInSeconds))/1000);
+            //MILLISECONDS       //SECONDS                                  //SECONDS CONVERSION
+            // console.log(new Date().getTime())
+            // console.log(localStorageLastSetTimeInMilliseconds)
+            // console.log(Math.round( ( new Date().getTime() - parseInt(localStorageLastSetTimeInMilliseconds) ) ) / 1000)
+            // console.log(interval)
+  if ( Math.round( ( new Date().getTime() - parseInt(localStorageLastSetTimeInMilliseconds) ) ) / 1000 > interval)
+  {
+    return true
+  }
+
+  else return false;
+}
 
 /**prepare DOM for preview*/
 function prepare()
@@ -190,11 +226,13 @@ function createBase64Image(type) {
   if (type == "postpage")
   {
     var img = document.getElementById("canvasimg")
+    setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
   }
   else if (type == "preview")
   {
     var img = document.getElementsByClassName("preview_image_or_video_tag")[0]
     img.crossOrigin = "anonymous";
+    setCssOnElement(img, "red", true)
   }
   var canvas = document.createElement("canvas");
   canvas.width = img.naturalWidth;
@@ -446,12 +484,22 @@ $(".thumblink").on("mouseup", function(e)
 
 }
 
-function setCssOnElement(element)
+function setCssOnElement(element, color = "springgreen", isAnActualElement = false)
 {
-  $(element.currentTarget).css({"transition": "outline 0.5s cubic-bezier(0, -2.37, 0.02, 4.64) 0s", "outline": "4px solid springgreen", "animation-delay": "0.5s", "animation-duration": "0.1s", "animation-name": "continue"})
-  setTimeout(() => {
-    $(element.currentTarget).css({"transition": "", "outline": "", "animation-delay": "", "animation-duration": "", "animation-name": ""})
-  }, 500);
+  if (!isAnActualElement)
+  {
+    $(element.currentTarget).css({"transition": "outline 0.5s cubic-bezier(0, -2.37, 0.02, 4.64) 0s", "outline": "4px solid "+color+"", "animation-delay": "0.5s", "animation-duration": "0.1s", "animation-name": "continue"})
+    setTimeout(() => {
+      $(element.currentTarget).css({"transition": "", "outline": "", "animation-delay": "", "animation-duration": "", "animation-name": ""})
+    }, 500);
+  }
+  else if (isAnActualElement)
+  {
+    $(element).css({"transition": "outline 0.5s cubic-bezier(0, -2.37, 0.02, 4.64) 0s", "outline": "4px solid "+color+"", "animation-delay": "0.5s", "animation-duration": "0.1s", "animation-name": "continue"})
+    setTimeout(() => {
+      $(element).css({"transition": "", "outline": "", "animation-delay": "", "animation-duration": "", "animation-name": ""})
+    }, 500);
+  }
 }
 
 function unsetPreviewImage(e)
@@ -490,6 +538,7 @@ function addPreviewImg(e)
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_image_or_video_tag")
   $(preview).attr("referrerpolicy", "no-referrer")
+  $(preview).attr("crossorigin", "anonymous");
 
   //assign preview image position
   $(preview).on("load", function() 
@@ -587,12 +636,26 @@ function clearbs() {
     $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
     $(".eww").remove()
     $("iframe").remove()
-    console.log("SankakuCacher: set localstorage")
+    // console.log("SankakuCacher: set localstorage")
     localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
     localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
     clearbs();
   }, 1000);
   }
+
+function clearb(mutationRecord, mutationwatcher)
+{
+  $("div[style*='-webkit-tap-highlight-color: transparent !important; background: none !important; border: 0px !important; display: block !important; height: 100vh !important; left: 0px !important; margin: 0px !important; outline: 0px !important; padding: 0px !important; position: fixed !important; top: 0px !important; width: 100vw !important; z-index: 2147483647 !important;'").remove();
+  $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647;'").remove();
+  $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647 !important;'").remove();
+  $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
+  $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
+  $(".eww").remove()
+  $("iframe").remove()
+  // console.log("SankakuCacher: set localstorage")
+  localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
+  localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
+}
 
 /**add script button for adding fav class and creatting relative create function for IMG element*/
 function addInvisibleScriptButton(post_id, element)
@@ -662,32 +725,6 @@ function preventdefaultthumblink()
         $("#invisiblescriptbutton").remove();
       })
     });     }   else{}    }) //////////////////////CALLBACK FUCKING HECK
-}
-
-
-function getImageTags(body)
-{
-  var charactertags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
-  var seriestags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-copyright"))
-  var artisttags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-artist"))
-  var genretags = Array.prototype.slice.call(body.getElementById("tag-sidebar").getElementsByClassName("tag-type-genre"))
-  var tag_array = [];
-  charactertags.forEach(element => {
-    tag_array.push ({"type": "character_tag", "tag": $(element).find("a").text().slice (0, -1)})
-  });
-  seriestags.forEach(element => {
-    tag_array.push ({"type": "copyright_tag", "tag": $(element).find("a").text().slice (0, -1)})
-  });
-  artisttags.forEach(element => {
-    tag_array.push ({"type": "artist_tag", "tag": $(element).find("a").text().slice (0, -1)})
-  });
-  genretags.forEach(element => {
-    tag_array.push ({"type": "genre_tag", "tag": $(element).find("a").text().slice (0, -1)})
-  });
-  tag_array.forEach(element => {
-    element.tag = element.tag.replace(/ /g, "_")
-  });
-  return tag_array
 }
 
 /**get image tags (if url ==) */
@@ -806,7 +843,10 @@ function getTheGodDamnLink()
 
   if (y === undefined)
   {
-    chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
+    if (v != undefined)
+    {
+      chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
+    }
   }
 
   else
