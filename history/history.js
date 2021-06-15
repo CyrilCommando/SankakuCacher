@@ -2,6 +2,10 @@
 
 //var toggled=false;
 
+//NOT USED
+var downloadLink;
+//
+
 var dynamicobjectobject = {};
 
 var image_postid;
@@ -30,6 +34,10 @@ var timeout2;
 
 var lessthan5mssincelastkeypressed = false;
 
+var xhr_received_page;
+
+var operlist;
+
 document.getElementById("menu").onchange = function(e) {
   pages_added = false; 
   populateList()
@@ -57,6 +65,143 @@ title:"Hide"})
 
 // createImagefromUrl(base64)
 
+function updateAllImagesWithTags(limit = 15, concurrent = 5, offset = 0, menu)
+{
+  chrome.storage.local.get([menu], async function(result) {
+
+    var pagesDownloaded = 0;
+
+    //set operlist
+    operlist = new History(result[menu].list);
+    
+    //operlist foreach
+      for (let index = offset; index < operlist.list.length; index++) {
+
+        const PostObject = operlist.list[index];
+
+        pagesDownloaded++
+
+        if (pagesDownloaded <= limit)
+        {
+
+          console.log(pagesDownloaded+"/"+limit)
+
+
+        //pause
+        // while (concurrentImages > concurrent) {
+
+        // }
+
+        var xprval = false;
+
+          var xPr = await xmlhttpReq(PostObject.pid, undefined, false, false).catch(reason => {
+            console.log(reason)
+            xprval = true;
+          })
+          console.log("xhr resolved!")
+
+          //pause
+          // while (xhr_received_page == undefined) {
+          //   console.log("waiting for page!")
+          //   if (xhr_received_page != undefined)
+          //   {
+          //     break;
+          //   }
+          // }
+
+            if (!xprval)
+            {
+              operlist.list[index].tags = getImageTags(xhr_received_page)
+          
+              console.log("tags for "+ operlist.list[index].pid+" retrieved")
+    
+              xhr_received_page = undefined;
+            }
+             
+            else if (xprval)
+            {
+              // console.log("xhr failed"); console.log("writing currently downloaded tags");
+              // console.log("wow, we actually got to the failed section. fuck promises")
+              // xprval = true;
+            }
+
+
+          if (xprval)
+          {
+            break;
+          }
+
+        }
+        else break;
+      }
+
+    setHistoryMenu(operlist, menu)
+    console.log("local operlist var cleared")
+    console.log("COMPLETED")
+})
+}
+
+function makerequest(url, method) {
+
+	// Create the XHR request
+	var request = new XMLHttpRequest();
+
+	// Return it as a Promise
+	return new Promise(function (resolve, reject) {
+
+		// Setup our listener to process compeleted requests
+		request.onreadystatechange = function () {
+
+			// Only run if the request is complete
+			if (request.readyState !== 4) return;
+
+			// Process the response
+			if (request.status >= 200 && request.status < 300) {
+				// If successful
+				resolve(request);
+			} else {
+				// If failed
+				reject({
+					status: request.status,
+					statusText: request.statusText
+				});
+			}
+
+		};
+
+	});
+};
+
+async function testPromise() {
+  let p1 = new Promise((resolve, reject) => {
+
+    // This is only an example to create asynchronism
+    setTimeout(function() {
+        // We fulfill the promise !
+        if (xhr_received_page != undefined)
+        {
+          console.log("resolved")
+          resolve(xhr_received_page);
+        }
+        else {
+          testPromise();
+        }
+    }, 500);
+  });
+
+  // We define what to do when the promise is resolved with the then() call,
+  // and what to do when the promise is rejected with the catch() call
+
+  // p1.then(function(val) {
+  //   // Log the fulfillment value
+  //   log.insertAdjacentHTML('beforeend', val + ') Promise fulfilled<br>');
+  // }).catch((reason) => {
+  //   // Log the rejection reason
+  //   console.log(`Handle rejected promise (${reason}) here.`);
+  // });
+  // end
+}
+
 function getHistoryMenuEntries()
 {
   chrome.storage.local.get(["Previewed"], function(result) {
@@ -67,12 +212,12 @@ function getHistoryMenuEntries()
   })
 }
 
-function editHistoryMenuEntry(menu, postid, hidden)
+function editHistoryMenuEntry(menu, postid, hidden = undefined, tagarr = undefined, newpostid = undefined)
 {
   chrome.storage.local.get([menu], function(result) {
       operlist = new History(result[menu].list);
       operlist.list.forEach(historyEntry => {
-        if (historyEntry.pid == postid)
+        if ((hidden != undefined) && (historyEntry.pid == postid))
         {
           historyEntry.hidden = hidden
           mObj = {}
@@ -80,8 +225,28 @@ function editHistoryMenuEntry(menu, postid, hidden)
           chrome.storage.local.set(mObj)
           console.log("hid "+postid+": "+hidden)
         }
+        if ((tagarr != undefined) && (historyEntry.pid == postid))
+        {
+          historyEntry.tags = tagarr
+          console.log(+postid+" tags updated")
+        }
+        if ((newpostid != undefined) && (historyEntry.pid == postid))
+        {
+          historyEntry.pid = newpostid
+          setHistoryMenu(operlist, menu)
+          console.log("postid "+postid+" set to "+newpostid)
+        }
       });
   })
+}
+
+function setHistoryMenu(HistoryMenu, menu)
+{
+  mObj = {}
+  mObj[''+menu]= HistoryMenu;
+  chrome.storage.local.set(mObj)
+  console.log("function setHistoryMenu executed")
+  console.log("set history menu")
 }
 
 class History
@@ -284,12 +449,15 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
   }
   var x = document.getElementById("menu").value
   console.log(x)
+
+  if (x != "All"){
+    
   //get array by menu selected
   chrome.storage.local.get([x], function(result){
     while (document.getElementById("mppane").firstChild) {
       document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
     }
-    history_entry_list = result
+    // history_entry_list = result
     console.log(result)
     try {
       //sort array by date
@@ -376,6 +544,15 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
         {
           image = new Image();
           image.id = obj.pid
+          try {
+            var tTitle = []
+            obj.tags.forEach(tagObj => {
+              tTitle.push(tagObj.tag)
+            });
+            image.title = tTitle.join(" ")
+          } catch (error) {
+            
+          }
           image.className = "preview_image"
           parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
           $(parent_div).append(image)
@@ -408,7 +585,218 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
       console.log(error)
       console.log("history list not defined")
     }
-  })
+  })}
+  else {chrome.storage.local.get(["Viewed", "Downloaded", "Previewed"], function (result) {noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, sb, sbpersistent, result)})}
+}
+
+/**
+ * a fitting name for a function in javascript
+ */
+function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, sb, sbpersistent, result)
+{
+  while (document.getElementById("mppane").firstChild) {
+    document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
+  }
+  // history_entry_list = result
+  var HistoryMenuArray = {};
+  HistoryMenuArray.list = [];
+  console.log(result)
+  try {
+    //sort array by date
+    //for each history menu in result
+    for (const HistoryMenu in result) {
+      if (Object.hasOwnProperty.call(result, HistoryMenu)) {
+        const HistoryMenuObject = result[HistoryMenu];
+        
+        //for each historymenuobject in result
+        for(let i=0; i < HistoryMenuObject.list.length; i++){
+
+          if(!historyMenuContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i]))
+          {
+            HistoryMenuArray.list.push(HistoryMenuObject.list[i])
+          }
+          else
+          {
+            if( (historyMenuContainsPostWithALesserDate(HistoryMenuArray, HistoryMenuObject.list[i])) && (historyMenuContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i])) )
+            {
+              // console.log("did we ever get here?")
+              HistoryMenuArray.list.splice(whichOneIsOfALesserDate(HistoryMenuArray, HistoryMenuObject.list[i]), 1)
+              HistoryMenuArray.list.push(HistoryMenuObject.list[i])
+            }
+          }
+          
+        }
+        
+      }
+    }
+
+
+    HistoryMenuArray.list.sort(function(a, b){return b.date - a.date});
+
+    result = HistoryMenuArray;
+
+    history_entry_list = result;
+
+    console.log(result)
+    
+    //add pages by length / page_image_limit
+    if (!sb)
+    {
+        if (!pages_added){
+          pages_added = true;
+          addpages(Math.ceil(result.list.length/page_image_limit))
+        }
+      }
+
+    //god fuck i hate the way indexes are counted
+
+    if (sb)
+    {
+      var excluded_items_array = {};
+      excluded_items_array.list = [];
+      var split_strings_array = sb_text.split(/ +/)
+      var tagvpairstagarray = [];
+
+      result.list.forEach(HistoryMenuEntry => {
+
+        try {
+
+          HistoryMenuEntry.tags.forEach(tag => {
+            if (tag.tag.match("(^"+split_strings_array[0]+")"))
+            {
+              if(!excluded_items_array.list.includes(HistoryMenuEntry))
+              {
+                excluded_items_array.list.push(HistoryMenuEntry)
+              }
+            }
+          });
+          
+        } catch (error) {
+          console.log ("many images don't have tags! old version images must be updated if you want to search for them by tags!")
+        }
+
+      });
+
+      console.log(excluded_items_array.list)
+
+      excluded_items_array.list = returnFilteredArray(excluded_items_array.list, split_strings_array)
+
+      console.log(excluded_items_array.list)
+
+    }
+
+    if ((sb == true) && (sbpersistent == false))
+    {
+      addpages(Math.ceil(excluded_items_array.list.length/page_image_limit))
+    }
+
+    if (sb)
+    {
+      var use_array = excluded_items_array
+    }
+
+    if(!sb)
+    {
+      var use_array = result
+    }
+
+    // if (sb_text == "")
+    // {
+    //   addpages(Math.ceil(result[x].list.length/page_image_limit))
+    // }
+
+    return_Limited_Array(selectedpage, use_array).forEach(obj => {
+      if (!obj.hidden)
+      {
+        image = new Image();
+        image.id = obj.pid
+        try {
+          var tTitle = []
+          obj.tags.forEach(tagObj => {
+            tTitle.push(tagObj.tag)
+          });
+          image.title = tTitle.join(" ")
+        } catch (error) {
+          
+        }
+        image.className = "preview_image"
+        parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
+        $(parent_div).append(image)
+        $("#mppane").append(parent_div)
+        updateImagewithBase64(obj.pid)
+        mb = createPreviewMenuBar(obj.posturl)
+        $("#"+obj.pid+"_parent").append(mb)
+      }
+      else{console.log("hid "+obj.pid)}
+    });
+
+    //assign transform to images
+    var preview_images = Array.prototype.slice.call(document.getElementsByClassName("preview_image"))
+
+    preview_images.forEach(element => {
+      element.onclick = function() {toggleTransform(element.parentElement)}
+    });
+
+    //track which image to hide
+    Array.prototype.slice.call(document.getElementsByClassName("preview_image")).forEach(element => {
+      $(element).mousedown(function(e){
+        if (e.which == 3)
+        {
+          image_postid = e.currentTarget.id;
+        }
+      })
+    });
+    
+  } catch (error) {
+    console.log(error)
+    console.log("history list not defined")
+  }
+}
+
+/**
+ * returns index
+ */
+function whichOneIsOfALesserDate(HistoryMenu, PostObject)
+{
+  var thisOne;
+
+  for (let index = 0; index < HistoryMenu.list.length; index++) {
+    const PostOBJ = HistoryMenu.list[index];
+    if ( (PostOBJ.posturl == PostObject.posturl) && (PostOBJ.date < PostObject.date) )
+    {
+      thisOne = index;
+    }
+  }
+
+  return thisOne;
+}
+
+/**
+ * HistoryMenu = HistoryMenu
+ * PostObject = PostObject
+ */
+function historyMenuContainsPostWithTheSameURL(HistoryMenu, PostObject)
+{
+  var containsTheUrl = false;
+  HistoryMenu.list.forEach(PostOBJ => {
+    if (PostOBJ.posturl == PostObject.posturl)
+    {
+      containsTheUrl = true;
+    }
+  });
+  return containsTheUrl;
+}
+
+function historyMenuContainsPostWithALesserDate(HistoryMenu, PostObject)
+{
+  var containsLesserDate = false;
+  HistoryMenu.list.forEach(PostOBJ => {
+    if (PostOBJ.date < PostObject.date)
+    {
+      containsLesserDate = true;
+    }
+  });
+  return containsLesserDate;
 }
 
 /**
