@@ -12,7 +12,7 @@
          color: #69daff;">Settings</h1>
    </div>
    <div id="header" style="
-      height: 8.5em;
+      height: 10.5em;
       background-color: darkgray;
       display: flex;
       justify-content: space-around;">
@@ -46,14 +46,12 @@
                font-family: ultra;
                color: dimgrey;">Mass-Download</h2>
             <form style="
-               font-family: auto;
                padding: 39px;
                margin-left: 30;
-               ">
-               Arrange files: <input id="arrangefiles" type="checkbox"> <a id="advl" href="advanced.html"> Adv. </a> <br>
-               <br>
+               ">       
+               
                Save folder:<br>
-               <input id="savefolder" type="text"> 
+               <input id="savefolder" class="savefolder" type="text"> 
                <br>
                <input id="openfolder" type="button" value="Open Folder">
                <br>
@@ -83,13 +81,12 @@ Offset: <input id="offset" type="text" style="
                color: dimgrey;
                ">Extension</h2>
             <form style="
-               font-family: auto;
                padding: 39px;
                margin-left: 30;
                ">
                New Window: <input id="newwindow" type="checkbox" title="When site shortcut is clicked, open in a new window" checked="checked"> <br> <br>
                Automatically favorite downloaded images: <input id="autofav" type="checkbox"> 
-               <!-- <input id="autofavinclude" type="checkbox" style="position: relative; left: 94px" title="Include autodownload images"> !-->
+                Include automatically downloaded images: <input id="autofavinclude" type="checkbox" style=""> 
                <br> 
                <br>
                Favorite on middle-click: <input id="middleclickfav" type="checkbox" checked="checked"> 
@@ -101,7 +98,7 @@ Offset: <input id="offset" type="text" style="
                Arrange files: <input id="arrangefiles" type="checkbox"> <a id="advl" href="advanced.html"> Adv. </a> <br>
                <br>
                Save folder:<br>
-               <input id="savefolder" type="text"> 
+               <input id="savefolder" class="savefolder" type="text"> 
                <br>
                <input id="openfolder" type="button" value="Open Folder">
                <br>
@@ -128,45 +125,36 @@ Offset: <input id="offset" type="text" style="
                top: 22px;
                font-family: ultra;
                color: dimgrey;
-               ">Download</h2>
+               ">History Menu</h2>
             <form style="
-               font-family: auto;
                padding: 39px;
                margin-left: 30;
-               ">
-               New Window: <input id="newwindow" type="checkbox" title="When site shortcut is clicked, open in a new window" checked="checked"> <br> <br>
-               Automatically favorite downloaded images: <input id="autofav" type="checkbox"> 
+               ">   
                <!-- <input id="autofavinclude" type="checkbox" style="position: relative; left: 94px" title="Include autodownload images"> !-->
                <br> 
-               <br>
-               Favorite on middle-click: <input id="middleclickfav" type="checkbox" checked="checked"> 
-               <br>
-               <br>
-               <b>Auto-Download options:</b> <br>
-               (Auto-Download:)Enabled: <input id="enabled" type="checkbox"> <br>
-               (Include)Download WEBM's/MP4's: <input id="mp4swebms" type="checkbox"> <br>
+               <br> 
+               
+               
+                  
                Arrange files: <input id="arrangefiles" type="checkbox"> <a id="advl" href="advanced.html"> Adv. </a> <br>
                <br>
                Save folder:<br>
-               <input id="savefolder" type="text"> 
+               <input id="savefolder" class="savefolder" type="text"> 
                <br>
                <input id="openfolder" type="button" value="Open Folder">
                <br>
-               <br> 
-               Tags to download: <input id="tagsdownload" type="text">
                <br>
-               <input type="button" id="engagedownload" value="Download Tags">
-               <br>
-               <br>
-               Open Sankaku with tags:
-               <input type="text" id="tagstosearch">
-               <br>
-               <input type="button" id="searchtags" value="Open tab with tags"> <!-- W? <input type="checkbox" id="w"> !--> 
-               <br>
-               <br>
-               <input id="deletesettings" type="button" value="Delete Settings">
-               <br> <br> 
-               <input id="defaultsettings" type="button" value="Default Settings"><br> 
+               
+               
+               
+               
+               
+                 
+               
+               
+               
+                 
+                
                <!-- <input id="deleteimages" type="button" value = "Delete All Downloaded Images"> !-->
             </form>
          </div>
