@@ -84,6 +84,8 @@ var dt;
 
 var xhr_received_page;
 
+var base64data;
+
 aparse();
 
 var downloadLink;
@@ -99,6 +101,38 @@ chrome.storage.local.get(["autofav"], function(result)
     addscript2();
   }
 })
+
+/**make XMLHttpRequest for sample image base64*/
+function newxmlHttpReq(url)
+{
+  console.log(url)
+  var xhr22222222 = new XMLHttpRequest();
+
+  xhr22222222.open("GET", url);
+  xhr22222222.responseType = "blob";
+  xhr22222222.send();
+  return new Promise(function (resolve, reject) {
+  xhr22222222.onreadystatechange = function() {
+    if (this.readyState !== 4) return;
+    if (this.status >= 200 && this.status < 300) {
+
+      var reader = new FileReader();
+      reader.readAsDataURL(this.response); 
+      reader.onloadend = function() {
+          var b64data = reader.result;                
+          // document.getElementById("25333109").src = base64data;
+          base64data = b64data;
+          resolve("ggggfdgfgdfgfdgfdgfd")
+      }
+    }
+    else{
+      console.log("request failed")
+      base64data = "data:,";
+      reject("dfgdfgsfghdfghxfghfghdfhg ")
+    }
+}
+});
+}
 
 function seconds(localStorageLastSetTimeInMilliseconds, interval = 21600) {
   //Math.round(((new Date()).getTime() - parseInt(timeInSeconds))/1000);
@@ -130,10 +164,11 @@ function prepare()
  * @param {string} type 
  * type "postpage", "preview" or "download"
  */
-function createHistoryMenuEntry(postid, menu, type, page)
+async function createHistoryMenuEntry(postid, menu, type, page)
 {
   let ifExistsEntry = false;
-  b64image = createBase64Image(type)
+  await createBase64Image(type)
+  b64image = base64data;
   var options = {}
   options[''+postid]= b64image;
   console.log(options)
@@ -221,34 +256,39 @@ class History
 }
 
 /**create base 64 image from preview tab */
-function createBase64Image(type) {
+async function createBase64Image(type) {
   // Create an empty canvas element
   if (type == "postpage")
   {
     var img = document.getElementById("canvasimg")
     setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
+    await newxmlHttpReq(document.getElementById("image-link").firstChild.nextSibling.src)
+    return base64data;
   }
   else if (type == "preview")
   {
     var img = document.getElementsByClassName("preview_image_or_video_tag")[0]
-    img.crossOrigin = "anonymous";
+    // img.crossOrigin = "anonymous";
     setCssOnElement(img, "red", true)
+    await newxmlHttpReq(document.getElementsByClassName("preview_image_or_video_tag")[0].src)
+    return base64data;
   }
-  var canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
+  // var canvas = document.createElement("canvas");
+  // canvas.width = img.naturalWidth;
+  // canvas.height = img.naturalHeight;
 
   // Copy the image contents to the canvas
-  var ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
+  // var ctx = canvas.getContext("2d");
+  // ctx.drawImage(img, 0, 0);
 
   // Get the data-URL formatted image
   // Firefox supports PNG and JPEG. You could check img.src to
   // guess the original format, but be aware the using "image/jpg"
   // will re-encode the image.
-  var dataURL = canvas.toDataURL("image/png");
-  console.log("b64 img created")
-  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+
+  // var dataURL = canvas.toDataURL("image/jpeg", 1);
+  // console.log("b64 img created")
+  // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
 var isFullscreen = false;
@@ -449,7 +489,7 @@ $(".thumblink").on("mousedown", function(e)
       if (hasHeldDownClick)
       {
         $(".thumblink").off("click")
-        $(e.currentTarget).on("click", function(e){console.log("we made it here boys"); e.preventDefault(); hasHeldDownClick = false; $(e.currentTarget).off("click")})
+        $(e.currentTarget).on("click", function(e){ e.preventDefault(); hasHeldDownClick = false; $(e.currentTarget).off("click")})
         try 
         {
           setCssOnElement(operatingthumbnail)
