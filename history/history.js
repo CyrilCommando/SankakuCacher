@@ -65,6 +65,16 @@ title:"Hide"})
 
 // createImagefromUrl(base64)
 
+function editBase64(postid, base64 = "data:,")
+{
+  var options = {}
+  options[''+postid]= base64;
+  chrome.storage.local.set(options, function()
+  {
+    console.log(postid + " base64 edited")
+  })
+}
+
 function updateAllImagesWithTags(limit = 15, concurrent = 5, offset = 0, menu)
 {
   chrome.storage.local.get([menu], async function(result) {
@@ -128,15 +138,21 @@ function updateAllImagesWithTags(limit = 15, concurrent = 5, offset = 0, menu)
 
           if (xprval)
           {
+            pagesDownloaded --
             break;
           }
 
         }
-        else break;
+        else 
+        {
+          pagesDownloaded--; 
+          break;
+        }
       }
 
     setHistoryMenu(operlist, menu)
     console.log("local operlist var cleared")
+    console.log(pagesDownloaded + " images updated")
     console.log("COMPLETED")
 })
 }
@@ -244,9 +260,9 @@ function setHistoryMenu(HistoryMenu, menu)
 {
   mObj = {}
   mObj[''+menu]= HistoryMenu;
-  chrome.storage.local.set(mObj)
+  chrome.storage.local.set(mObj, function() {console.log("set history menu")})
   console.log("function setHistoryMenu executed")
-  console.log("set history menu")
+  // console.log("set history menu")
 }
 
 class History
@@ -611,16 +627,16 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
         //for each historymenuobject in result
         for(let i=0; i < HistoryMenuObject.list.length; i++){
 
-          if(!historyMenuContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i]))
+          if(!historyMenuArrayContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i]))
           {
             HistoryMenuArray.list.push(HistoryMenuObject.list[i])
           }
           else
           {
-            if( (historyMenuContainsPostWithALesserDate(HistoryMenuArray, HistoryMenuObject.list[i])) && (historyMenuContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i])) )
+            if( (historyMenuArrayContainsPostWithALesserDate(HistoryMenuArray, HistoryMenuObject.list[i])) && (historyMenuArrayContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i])) )
             {
               // console.log("did we ever get here?")
-              HistoryMenuArray.list.splice(whichOneIsOfALesserDate(HistoryMenuArray, HistoryMenuObject.list[i]), 1)
+              HistoryMenuArray.list.splice(whichInHistoryMenuArrayIsOfALesserDate(HistoryMenuArray, HistoryMenuObject.list[i]), 1)
               HistoryMenuArray.list.push(HistoryMenuObject.list[i])
             }
           }
@@ -756,7 +772,7 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
 /**
  * returns index
  */
-function whichOneIsOfALesserDate(HistoryMenu, PostObject)
+function whichInHistoryMenuArrayIsOfALesserDate(HistoryMenu, PostObject)
 {
   var thisOne;
 
@@ -775,7 +791,7 @@ function whichOneIsOfALesserDate(HistoryMenu, PostObject)
  * HistoryMenu = HistoryMenu
  * PostObject = PostObject
  */
-function historyMenuContainsPostWithTheSameURL(HistoryMenu, PostObject)
+function historyMenuArrayContainsPostWithTheSameURL(HistoryMenu, PostObject)
 {
   var containsTheUrl = false;
   HistoryMenu.list.forEach(PostOBJ => {
@@ -787,11 +803,11 @@ function historyMenuContainsPostWithTheSameURL(HistoryMenu, PostObject)
   return containsTheUrl;
 }
 
-function historyMenuContainsPostWithALesserDate(HistoryMenu, PostObject)
+function historyMenuArrayContainsPostWithALesserDate(HistoryMenu, PostObject)
 {
   var containsLesserDate = false;
   HistoryMenu.list.forEach(PostOBJ => {
-    if (PostOBJ.date < PostObject.date)
+    if ((PostOBJ.url == PostObject.url) && (PostOBJ.date < PostObject.date))
     {
       containsLesserDate = true;
     }
@@ -890,9 +906,45 @@ function updateImagewithBase64(pid)
 {
   chrome.storage.local.get([pid], function(result){
     //console.log(result)
-    document.getElementById(pid).src = "data:image/png;base64,"+result[pid];
+    document.getElementById(pid).src = function(result, pid)
+    {
+      if (result[pid].match(/^data:image\/(jpeg);base64,/))
+      {
+        return result[pid]
+      }
+      else return "data:image/png;base64,"+result[pid];
+    }(result, pid)
   })
 }
+
+/**make XMLHttpRequest for sample image base64*/
+  function newxmlHttpReq(url)
+  {
+    var xhr = new XMLHttpRequest();
+  
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
+    xhr.send();
+    return new Promise(function (resolve, reject) {
+    xhr.onreadystatechange = function() {
+      if (this.readyState !== 4) return;
+      if (this.status >= 200 && this.status < 300) {
+  
+        var reader = new FileReader();
+        reader.readAsDataURL(this.response); 
+        reader.onloadend = function() {
+            var base64data = reader.result;                
+            // document.getElementById("25333109").src = base64data;
+            resolve(base64data)
+        }
+      }
+      else{
+        console.log("request failed")
+        reject("data:,")
+      }
+  }
+  });
+  }
 
 function createImagefromUrl(url)
 {
