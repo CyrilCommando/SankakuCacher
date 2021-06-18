@@ -23,10 +23,10 @@ function getImageTags(docu)
     tag_array.push ({"type": "studio_tag", "tag": $(element).find("a").text().slice (0, -1)})
   });
   metadatatags.forEach(element => {
-    if ($(element).find("a").text().slice (0, -1).match("^animated"))
-    {
+    // if ($(element).find("a").text().slice (0, -1).match("^animated"))
+    // {
       tag_array.push ({"type": "metadata_tag", "tag": $(element).find("a").text().slice (0, -1)})
-    }
+    // }
   });
   tag_array.forEach(element => {
     element.tag = element.tag.replace(/ /g, "_")

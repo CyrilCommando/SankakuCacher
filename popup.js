@@ -148,7 +148,7 @@ function delete_all_settings()
 function default_settings()
 {
     var aso = new AdvancedSettingsObject();
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 50, "mass_download_concurrentlimit": 15, "mass_download_offset": 0})
+    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 50, "mass_download_concurrentlimit": 15, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false})
     chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 

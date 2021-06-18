@@ -33,7 +33,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       if ($("#image").is("img"))
       {
-        document.getElementById("image").crossOrigin = "anonymous"
         $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)})
       }
       
@@ -505,7 +504,7 @@ async function createBase64Image(type, page = undefined) {
             console.log("b64 img created")
             // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
             base64data = dataURL;
-            setCssOnElement(document.getElementsByClassName("preview_image_or_video_tag")[0], "red", true)
+            setCssOnElement(document.getElementById("image"), "red", true)
           }
 
         }
@@ -554,12 +553,62 @@ function updateProgressBar(){
 
         //If finished buffering buffering quit calling it
         if (buffered >= videoDuration) {
-          readyNow = true;
-                clearInterval(this.watchBuffer);
+          $("#vidp").prop("currentTime", 0)
+          var x = $("#vidp")
+          $("#vidp").remove()
+          console.log("removed")
+            setTimeout(() => {
+              $("#preview-close_button").before(x)
+              document.getElementById("vidp").play()
+              mx = setInterval(newFunction, 1500)
+            }, 500);
+
+
+
+          clearInterval(watchBuffer);
+          setTimeout(() => {
+            readyNow = true;
+            if ((!video_Event_Fired_Once) && (document.getElementsByClassName("preview_image_or_video_tag")[0].currentTime > 0) && (readyNow)) 
+            {
+              createHistoryMenuEntry(preview_postid, "Previewed", "preview", xhr_received_page)
+              readyNow = false;
+              video_Event_Fired_Once = true;
+            }
+          }, 5000);
         }
     }
 };
 var watchBuffer;
+
+var mx;
+var timesetnumber = 0;
+var factor = 2
+function newFunction()
+{
+  if (timesetnumber == 0)
+  {
+    document.getElementById("vidp").currentTime = 0
+  }
+  else 
+  {
+    if (document.getElementById("vidp").currentTime = 5 + (factor) > document.getElementById("vidp").duration)
+    {
+      document.getElementById("vidp").currentTime = 0
+    }
+    else
+    {
+      document.getElementById("vidp").currentTime = 5 + (factor)
+    }
+  }
+  timesetnumber++
+  factor++
+  console.log("inter")
+  if (timesetnumber == 10) {
+    clearInterval(mx)
+    timesetnumber = 0;
+    factor = 2
+  }
+}
 
 function obtainSynchronous(vto)
 {
@@ -638,7 +687,7 @@ function makeVideoPlayer(e)
   $(preview).attr("class", "preview_image_or_video_tag")
   $(preview).attr("referrerpolicy", "no-referrer")
   $(preview).attr("controls", "")
-  $(preview).attr("autoplay", "")
+  $(preview).prop("autoplay", true)
   $(preview).attr("loop", "")
   $(preview).attr("crossorigin", "anonymous")
   $(preview).attr("id", "vidp")
@@ -796,6 +845,7 @@ $(".thumblink").on("mousedown", function(e)
         try 
         {
           setCssOnElement(operatingthumbnail)
+          preview_postid = getPostIdOfHoveredImage(operatingthumbnail.currentTarget)
           addPreviewImg(operatingthumbnail)
         } 
         catch (error) 
@@ -826,6 +876,8 @@ $(".thumblink").on("mouseup", function(e)
 })
 
 }
+
+var preview_postid;
 
 function setCssOnElement(element, color = "springgreen", isAnActualElement = false)
 {
