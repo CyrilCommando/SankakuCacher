@@ -40,28 +40,64 @@ var operlist;
 
 document.getElementById("menu").onchange = function(e) {
   pages_added = false; 
+  search_bar = false;
   populateList()
 }
 
+document.getElementById("showhidden").onchange = function(e)
+{
+  populateList(current_page, search_bar, true)
+}
+
 populateList()
+
 
 document.getElementById("sb").oninput = function(e) {
   if (e.target.value == "") {
     pages_added = false;
     search_bar = false; sb_text = e.target.value; populateList(); 
   } else {
-    search_bar = true; sb_text = e.target.value; populateList(1, true);
+    
+    if (!lessthan5mssincelastkeypressed)
+    {
+      try {
+        clearTimeout(timeout2)
+        clearTimeout(timeout)
+      } catch (error) {
+    
+      }
+      timeout2 = setTimeout(() => {
+        lessthan5mssincelastkeypressed = true;
+      }, 799);
+
+      timeout = setTimeout(() => {
+        if (lessthan5mssincelastkeypressed)
+        {
+          search_bar = true; sb_text = e.target.value; populateList(1, true);
+          lessthan5mssincelastkeypressed = false;
+        }
+      }, 800);
+}
+
   }
   }
 
 chrome.contextMenus.remove("Hide")
+chrome.contextMenus.remove("Reset Image Data")
 
-chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Hide", onclick: function ()
+chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Hide", onclick: function ()
 {
   editHistoryMenuEntry(document.getElementById("menu").value, image_postid, true)
 }
 , 
 title:"Hide"})
+
+chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Reset Image Data", onclick: function ()
+{
+  editBase64(image_postid)
+}
+, 
+title:"Reset Image Data"})
 
 // createImagefromUrl(base64)
 
@@ -104,10 +140,12 @@ function updateAllImagesWithTags(limit = 15, concurrent = 5, offset = 0, menu)
 
         var xprval = false;
 
-          var xPr = await xmlhttpReq(PostObject.pid, undefined, false, false).catch(reason => {
-            console.log(reason)
-            xprval = true;
-          })
+          await stupidPromiseBullcrap().then(async function(uselesspromise) {
+            await xmlhttpReq(PostObject.pid, undefined, false, false).catch(reason => {
+              console.log(reason)
+              xprval = true;
+            })
+          }) 
           console.log("xhr resolved!")
 
           //pause
@@ -155,6 +193,17 @@ function updateAllImagesWithTags(limit = 15, concurrent = 5, offset = 0, menu)
     console.log(pagesDownloaded + " images updated")
     console.log("COMPLETED")
 })
+}
+
+async function stupidPromiseBullcrap()
+{
+  console.log("waiting..(attempt to mitigate rate limit)")
+  return new Promise(function (resolve, reject)
+  {
+    setTimeout(() => {
+      resolve()
+    }, 1000);
+  })
 }
 
 function makerequest(url, method) {
@@ -230,16 +279,29 @@ function getHistoryMenuEntries()
 
 function editHistoryMenuEntry(menu, postid, hidden = undefined, tagarr = undefined, newpostid = undefined)
 {
-  chrome.storage.local.get([menu], function(result) {
-      operlist = new History(result[menu].list);
+  if (menu == "All")
+  {
+    chrome.storage.local.get(["Viewed", "Downloaded", "Previewed"], function(result) {
+      operlist = combineHistoryMenuArrays(result)
       operlist.list.forEach(historyEntry => {
         if ((hidden != undefined) && (historyEntry.pid == postid))
         {
-          historyEntry.hidden = hidden
-          mObj = {}
-          mObj[''+menu]= operlist;
-          chrome.storage.local.set(mObj)
-          console.log("hid "+postid+": "+hidden)
+          for (const HistoryMenu in result) {
+            if (Object.hasOwnProperty.call(result, HistoryMenu)) {
+              var HMArray = result[HistoryMenu];
+              HMArray.list.forEach(HMEntry => {
+                if(HMEntry.pid == postid)
+                {
+                  HMEntry.hidden = hidden
+                  mObj = {}
+                  console.log(""+HistoryMenu)
+                  mObj[''+HistoryMenu]= HMArray;
+                  chrome.storage.local.set(mObj)
+                  console.log("hid "+postid+": "+hidden)
+                }
+              });
+            }
+          }
         }
         if ((tagarr != undefined) && (historyEntry.pid == postid))
         {
@@ -254,6 +316,34 @@ function editHistoryMenuEntry(menu, postid, hidden = undefined, tagarr = undefin
         }
       });
   })
+  }
+  else
+  {
+    chrome.storage.local.get([menu], function(result) {
+        operlist = new History(result[menu].list);
+        operlist.list.forEach(historyEntry => {
+          if ((hidden != undefined) && (historyEntry.pid == postid))
+          {
+            historyEntry.hidden = hidden
+            mObj = {}
+            mObj[''+menu]= operlist;
+            chrome.storage.local.set(mObj)
+            console.log("hid "+postid+": "+hidden)
+          }
+          if ((tagarr != undefined) && (historyEntry.pid == postid))
+          {
+            historyEntry.tags = tagarr
+            console.log(+postid+" tags updated")
+          }
+          if ((newpostid != undefined) && (historyEntry.pid == postid))
+          {
+            historyEntry.pid = newpostid
+            setHistoryMenu(operlist, menu)
+            console.log("postid "+postid+" set to "+newpostid)
+          }
+        });
+    })
+  }
 }
 
 function setHistoryMenu(HistoryMenu, menu)
@@ -326,6 +416,11 @@ function createMenuBarOpenButton(posturl)
  */
 function checkSize(e)
 {
+
+  if ($(e.firstChild).is("img"))
+  {
+
+
   // e = document.getElementById(e.id)
   console.log("checksize")
   var h = e.getBoundingClientRect().top
@@ -385,6 +480,75 @@ function checkSize(e)
     {
       //$(e).css("left", lp); //isNotFullscreenPositionHorizontal = lp;
     }
+
+  }
+
+  else if ($(e.firstChild).is("video"))
+  {
+
+
+    // e = document.getElementById(e.id)
+    console.log("checksize")
+    var h = e.getBoundingClientRect().top
+    var lp = e.getBoundingClientRect().left
+    var rp = e.getBoundingClientRect().right
+    var bp = e.getBoundingClientRect().bottom
+    console.log(h)
+    console.log(lp)
+
+    if (e.firstChild.getBoundingClientRect().width > e.firstChild.getBoundingClientRect().height)
+    {
+      var use_transform_ratio = transform_ratio_ws
+    }
+    else{
+      var use_transform_ratio = transform_ratio
+    }
+
+    var transformed_image_height = e.firstChild.getBoundingClientRect().height * use_transform_ratio + ((3 * use_transform_ratio) * 2)
+    var transformed_image_width = e.firstChild.getBoundingClientRect().width * use_transform_ratio + ((3 * use_transform_ratio) * 2)
+
+      //assign vertical position
+      //check if vertical position is out of bounds
+      //(treat size as box)
+      if ((use_transform_ratio * e.firstChild.getBoundingClientRect().height - e.firstChild.getBoundingClientRect().height) / 2 > h)
+      {                       //219.7                  156           54.925
+        $(e).css("top", Math.abs(((transformed_image_height - e.firstChild.getBoundingClientRect().height) / 2) - h) ) 
+        //isNotFullscreenPositionVertical = h;
+      }
+      else if(bp + (use_transform_ratio * e.firstChild.getBoundingClientRect().height - e.firstChild.getBoundingClientRect().height ) /2 >window.innerHeight)
+      {
+        $(e).css("bottom", Math.abs(bp + (transformed_image_height - e.firstChild.getBoundingClientRect().height) /2 - window.innerHeight));
+        //isNotFullscreenPositionHorizontal = lp;
+      }
+      else
+      {
+        //$(e).css("top", h); //isNotFullscreenPositionVertical = h; 
+      }
+      
+      //
+
+      
+      //
+
+      //assign horizontal position
+      //check if horizontal position is out of bounds
+      if ((use_transform_ratio* e.firstChild.getBoundingClientRect().width - e.firstChild.getBoundingClientRect().width) /2 > lp)
+      {
+        $(e).css("left", Math.abs((transformed_image_width - e.firstChild.getBoundingClientRect().width) / 2) - lp)
+        //isNotFullscreenPositionHorizontal = lp;
+      }
+      else if(rp + (use_transform_ratio * e.firstChild.getBoundingClientRect().width - e.firstChild.getBoundingClientRect().width) /2 >$(window).width())
+      {
+        $(e).css("right", Math.abs(rp + (transformed_image_width - e.firstChild.getBoundingClientRect().width) /2 - $(window).width()));
+        //isNotFullscreenPositionHorizontal = lp;
+      }
+      else
+      {
+        //$(e).css("left", lp); //isNotFullscreenPositionHorizontal = lp;
+      }
+
+  }
+
 }
 
 /**
@@ -392,6 +556,9 @@ function checkSize(e)
  */
 function toggleTransform(element)
 {
+  if ($(element.firstChild).is("img"))
+  {
+
   transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * ws_transform_ratio)
   transform_ratio = 3.0//window.outerWidth / 738
   var toggled = false;
@@ -448,6 +615,69 @@ function toggleTransform(element)
     //toggled=false;
     addDynamicToggledVariableToObject(element.id, false)
   }
+
+}
+
+else if ($(element.firstChild).is("video"))
+{
+  transform_ratio_ws = (window.outerWidth / 738) + (window.outerWidth / 738 * ws_transform_ratio)
+  transform_ratio = 3.0//window.outerWidth / 738
+  var toggled = false;
+  for (const key in dynamicobjectobject) {
+    if (key == element.id) 
+    {
+      toggled = dynamicobjectobject[key];
+    }
+    else if (key != element.id)
+    {
+      continue;
+    }
+  }
+  if (!toggled)
+  {
+    if (element.firstChild.getBoundingClientRect().width > element.firstChild.getBoundingClientRect().height)
+    {
+      //while bigger than the screen (height)
+      while (element.firstChild.getBoundingClientRect().height * transform_ratio_ws + ((3 * transform_ratio_ws) * 2) > window.innerHeight) {
+        transform_ratio_ws -= 0.01
+      }
+      //while bigger than the screen (width)
+      while (element.firstChild.getBoundingClientRect().width * transform_ratio_ws + ((3 * transform_ratio_ws) * 2) > window.innerWidth) {
+        transform_ratio_ws -= 0.01
+      }
+      //while bigger than full image res
+      while (element.firstChild.getBoundingClientRect().width * transform_ratio_ws + ((3 * transform_ratio_ws) * 2) > element.firstChild.videoWidth) {
+        transform_ratio_ws -= 0.01
+      }
+      $(element).attr("style", "transform: scale("+transform_ratio_ws+"); position: relative; z-index: 2;")
+    }
+    else{
+      //while bigger than the screen
+      while (element.firstChild.getBoundingClientRect().height * transform_ratio + ((3 * transform_ratio) * 2) > window.innerHeight) {
+        transform_ratio -= 0.01
+      }
+      //while bigger than full image res
+      while (element.firstChild.getBoundingClientRect().height * transform_ratio + ((3 * transform_ratio) * 2) > element.firstChild.videoHeight) {
+        transform_ratio -= 0.01
+      }
+      $(element).attr("style", "transform: scale("+transform_ratio+"); position: relative; z-index: 2;")
+    }
+    var img = $(element).children("video").attr("style", "outline: 3px solid yellow;")
+    //toggled=true;
+    addDynamicToggledVariableToObject(element.id, true)
+    // setTimeout(() => {
+      checkSize(element)
+    // }, 65);
+  }
+  else if (toggled)
+  {
+    $(element).attr("style", "")
+    $(element).children("video").attr("style", "")
+    //toggled=false;
+    addDynamicToggledVariableToObject(element.id, false)
+  }
+}
+
 }
 
 function addDynamicToggledVariableToObject(id, toggled)
@@ -556,9 +786,9 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
       // }
 
       return_Limited_Array(selectedpage, use_array).forEach(obj => {
-        if (!obj.hidden)
+        if (!obj.hidden || document.getElementById("showhidden").checked)
         {
-          image = new Image();
+          var image = new Image();
           image.id = obj.pid
           try {
             var tTitle = []
@@ -573,7 +803,7 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
           parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
           $(parent_div).append(image)
           $("#mppane").append(parent_div)
-          updateImagewithBase64(obj.pid)
+          updateImagewithBase64(obj.pid, image.className, image.title)
           mb = createPreviewMenuBar(obj.posturl)
           $("#"+obj.pid+"_parent").append(mb)
         }
@@ -593,6 +823,7 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
           if (e.which == 3)
           {
             image_postid = e.currentTarget.id;
+            console.log(image_postid)
           }
         })
       });
@@ -605,6 +836,39 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
   else {chrome.storage.local.get(["Viewed", "Downloaded", "Previewed"], function (result) {noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, sb, sbpersistent, result)})}
 }
 
+function combineHistoryMenuArrays(result)
+{
+  var HistoryMenuArray = {};
+  HistoryMenuArray.list = [];
+  console.log(result)
+  for (const HistoryMenu in result) {
+    if (Object.hasOwnProperty.call(result, HistoryMenu)) {
+      const HistoryMenuObject = result[HistoryMenu];
+      
+      //for each historymenuobject in result
+      for(let i=0; i < HistoryMenuObject.list.length; i++){
+
+        if(!historyMenuArrayContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i]))
+        {
+          HistoryMenuArray.list.push(HistoryMenuObject.list[i])
+        }
+        else
+        {
+          if( (historyMenuArrayContainsPostWithALesserDate(HistoryMenuArray, HistoryMenuObject.list[i])) && (historyMenuArrayContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i])) )
+          {
+            // console.log("did we ever get here?")
+            HistoryMenuArray.list.splice(whichInHistoryMenuArrayIsOfALesserDate(HistoryMenuArray, HistoryMenuObject.list[i]), 1)
+            HistoryMenuArray.list.push(HistoryMenuObject.list[i])
+          }
+        }
+        
+      }
+      
+    }
+  }
+  return HistoryMenuArray;
+}
+
 /**
  * a fitting name for a function in javascript
  */
@@ -614,38 +878,13 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
     document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
   }
   // history_entry_list = result
-  var HistoryMenuArray = {};
-  HistoryMenuArray.list = [];
-  console.log(result)
+  var HistoryMenuArray;
+
   try {
     //sort array by date
     //for each history menu in result
-    for (const HistoryMenu in result) {
-      if (Object.hasOwnProperty.call(result, HistoryMenu)) {
-        const HistoryMenuObject = result[HistoryMenu];
-        
-        //for each historymenuobject in result
-        for(let i=0; i < HistoryMenuObject.list.length; i++){
 
-          if(!historyMenuArrayContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i]))
-          {
-            HistoryMenuArray.list.push(HistoryMenuObject.list[i])
-          }
-          else
-          {
-            if( (historyMenuArrayContainsPostWithALesserDate(HistoryMenuArray, HistoryMenuObject.list[i])) && (historyMenuArrayContainsPostWithTheSameURL(HistoryMenuArray, HistoryMenuObject.list[i])) )
-            {
-              // console.log("did we ever get here?")
-              HistoryMenuArray.list.splice(whichInHistoryMenuArrayIsOfALesserDate(HistoryMenuArray, HistoryMenuObject.list[i]), 1)
-              HistoryMenuArray.list.push(HistoryMenuObject.list[i])
-            }
-          }
-          
-        }
-        
-      }
-    }
-
+    HistoryMenuArray = combineHistoryMenuArrays(result)
 
     HistoryMenuArray.list.sort(function(a, b){return b.date - a.date});
 
@@ -722,9 +961,9 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
     // }
 
     return_Limited_Array(selectedpage, use_array).forEach(obj => {
-      if (!obj.hidden)
+      if (!obj.hidden || document.getElementById("showhidden").checked)
       {
-        image = new Image();
+        var image = new Image();
         image.id = obj.pid
         try {
           var tTitle = []
@@ -739,7 +978,7 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
         parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
         $(parent_div).append(image)
         $("#mppane").append(parent_div)
-        updateImagewithBase64(obj.pid)
+        updateImagewithBase64(obj.pid, image.className, image.title)
         mb = createPreviewMenuBar(obj.posturl)
         $("#"+obj.pid+"_parent").append(mb)
       }
@@ -759,6 +998,7 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
         if (e.which == 3)
         {
           image_postid = e.currentTarget.id;
+          console.log(image_postid)
         }
       })
     });
@@ -807,7 +1047,7 @@ function historyMenuArrayContainsPostWithALesserDate(HistoryMenu, PostObject)
 {
   var containsLesserDate = false;
   HistoryMenu.list.forEach(PostOBJ => {
-    if ((PostOBJ.url == PostObject.url) && (PostOBJ.date < PostObject.date))
+    if ((PostOBJ.posturl == PostObject.posturl) && (PostOBJ.date < PostObject.date))
     {
       containsLesserDate = true;
     }
@@ -902,14 +1142,53 @@ current_page = 1;
 
 }
 
-function updateImagewithBase64(pid)
+function updateImagewithBase64(pid, classname, title)
 {
   chrome.storage.local.get([pid], function(result){
     //console.log(result)
     document.getElementById(pid).src = function(result, pid)
     {
-      if (result[pid].match(/^data:image\/(jpeg);base64,/))
+      if (result[pid].match(/^data:(image|video)\/(jpeg|gif|mp4|webm);base64,/))
       {
+        if (result[pid].match(/^data:(video)\/(mp4|webm);base64,/))
+        {
+          $("#"+pid).remove()
+          // image = new HTMLVideoElement();
+          // image.id = pid
+
+          // image.title = title;
+
+          // image.className = classname
+          
+          var video = $("<video></video>");
+          $(video).attr({"id": pid, "title": title, "class": classname, "src": result[pid], "controls": false, "loop": true, autoplay: true})
+          $(video).prop("muted", true)
+
+          $("#"+pid+"_parent").prepend(video)
+
+          // document.getElementById(pid).muted = true;
+
+          var preview_images = Array.prototype.slice.call(document.getElementsByClassName("preview_image"))
+
+          // preview_images.forEach(element => {
+            if ($("#"+pid).is("video"))
+            {
+              document.getElementById(pid).onclick = function(e) {
+                e.preventDefault();
+                toggleTransform(e.currentTarget.parentElement)
+              }
+              document.getElementById(pid).onmousedown = function(e)
+              {
+                if (e.which == 3)
+                {
+                  image_postid = e.currentTarget.id;
+                  console.log(image_postid)
+                }
+              }
+            }
+          // });
+
+        }
         return result[pid]
       }
       else return "data:image/png;base64,"+result[pid];
