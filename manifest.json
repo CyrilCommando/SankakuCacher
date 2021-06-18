@@ -1,7 +1,7 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. More functionality soon.",
-  "version": "1.7",
+  "version": "1.8",
   "author": "CyrilCommando",
   "web_accessible_resources": [
     "animation.css",
