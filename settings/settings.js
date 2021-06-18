@@ -19,6 +19,12 @@ var autofavattr = document.getElementById("autofav");
 /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
 
+//animated gifs onclick
+document.getElementById("HMenu_downloadanimatedgifs").onclick = function() {doc_onchanged(document.getElementById("HMenu_downloadanimatedgifs"))}
+
+//full videos onclick
+document.getElementById("HMenu_downloadfullvideos").onclick = function() {doc_onchanged(document.getElementById("HMenu_downloadfullvideos"))}
+
 class AdvancedSettingsObject
 {
     constructor(param1 = false, param2 = false) {
@@ -75,17 +81,17 @@ function openLinkWithTags()
 
 function go(){
 
-        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav"], function(result) {
+        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav", "HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos"], function(result) {
             console.log('extension enabled: ' + result.enabled)
             console.log('arrangefiles value currently is ' + result.arrangefiles)
             console.log('savefolder value currently is ' + result.savefolder);
             console.log('previous search value currently is ' + result.prevsearch);
             setthethings(result.enabled, result.arrangefiles, result.savefolder);
-            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav);
+            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav, result.HMenu_downloadanimatedgifs, result.HMenu_downloadfullvideos);
           })
 }
 
-function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8)
+function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10)
 {
     $("#enabled").attr("checked", n1);
     $("#arrangefiles").attr("checked", n2);
@@ -99,6 +105,8 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8)
     $("#newwindow").attr("checked", n6)
     $("#mp4swebms").attr("checked", n7)
     $("#middleclickfav").attr("checked", n8)
+    $("#HMenu_downloadanimatedgifs").attr("checked", n9)
+    $("#HMenu_downloadfullvideos").attr("checked", n10)
 }
 
 function delete_all_settings()
@@ -157,6 +165,16 @@ function doc_onchanged(htmlelement){
             // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             //     chrome.tabs.sendMessage(tabs[0].id, {message: "change_middleclick_variable"})
             // }) 
+            break;
+
+        case "HMenu_downloadanimatedgifs":
+
+            chrome.storage.local.set({"HMenu_downloadanimatedgifs": htmlelement.checked})
+            break;
+
+        case "HMenu_downloadfullvideos":
+
+            chrome.storage.local.set({"HMenu_downloadfullvideos": htmlelement.checked})
             break;
     }
 }
