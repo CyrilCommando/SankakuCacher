@@ -6,6 +6,7 @@ function getImageTags(docu)
   var genretags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-genre"))
   var studiotags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-studio"))
   var metadatatags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-medium"))
+  var generaltags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-general"))
   var tag_array = [];
   charactertags.forEach(element => {
     tag_array.push ({"type": "character_tag", "tag": $(element).find("a").text().slice (0, -1)})
@@ -27,6 +28,9 @@ function getImageTags(docu)
     // {
       tag_array.push ({"type": "metadata_tag", "tag": $(element).find("a").text().slice (0, -1)})
     // }
+  });
+  generaltags.forEach(element => {
+    tag_array.push ({"type": "general_tag", "tag": $(element).find("a").text().slice (0, -1)})
   });
   tag_array.forEach(element => {
     element.tag = element.tag.replace(/ /g, "_")
