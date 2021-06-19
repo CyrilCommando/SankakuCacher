@@ -8,6 +8,9 @@ var downloadLink;
 
 var dynamicobjectobject = {};
 
+//WHY THE FUCK DIDNT I DO THIS SOONER
+var kvp = {};
+
 var image_postid;
 
 var current_page = 1;
@@ -37,6 +40,8 @@ var lessthan5mssincelastkeypressed = false;
 var xhr_received_page;
 
 var operlist;
+
+var base64data;
 
 document.getElementById("menu").onchange = function(e) {
   pages_added = false; 
@@ -84,6 +89,7 @@ document.getElementById("sb").oninput = function(e) {
 
 chrome.contextMenus.remove("Hide")
 chrome.contextMenus.remove("Reset Image Data")
+// chrome.contextMenus.remove("ResetR")
 
 chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Hide", onclick: function ()
 {
@@ -98,6 +104,27 @@ chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [
 }
 , 
 title:"Reset Image Data"})
+
+// chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "ResetR", onclick: function ()
+// {
+//   chrome.storage.local.get([image_postid], async function(result)
+//   {
+//     if (result[image_postid].match(/^data:(video|image)\/(mp4|webm|gif);base64,/))
+//     {
+//       await xmlhttpReq(image_postid, undefined, false, false).then(async function(fulfilled){
+//         await createBase64Image(xhr_received_page, "image").then(async function (uselessrval2){
+//           editBase64(image_postid, base64data)
+//         })
+//       })
+//     }
+//     else if (result[image_postid].match(/^data:(image)\/(jpeg|gif);base64,/))
+//     {
+
+//     }
+//   })
+// }
+// , 
+// title:"Reset>Reobtain Image Data"})
 
 // createImagefromUrl(base64)
 
@@ -206,6 +233,73 @@ async function stupidPromiseBullcrap()
   })
 }
 
+async function createBase64Image(page = xhr_received_page, obtainType) {
+
+        //if is a video
+        if ($(page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src") != undefined)
+        {
+
+          if (obtainType == "animated")
+          {
+              await newxmlHttpReq($(page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")).catch(async function(rejectedval){
+                console.log(rejectedval)
+                await newxmlHttpReq($(page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
+              })
+          }
+          
+          else if (obtainType == "image")
+          {
+            var img = document.getElementById("image")
+            var canvas = document.createElement("canvas");
+
+
+            canvas.width = img.videoWidth;
+            canvas.height = img.videoHeight;
+
+  
+            // Copy the image contents to the canvas
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+  
+            var dataURL = canvas.toDataURL("image/jpeg", 1);
+            console.log("b64 img created")
+            // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
+            base64data = dataURL;
+          }
+
+        }
+
+        //not a video
+        else if ($(page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src") == undefined)
+        {
+
+          if (obtainType == "animated")
+          {
+              await newxmlHttpReq(document.getElementById("image-link").firstChild.nextSibling.src).catch(async function(rejectedval){
+                await newxmlHttpReq(document.getElementById("image-link").firstChild.nextSibling.src)
+              })
+          }
+          
+          else if (obtainType == "image")
+          {
+            var img = document.getElementById("image")
+            var canvas = document.createElement("canvas");
+ 
+              canvas.width = img.naturalWidth;
+              canvas.height = img.naturalHeight;
+  
+            // Copy the image contents to the canvas
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+  
+            var dataURL = canvas.toDataURL("image/jpeg", 1);
+            console.log("b64 img created")
+            base64data = dataURL;
+          }
+
+        }  
+}
+
 function makerequest(url, method) {
 
 	// Create the XHR request
@@ -292,12 +386,24 @@ function editHistoryMenuEntry(menu, postid, hidden = undefined, tagarr = undefin
               HMArray.list.forEach(HMEntry => {
                 if(HMEntry.pid == postid)
                 {
-                  HMEntry.hidden = hidden
+                  var h;
+                  if (HMEntry.hidden == true)
+                  {
+                    HMEntry.hidden = false
+                    h = false
+                    $("#"+postid).attr("style", "")
+                  }
+                  else
+                  {
+                    HMEntry.hidden = hidden
+                    h = hidden
+                    $("#"+postid).attr("style", "outline: 3px groove red;")
+                  }
                   mObj = {}
                   console.log(""+HistoryMenu)
                   mObj[''+HistoryMenu]= HMArray;
                   chrome.storage.local.set(mObj)
-                  console.log("hid "+postid+": "+hidden)
+                  console.log("hid "+postid+": "+h)
                 }
               });
             }
@@ -324,11 +430,23 @@ function editHistoryMenuEntry(menu, postid, hidden = undefined, tagarr = undefin
         operlist.list.forEach(historyEntry => {
           if ((hidden != undefined) && (historyEntry.pid == postid))
           {
-            historyEntry.hidden = hidden
+            var h;
+            if (historyEntry.hidden == true)
+            {
+              historyEntry.hidden = false
+              h = false
+              $("#"+postid).attr("style", "")
+            }
+            else
+            {
+              historyEntry.hidden = hidden
+              h = hidden
+              $("#"+postid).attr("style", "outline: 3px groove red;")
+            }
             mObj = {}
             mObj[''+menu]= operlist;
             chrome.storage.local.set(mObj)
-            console.log("hid "+postid+": "+hidden)
+            console.log("hid "+postid+": "+h)
           }
           if ((tagarr != undefined) && (historyEntry.pid == postid))
           {
@@ -556,6 +674,28 @@ function checkSize(e)
  */
 function toggleTransform(element)
 {
+  if ($(element.firstChild).attr("style") == "outline: 3px solid yellow;")
+    {
+      if ($(element.firstChild).attr("style") == "outline: 3px groove red;")
+      {
+        kvp[element.id] = ""
+      }
+    }
+    else
+    {
+      kvp[element.id] = function() {
+        if ($(element.firstChild).attr("style") == undefined)
+        {
+          return ""
+        }
+        else
+        {
+          return $(element.firstChild).attr("style")
+        }
+      }()
+      console.log(kvp[element.id])
+    }
+
   if ($(element.firstChild).is("img"))
   {
 
@@ -601,9 +741,10 @@ function toggleTransform(element)
       }
       $(element).attr("style", "transform: scale("+transform_ratio+"); position: relative; z-index: 2;")
     }
-    var img = $(element).children("img").attr("style", "outline: 3px solid yellow;")
     //toggled=true;
     addDynamicToggledVariableToObject(element.id, true)
+
+    var img = $(element).children("img").attr("style", "outline: 3px solid yellow;")
     // setTimeout(() => {
       checkSize(element)
     // }, 65);
@@ -611,7 +752,7 @@ function toggleTransform(element)
   else if (toggled)
   {
     $(element).attr("style", "")
-    $(element).children("img").attr("style", "")
+    $(element).children("img").attr("style", kvp[element.id])
     //toggled=false;
     addDynamicToggledVariableToObject(element.id, false)
   }
@@ -662,9 +803,10 @@ else if ($(element.firstChild).is("video"))
       }
       $(element).attr("style", "transform: scale("+transform_ratio+"); position: relative; z-index: 2;")
     }
-    var img = $(element).children("video").attr("style", "outline: 3px solid yellow;")
     //toggled=true;
     addDynamicToggledVariableToObject(element.id, true)
+
+    var img = $(element).children("video").attr("style", "outline: 3px solid yellow;")
     // setTimeout(() => {
       checkSize(element)
     // }, 65);
@@ -672,7 +814,7 @@ else if ($(element.firstChild).is("video"))
   else if (toggled)
   {
     $(element).attr("style", "")
-    $(element).children("video").attr("style", "")
+    $(element).children("video").attr("style", kvp[element.id])
     //toggled=false;
     addDynamicToggledVariableToObject(element.id, false)
   }
@@ -793,7 +935,21 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
           try {
             var tTitle = []
             obj.tags.forEach(tagObj => {
-              tTitle.push(tagObj.tag)
+              if (tagObj.type == "metadata_tag")
+              {
+                if ((tagObj.tag.match("^animated")) )//|| (tagObj.tag.match("video$")))
+                {
+                  tTitle.push(tagObj.tag)
+                }
+              }
+              else if (tagObj.type == "general_tag")
+              {
+  
+              }
+              else
+              {
+                tTitle.push(tagObj.tag)
+              }
             });
             image.title = tTitle.join(" ")
           } catch (error) {
@@ -803,7 +959,7 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
           parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
           $(parent_div).append(image)
           $("#mppane").append(parent_div)
-          updateImagewithBase64(obj.pid, image.className, image.title)
+          updateImagewithBase64(obj.pid, image.className, image.title, obj.hidden)
           mb = createPreviewMenuBar(obj.posturl)
           $("#"+obj.pid+"_parent").append(mb)
         }
@@ -968,7 +1124,21 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
         try {
           var tTitle = []
           obj.tags.forEach(tagObj => {
-            tTitle.push(tagObj.tag)
+            if (tagObj.type == "metadata_tag")
+            {
+              if ((tagObj.tag.match("^animated")) )//|| (tagObj.tag.match("video$")))
+              {
+                tTitle.push(tagObj.tag)
+              }
+            }
+            else if (tagObj.type == "general_tag")
+            {
+
+            }
+            else
+            {
+              tTitle.push(tagObj.tag)
+            }
           });
           image.title = tTitle.join(" ")
         } catch (error) {
@@ -978,7 +1148,7 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
         parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
         $(parent_div).append(image)
         $("#mppane").append(parent_div)
-        updateImagewithBase64(obj.pid, image.className, image.title)
+        updateImagewithBase64(obj.pid, image.className, image.title, obj.hidden)
         mb = createPreviewMenuBar(obj.posturl)
         $("#"+obj.pid+"_parent").append(mb)
       }
@@ -1142,7 +1312,7 @@ current_page = 1;
 
 }
 
-function updateImagewithBase64(pid, classname, title)
+function updateImagewithBase64(pid, classname, title, hidden)
 {
   chrome.storage.local.get([pid], function(result){
     //console.log(result)
@@ -1163,6 +1333,11 @@ function updateImagewithBase64(pid, classname, title)
           var video = $("<video></video>");
           $(video).attr({"id": pid, "title": title, "class": classname, "src": result[pid], "controls": false, "loop": true, autoplay: true})
           $(video).prop("muted", true)
+
+          if (hidden)
+          {
+            $(video).attr("style", "outline: 3px groove red;")
+          }
 
           $("#"+pid+"_parent").prepend(video)
 
@@ -1189,9 +1364,20 @@ function updateImagewithBase64(pid, classname, title)
           // });
 
         }
+        if (hidden)
+        {
+          $("#"+pid).attr("style", "outline: 3px groove red;")
+        }
         return result[pid]
       }
-      else return "data:image/png;base64,"+result[pid];
+      else
+      {
+        if (hidden)
+        {
+          $("#"+pid).attr("style", "outline: 3px groove red;")
+        }
+        return "data:image/png;base64,"+result[pid];
+      } 
     }(result, pid)
   })
 }
