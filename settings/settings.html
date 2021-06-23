@@ -1,145 +1,147 @@
-<html>
-   <style>
-      @import url('https://fonts.googleapis.com/css2?family=Ultra&display=swap');
-      </style>   
-<head>
-   <link rel="stylesheet" href="settings.css" type="text/css">
+<html><head><style>
+   @import url('https://fonts.googleapis.com/css2?family=Ultra&display=swap');
+   </style>   
+
+<link rel="stylesheet" href="settings.css" type="text/css">
 </head>
 <body style="
+background-color: #0ec4ff;
+margin: 0;">
+<div id="menide" style="height: 0;width: fit-content;position: relative;left: 88px;top: 35px;">
+   <h1 style="
+      font-weight: normal;
+      font-family: Ultra;
+      font-size: 2.5em;
+      color: #69daff;">Settings</h1>
+</div>
+<div id="header" style="
+   height: 10.5em;
+   background-color: darkgray;
+   display: flex;
+   justify-content: space-around;">
+   <div id="scic" style="">
+      <img src="../squared.png" style="
+         position: relative;
+         top: 13px;
+         ">
+   </div>
+</div>
+<div id="mainbox" style="
    background-color: #0ec4ff;
-   margin: 0;">
-   <div id="menide" style="height: 0;width: fit-content;position: relative;left: 88px;top: 35px;">
-      <h1 style="
-         font-weight: normal;
-         font-family: Ultra;
-         font-size: 2.5em;
-         color: #69daff;">Settings</h1>
-   </div>
-   <div id="header" style="
-      height: 10.5em;
-      background-color: darkgray;
-      display: flex;
-      justify-content: space-around;">
-      <div id="scic" style="">
-         <img src="../squared.png" style="
+   /* height: -webkit-fill-available; */
+   margin: 8;
+   ">
+   <div id="settingsbox1" style="
+      margin: 8px;
+      width: 1131px;
+      height: fit-content;
+      margin-left: auto;
+      background-color: white;
+      margin-right: auto;
+      margin-top: 52px;
+      outline: auto;
+      outline-color: black;
+      "><div class="settings_block">
+         <h2 style="
             position: relative;
-            top: 13px;
-            ">
-      </div>
-   </div>
-   <div id="mainbox" style="
-      background-color: #0ec4ff;
-      /* height: -webkit-fill-available; */
-      margin: 8;
-      ">
-      <div id="settingsbox1" style="
-         margin: 8px;
-         width: 1131px;
-         height: fit-content;
-         margin-left: auto;
-         background-color: white;
-         margin-right: auto;
-         margin-top: 52px;
-         outline: auto;
-         outline-color: black;
-         "><div class="settings_block">
-            <h2 style="
-               position: relative;
-               text-align: center;
-               top: 22px;
-               font-family: ultra;
-               color: dimgrey;">Mass-Download</h2>
-            <form style="
-               padding: 39px;
-               margin-left: 30;
-               ">       
-               
-               
-               Tags to download: <input id="tagsdownload" type="text">
+            text-align: center;
+            top: 22px;
+            font-family: ultra;
+            color: dimgrey;">Mass-Download</h2>
+         <form style="
+            padding: 39px;
+            margin-left: 30;
+            ">       
+            
+            
+            Tags to download: <input id="tagsdownload" type="text">
 <br>
- Concurrent Download Limit (REQUIRED): 
-<input id="concurrentmax" type="text" style="
- width: 20px;
+Concurrent Download Limit (REQUIRED): 
+<input id="mass_download_concurrentlimit" type="text" style="
+width: 24px;
 "> <br>
 
-Limit: (REQUIRED): <input id="max" type="text" style="
- width: 20px;
+Limit: (REQUIRED): <input id="mass_download_limit" type="text" style="
+width: 24px;
 ">
 <br>
-Offset: <input id="offset" type="text" style="
- width: 20px;
+Offset: <input id="mass_download_offset" type="text" style="
+width: 24px;
 "> <br><br>
-               <input type="button" id="engagedownload" value="Download Tags">
-            </form>
-         </div><div class="settings_block">
-            <h2 style="
-               position: relative;
-               text-align: center;
-               top: 22px;
-               font-family: ultra;
-               color: dimgrey;
-               ">Extension</h2>
-            <form style="
-               padding: 39px;
-               margin-left: 30;
-               ">
-               New Window: <input id="newwindow" type="checkbox" title="When site shortcut is clicked, open in a new window" checked="checked"> <br> <br>
-               Automatically favorite downloaded images: <input id="autofav" type="checkbox"> 
-                Include automatically downloaded images: <input id="autofavinclude" type="checkbox" style=""> 
-               <br> 
-               <br>
-               Favorite on middle-click: <input id="middleclickfav" type="checkbox" checked="checked"> 
-               <br>
-               <br>
-               <b>Auto-Download options:</b> <br>
-               (Auto-Download:)Enabled: <input id="enabled" type="checkbox"> <br>
-               (Include)Download WEBM's/MP4's: <input id="mp4swebms" type="checkbox"> <br>
-               Arrange files: <input id="arrangefiles" type="checkbox"> <a id="advl" href="advanced.html"> Adv. </a> <br>
-               <br>
-               Save folder:<br>
-               <input id="savefolder" class="savefolder" type="text"> 
-               <br>
-               <input id="openfolder" type="button" value="Open Folder">
-               <br>
-               <br> 
-               Open Sankaku with tags:
-               <input type="text" id="tagstosearch">
-               <br>
-               <input type="button" id="searchtags" value="Open tab with tags"> <!-- W? <input type="checkbox" id="w"> !--> 
-               <br>
-               <br>
-               <input id="deletesettings" type="button" value="Delete Settings">
-               <br> <br> 
-               <input id="defaultsettings" type="button" value="Default Settings"><br> 
-            </form>
-         </div><div class="settings_block">
-            <h2 style="
-               position: relative;
-               text-align: center;
-               top: 22px;
-               font-family: ultra;
-               color: dimgrey;
-               ">History Menu</h2>
-            <form style="
-               padding: 39px;
-               margin-left: 30;
-               ">   
-               
-                Download animated gifs (warning: this can make your history menu very laggy): <input id="HMenu_downloadanimatedgifs" type="checkbox">
+            <input type="button" id="mass_download_downloadbutton" value="Download Tags">
+         </form>
+      </div><div class="settings_block">
+         <h2 style="
+            position: relative;
+            text-align: center;
+            top: 22px;
+            font-family: ultra;
+            color: dimgrey;
+            ">Extension</h2>
+         <form style="
+            padding: 39px;
+            margin-left: 30;
+            ">
+            New Window: <input id="newwindow" type="checkbox" title="When site shortcut is clicked, open in a new window"> <br> <br>
+            Automatically favorite downloaded images: <input id="autofav" type="checkbox"> 
+             Include automatically downloaded images: <input id="autofavinclude" type="checkbox" style=""> 
+            <br> 
+            <br>
+            Favorite on middle-click: <input id="middleclickfav" type="checkbox" checked="checked"> 
+            <br>
+            <br>
+            <b>Auto-Download options:</b> <br>
+            (Auto-Download:)Enabled: <input id="enabled" type="checkbox"> <br>
+            (Include)Download WEBM's/MP4's: <input id="mp4swebms" type="checkbox"> <br>
+            Arrange files: <input id="arrangefiles" type="checkbox"> <a id="advl" href="advanced.html"> Adv. </a> <br>
+            <br>
+            Save folder:<br>
+            <input id="savefolder" class="savefolder" type="text"> 
+            <br>
+            <input id="openfolder" type="button" value="Open Folder">
+            <br>
+            <br> 
+            Open Sankaku with tags:
+            <input type="text" id="tagstosearch">
+            <br>
+            <input type="button" id="searchtags" value="Open tab with tags"> <!-- W? <input type="checkbox" id="w"> !--> 
+            <br>
+            <br>
+            <input id="deletesettings" type="button" value="Delete Settings">
+            <br> <br> 
+            <input id="defaultsettings" type="button" value="Default Settings"><br> 
+         </form>
+      </div><div class="settings_block">
+         <h2 style="
+            position: relative;
+            text-align: center;
+            top: 22px;
+            font-family: ultra;
+            color: dimgrey;
+            ">History Menu</h2>
+         <form style="
+            padding: 39px;
+            margin-left: 30;
+            ">   
+            
+             Download animated gifs (warning: this can make your history menu very laggy): <input id="HMenu_downloadanimatedgifs" type="checkbox">
 <br>
 <br>
 Download full videos (warning: this can make your history menu very laggy): <input id="HMenu_downloadfullvideos" type="checkbox">
 <!-- <br><br>Tags to exclude from preview popup: <textarea id="HMenu_tagstoexclude_popup" style="
-    height: 100px;
-    width: 177px;
+ height: 100px;
+ width: 177px;
 "></textarea> -->
 
-               
-            </form>
-         </div>
+            
+         </form>
       </div>
    </div>
-   <script src="../jquery-3.4.1.min.js"></script>
-   <script src="settings.js"></script>
+</div>
+<script src="../jquery-3.4.1.min.js"></script>
+<script src="../httprequest.js"></script>
+<script src="../settingshelp.js"></script>
+<script src="../massdl.js"></script>
+<script src="settings.js"></script>
 
 </body></html>

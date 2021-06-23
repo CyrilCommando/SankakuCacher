@@ -19,19 +19,16 @@ var autofavattr = document.getElementById("autofav");
 /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
 
+/*limit onchange */ document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};
+/*concurrent limit onchange */ document.getElementById("mass_download_concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("mass_download_concurrentlimit"))};
+/*offset onchange */ document.getElementById("mass_download_offset").onchange = function() {doc_onchanged(document.getElementById("mass_download_offset"))};
+/*Download Button onclick*/document.getElementById("mass_download_downloadbutton").onclick = function() {initiateMdlWTags()};
+
 //animated gifs onclick
 document.getElementById("HMenu_downloadanimatedgifs").onclick = function() {doc_onchanged(document.getElementById("HMenu_downloadanimatedgifs"))}
 
 //full videos onclick
 document.getElementById("HMenu_downloadfullvideos").onclick = function() {doc_onchanged(document.getElementById("HMenu_downloadfullvideos"))}
-
-class AdvancedSettingsObject
-{
-    constructor(param1 = false, param2 = false) {
-        this.character = param1;
-        this.date = param2;
-    }
-}
 
 $("#tagstosearch").keyup(function(event) {
     if (event.keyCode === 13) {
@@ -109,75 +106,6 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10)
     $("#HMenu_downloadfullvideos").attr("checked", n10)
 }
 
-function delete_all_settings()
-{
-    chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "middleclickfav", "advanced_settings_object"])
-    chrome.runtime.sendMessage({"message": "alert", value: "settings deleted"})
-    default_settings()
-}
-
-function default_settings()
-{
-    var aso = new AdvancedSettingsObject();
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso})
-    chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
-}
-
-function doc_onchanged(htmlelement){
-    switch (htmlelement.id)
-    {
-        case "enabled":
-        {
-            chrome.storage.local.set({"enabled": htmlelement.checked})
-            break;
-        }
-        case "arrangefiles":
-        {
-            chrome.storage.local.set({"arrangefiles": htmlelement.checked})
-            break;
-        }
-        case "savefolder":
-        {
-            chrome.storage.local.set({"savefolder": htmlelement.value})
-            break;
-        }
-        case "mp4swebms":
-
-            chrome.storage.local.set({"mp4swebms": htmlelement.checked})
-            break;
-
-        case "autofav":
-
-            chrome.storage.local.set({"autofav": htmlelement.checked})
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {message: "change_autofav_variable"})
-            }) 
-            
-            break;
-            
-        case "newwindow":
-
-            chrome.storage.local.set({"newwindow": htmlelement.checked})
-            break;
-            
-        case "middleclickfav":
-            chrome.storage.local.set({"middleclickfav": htmlelement.checked})
-            // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            //     chrome.tabs.sendMessage(tabs[0].id, {message: "change_middleclick_variable"})
-            // }) 
-            break;
-
-        case "HMenu_downloadanimatedgifs":
-
-            chrome.storage.local.set({"HMenu_downloadanimatedgifs": htmlelement.checked})
-            break;
-
-        case "HMenu_downloadfullvideos":
-
-            chrome.storage.local.set({"HMenu_downloadfullvideos": htmlelement.checked})
-            break;
-    }
-}
 function setthethings(n1, n2, n3){
     if ((n1 == undefined) && (n2 == undefined))
     {
