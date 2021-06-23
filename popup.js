@@ -1,16 +1,11 @@
 go();
 
-var enabledattr = document.getElementById("enabled");
-var arrangefilesattr = document.getElementById("arrangefiles");
-var savefolderattr = document.getElementById("savefolder");
-var autofavattr = document.getElementById("autofav");
-
 /*Open in New Window*/ document.getElementById("newwindow").onchange = function() {doc_onchanged(document.getElementById("newwindow"))}
-/*autofav onchange*/document.getElementById("autofav").onchange = function() {doc_onchanged(autofavattr)}
-/* Enabled onchange*/document.getElementById("enabled").onchange = function() {doc_onchanged(enabledattr)};
+/*autofav onchange*/document.getElementById("autofav").onchange = function() {doc_onchanged(document.getElementById("autofav"))}
+/* Enabled onchange*/document.getElementById("enabled").onchange = function() {doc_onchanged(document.getElementById("enabled"))};
 /*MP4's/WEBM's onchange*/document.getElementById("mp4swebms").onchange = function() {doc_onchanged(document.getElementById("mp4swebms"))}
-/*Arrange Files onchange*/document.getElementById("arrangefiles").onchange = function() {doc_onchanged(arrangefilesattr)};
-/*Save Folder onchange*/document.getElementById("savefolder").onchange = function() {doc_onchanged(savefolderattr)};
+/*Arrange Files onchange*/document.getElementById("arrangefiles").onchange = function() {doc_onchanged(document.getElementById("arrangefiles"))};
+/*Save Folder onchange*/document.getElementById("savefolder").onchange = function() {doc_onchanged(document.getElementById("savefolder"))};
 /*Delete Settings onclick*/document.getElementById("deletesettings").onclick = function() {delete_all_settings()};
 /*Delete Images onclick*/ //document.getElementById("deleteimages").onclick = function() {delete_all_images()};
 /*Default Settings onlick*/document.getElementById("defaultsettings").onclick = function() {default_settings()};
@@ -22,10 +17,10 @@ var autofavattr = document.getElementById("autofav");
 /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
 
-/*limit onchange */ document.getElementById("limit").onchange = function() {doc_onchanged(document.getElementById("limit"))};
-/*concurrent limit onchange */ document.getElementById("concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("concurrentlimit"))};
-/*offset onchange */ document.getElementById("offset").onchange = function() {doc_onchanged(document.getElementById("offset"))};
-/*Download Button onclick*/document.getElementById("downloadbutton").onclick = function() {sendMessage()};
+/*limit onchange */ document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};
+/*concurrent limit onchange */ document.getElementById("mass_download_concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("mass_download_concurrentlimit"))};
+/*offset onchange */ document.getElementById("mass_download_offset").onchange = function() {doc_onchanged(document.getElementById("mass_download_offset"))};
+/*Download Button onclick*/document.getElementById("mass_download_downloadbutton").onclick = function() {initiateMdlWTags()};
 
 var x = Array.prototype.slice.call(document.getElementsByTagName("a"))
 
@@ -40,14 +35,6 @@ x.forEach(element => {
         }
   }
 });
-
-class AdvancedSettingsObject
-{
-    constructor(param1 = false, param2 = false) {
-        this.character = param1;
-        this.date = param2;
-    }
-}
 
 $("#tagstosearch").keyup(function(event) {
     if (event.keyCode === 13) {
@@ -132,87 +119,9 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11)
     $("#newwindow").attr("checked", n6)
     $("#mp4swebms").attr("checked", n7)
     $("#middleclickfav").attr("checked", n8)
-    $("#limit").val(n9);
-    $("#concurrentlimit").val(n10);
-    $("#offset").val(n11);
-}
-
-function delete_all_settings()
-{
-    chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "middleclickfav", "advanced_settings_object"])
-    //chrome.storage.local.clear()
-    chrome.runtime.sendMessage({"message": "alert", value: "settings deleted"})
-    default_settings()
-}
-
-function default_settings()
-{
-    var aso = new AdvancedSettingsObject();
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 50, "mass_download_concurrentlimit": 15, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false})
-    chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
-}
-
-function doc_onchanged(htmlelement){
-    switch (htmlelement.id)
-    {
-        case "enabled":
-        {
-            chrome.storage.local.set({"enabled": htmlelement.checked})
-            break;
-        }
-        case "arrangefiles":
-        {
-            chrome.storage.local.set({"arrangefiles": htmlelement.checked})
-            break;
-        }
-        case "savefolder":
-        {
-            chrome.storage.local.set({"savefolder": htmlelement.value})
-            break;
-        }
-        case "mp4swebms":
-
-            chrome.storage.local.set({"mp4swebms": htmlelement.checked})
-            break;
-
-        case "autofav":
-
-            chrome.storage.local.set({"autofav": htmlelement.checked})
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {message: "change_autofav_variable"})
-            }) 
-            
-            break;
-            
-        case "newwindow":
-
-            chrome.storage.local.set({"newwindow": htmlelement.checked})
-            break;
-            
-        case "middleclickfav":
-            chrome.storage.local.set({"middleclickfav": htmlelement.checked})
-            // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            //     chrome.tabs.sendMessage(tabs[0].id, {message: "change_middleclick_variable"})
-            // }) 
-            break;
-
-        case "limit":
-            
-            chrome.storage.local.set({"mass_download_limit": htmlelement.value})
-            break;
-            
-        case "concurrentlimit":
-            
-            chrome.storage.local.set({"mass_download_concurrentlimit": htmlelement.value})
-            break;
-
-        case "offset":
-            
-            chrome.storage.local.set({"mass_download_offset": htmlelement.value})
-            break;
-    }
-    //var x = document.getElementById("savefolder");
-    //chrome.storage.local.set({"savefolder": htmlelement.value})
+    $("#mass_download_limit").val(n9);
+    $("#mass_download_concurrentlimit").val(n10);
+    $("#mass_download_offset").val(n11);
 }
 
 /*chrome.storage.local.get(['key'], function(result) {

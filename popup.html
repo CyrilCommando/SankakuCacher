@@ -30,16 +30,16 @@
     Tags to download: <input id="tagsdownload" type="text">
     <br>
     Concurrent Download Limit (REQUIRED): 
-    <input id="concurrentlimit" type="text" style="
+    <input id="mass_download_concurrentlimit" type="text" style="
     width: 20px;"> 
     <br>
-    Limit (REQUIRED): <input id="limit" type="text" style="
+    Limit (REQUIRED): <input id="mass_download_limit" type="text" style="
     width: 20px;">
     <br>
-    Offset: <input id="offset" type="text" style="
+    Offset: <input id="mass_download_offset" type="text" style="
     width: 20px;"> 
     <br>
-    <input type="button" id="downloadbutton" value = "nonfunctional rn">
+    <input type="button" id="mass_download_downloadbutton" value = "Download Tags">
     <br>
     <br>
     Open Sankaku with tags:
@@ -55,5 +55,8 @@
     </form>
   </body>
     <script type="text/javascript" src= "jquery-3.4.1.min.js"></script>
+    <script src="settingshelp.js"></script>
+    <script src="massdl.js"></script>
+    <script src="../httprequest.js"></script>
     <script type="text/javascript" src="popup.js"></script>
 </html>

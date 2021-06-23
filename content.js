@@ -382,11 +382,12 @@ async function createBase64Image(type, page = undefined) {
         else if ($(page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src") == undefined)
         {
 
-          if (resultval.HMenu_downloadanimatedgifs == true)
+          if ((resultval.HMenu_downloadanimatedgifs == true) || (document.getElementById("image-link").firstChild.nextSibling.src.match(".jpg")))
           {
               await newxmlHttpReq(document.getElementById("image-link").firstChild.nextSibling.src).catch(async function(rejectedval){
                 await newxmlHttpReq(document.getElementById("image-link").firstChild.nextSibling.src)
               })
+              if ((resultval.HMenu_downloadanimatedgifs == true) && (document.getElementById("image-link").firstChild.nextSibling.src.match(".gif")))
               setCssOnElement(document.getElementById("image"), "red", true)
           }
           
@@ -406,7 +407,10 @@ async function createBase64Image(type, page = undefined) {
             console.log("b64 img created")
             // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
             base64data = dataURL;
-            setCssOnElement(document.getElementById("image"), "red", true)
+            if (document.getElementById("image-link").firstChild.nextSibling.src.match(".gif"))
+            {
+              setCssOnElement(document.getElementById("image"), "red", true)
+            }
           }
 
         }
@@ -445,7 +449,7 @@ async function createBase64Image(type, page = undefined) {
       await obtainSynchronous(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos"]).then(async function(resultval) {
 
         //if is a video
-        if ($(document.getElementsByClassName("preview_image_or_video_tag")[0]).is("video"))
+        if ($(page.getElementById("image")).is("video"))
         {
 
           if (resultval.HMenu_downloadfullvideos == true)
@@ -479,15 +483,18 @@ async function createBase64Image(type, page = undefined) {
         }
 
         //not a video
-        else if (!$(document.getElementsByClassName("preview_image_or_video_tag")[0]).is("video"))
+        else if (!$(page.getElementById("image")).is("video"))
         {
 
-          if (resultval.HMenu_downloadanimatedgifs == true)
+          if ((resultval.HMenu_downloadanimatedgifs == true) || (page.getElementById("image").src.match(".jpg")))
           {
-              await newxmlHttpReq(document.getElementsByClassName("preview_image_or_video_tag")[0].src).catch(async function(rejectedval){
-                await newxmlHttpReq(document.getElementsByClassName("preview_image_or_video_tag")[0].src)
+              await newxmlHttpReq(page.getElementById("image").src).catch(async function(rejectedval){
+                await newxmlHttpReq(page.getElementById("image").src)
               })
-              setCssOnElement(document.getElementsByClassName("preview_image_or_video_tag")[0], "red", true)
+              if ((resultval.HMenu_downloadanimatedgifs == true) && (page.getElementById("image").src.match(".gif")))
+              {
+                setCssOnElement(document.getElementsByClassName("preview_image_or_video_tag")[0], "red", true)
+              }
           }
           
           else if (resultval.HMenu_downloadanimatedgifs != true)
@@ -505,7 +512,10 @@ async function createBase64Image(type, page = undefined) {
             console.log("b64 img created")
             // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
             base64data = dataURL;
-            setCssOnElement(document.getElementsByClassName("preview_image_or_video_tag")[0], "red", true)
+            if (page.getElementById("image").src.match(".gif"))
+            {
+              setCssOnElement(document.getElementsByClassName("preview_image_or_video_tag")[0], "red", true)
+            }
           }
 
         }

@@ -105,6 +105,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     switch (request.message) {
       
+      case"wow_a_function":
+      wow_A_Function(request.url)
+        break;
+      
       case "reload":
         chrome.tabs.reload(sender.tab.id)
         break;
