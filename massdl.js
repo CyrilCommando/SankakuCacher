@@ -126,7 +126,7 @@ function dlItem()
     
     if (concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val()))
     {console.log("dlitm")
-        chrome.runtime.sendMessage({"message": "wow_a_function", url: downloadLink})
+        chrome.runtime.sendMessage({"message": "wow_a_function", url: downloadLink, isMassDownload: true})
         clearInterval(concurrentLimitPoll)
         concurrentLimitPoll = undefined;
         dldimages += 1;

@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   {
     getHighestCharacterTag();
   }
-  if (request.message.match("(https:\/\/chan\.sankakucomplex\.com\/post\/show\/)[1-9]*"))
+  if (request.message.match("(https:\/\/chan\.sankakucomplex\.com\/post\/show\/)[0-9]*$"))
   {
     chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos"], function(result){
 

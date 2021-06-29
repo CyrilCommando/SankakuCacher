@@ -38,20 +38,6 @@ chrome.contextMenus.create({contexts: ["browser_action"], documentUrlPatterns: [
 , 
 title:"Settings"})
 
-class AdvancedSettingsObject
-{
-    constructor(param1 = false, param2 = false) {
-        this.character = param1;
-        this.date = param2;
-    }
-}
-
-function default_settings()
-{
-    var aso = new AdvancedSettingsObject();
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": true, "middleclickfav": true, "advanced_settings_object": aso})
-}
-
 function xmlhttpReq(url)
 {
   var xhr = new XMLHttpRequest();
@@ -106,7 +92,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     switch (request.message) {
       
       case"wow_a_function":
-      wow_A_Function(request.url)
+      wow_A_Function(request.url, request.isMassDownload)
         break;
       
       case "reload":
@@ -296,16 +282,15 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   });
 });
 
-function wow_A_Function(download_link)
+function wow_A_Function(download_link, isMassDownload = false)
 {
-  chrome.storage.local.get(["savefolder", "advanced_settings_object"], function(newResult) { 
+  chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags"], function(newResult) { 
 
-    chrome.tabs.getSelected(tab => {
+
 
       //do a proper regex for that then
       //fuck it
-      if ((tab.url != "https://chan.sankakucomplex.com/") || (tab.url == "https://chan.sankakucomplex.com/"))
-      {
+
       
         var includeshttps = download_link[0] + download_link[1] + download_link[2] + download_link[3] + download_link[4];
       
@@ -348,8 +333,16 @@ function wow_A_Function(download_link)
       
         }
 
+        console.log(isMassDownload)
+        if (isMassDownload)
+        {
+          svfld += newResult.mass_download_prevtags.replaceAll(":", "_")
+          svfld += "/"
+        }
+        console.log(svfld)
+
         chrome.downloads.download({url: "https:" + download_link, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
-      } /*if url*/ else{} ////////callback fucking heck 
-    }); //chrome.tabs.getSelected
+       /*if url*/  ////////callback fucking heck 
+ //chrome.tabs.getSelected
   }) //chrome.storage.local.get
 }
