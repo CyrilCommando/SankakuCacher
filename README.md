@@ -29,6 +29,7 @@ automatically download images sankakucomplex
 ![alt text](https://i.imgur.com/BRJqMb7.gif)
 
 #### Mass-download function to download many in a group of tags at once!
+![alt text](https://i.imgur.com/10yKJm2.gif)
 
 ## How to use SankakuCacher?
 You'll need to download a full zip of the source code from the master branch or a release in the releases tab.
