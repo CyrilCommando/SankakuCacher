@@ -40,5 +40,6 @@ Select the SankakuCacher folder you just extracted.
 And pin the extension!
 
 To use mass download - in popup or settings type the tags you want to download & press Download Tags. The window where the request was initiated must stay open, which is sometimes hard to do for popup so settings is recommended.
-Tags are separated by spaces like the site, so for example: fav:cyrilcommando genshin_impact -animated
+Tags are separated by spaces like the site, so for example: fav:cyrilcommando genshin_impact -animated 
+
 limit is how many to download, concurrent is how many to download at once, and offset is where to begin in the selected tags. To start at page 2, type 20. To start at page 3, type 40. every page has 20 images. This is inconsistent, pages can sometimes have less than 20 images. If you type offset 20 and the first page doesn't have 20 images, the operation will fail and simply do nothing. This massDL also works for restricted images as long as you're logged in.
