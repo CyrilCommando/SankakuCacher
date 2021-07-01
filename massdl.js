@@ -113,7 +113,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     }
     
 
-    for (let ind = index; (ind <= popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
+    for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
         const image = popularExcludedArray[ind]; 
         await xmlhttpReq(image.id.substr(1,), undefined, false, false)
         concurrentLimitPoll = setInterval (dlItem, 500)
@@ -130,7 +130,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
         concurrentImageTracker++
 
 
-        if (  (ind == 20) && (parseInt($("#mass_download_limit").val()) > dldimages)  )
+        if (  (ind == 19) && (parseInt($("#mass_download_limit").val()) > dldimages)  )
         {
             console.log("reached end")
             mdl_pginc++
@@ -167,7 +167,7 @@ function dlItem()
 // code
 function promiseWhen(condition, timeout){
   if(!timeout){
-    timeout = 10000;
+    timeout = 20000;
   }
   return new Promise(function(resolve, reject)
   {

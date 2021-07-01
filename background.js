@@ -336,8 +336,16 @@ function wow_A_Function(download_link, isMassDownload = false)
         console.log(isMassDownload)
         if (isMassDownload)
         {
-          svfld += newResult.mass_download_prevtags.replaceAll(":", "_")
-          svfld += "/"
+          if (newResult.mass_download_prevtags != "")
+          {
+            svfld += newResult.mass_download_prevtags.replaceAll(":", "_")
+            svfld += "/"
+          }
+          else if (newResult.mass_download_prevtags == "")
+          {
+            svfld += "homepage"
+            svfld += "/"
+          }
         }
         console.log(svfld)
 
