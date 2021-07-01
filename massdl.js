@@ -4,11 +4,17 @@ console.log("mdl mod imported")
 var mdl_listpage;
 
 //current dl amount //page increment (number)
+/**
+ * page increment (number)
+ */
 var mdl_pginc = 1;
 
 var concurrentImageTracker = 0;
 
-var mdl_linkarr = [];
+/**
+ * link array for image pages?
+ * unused?
+ */
 
 var downloadLink;
 
@@ -23,14 +29,14 @@ chrome.downloads.onCreated.addListener(downloaditem => {
 })
 
 chrome.downloads.onChanged.addListener(downloaddelta => {
-    console.log(downloaddelta)
+    // console.log(downloaddelta)
     if (downloaddelta.state)
     {
         if(downloaddelta.state.current == "complete")
         {
             if (createdDlDict[downloaddelta.id])
             {
-                console.log("dec 1")
+                // console.log("dec 1")
                 concurrentImageTracker --
             }
         }
@@ -52,12 +58,18 @@ function MDL_update()
 async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val()), persist = false)
 {
     const factor = 20
+    
+    //populate page increment (page to use) & index if index >= factor
     if ((index >= factor) && (persist == false))
     {
         mdl_pginc = Math.ceil(((index + 1) / factor))
         index = index - (factor * (Math.floor(mdl_pginc - 0.05)));
     }
+
+    //set prevtags
     chrome.storage.local.set({"mass_download_prevtags": document.getElementById("tagsdownload").value})
+
+    // split tags
     var x = document.getElementById("tagsdownload").value;
     x = x.split(" ");
     var concatenated;
@@ -83,18 +95,29 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
         concatenated = concatenated + element;
        }
     });
+    //
+
+    //load page & save into mdl_listpage
     var ustr = `https://chan.sankakucomplex.com/?tags=${concatenated}&commit=Search&page=${mdl_pginc}`
     await xmlHttpReqforMDL(ustr)
-    var thumbs = Array.prototype.slice.call(mdl_listpage.getElementsByClassName("thumb"))
 
-    for (index = index; (index < thumbs.length && parseInt($("#mass_download_limit").val()) > dldimages); index++) {
+    
+    var thumbs = Array.prototype.slice.call(mdl_listpage.getElementsByClassName("thumb"))
+    var popularExcludedArray = [];
+    for (let index = 0; index < thumbs.length; index++) {
         const element = thumbs[index];
-        mdl_linkarr.push(element.firstChild.href) 
-        await xmlhttpReq(element.id.substr(1,), undefined, false, false)
+        if (element.parentElement.className != "popular-preview-post")
+        {
+            popularExcludedArray.push(element)
+        }
+    }
+    
+
+    for (let ind = index; (ind <= popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
+        const image = popularExcludedArray[ind]; 
+        await xmlhttpReq(image.id.substr(1,), undefined, false, false)
         concurrentLimitPoll = setInterval (dlItem, 500)
-        console.log(concurrentLimitPoll)
-        // concurrentLimitPoll = 1
-        // await awaitIfUndefined()
+        // console.log(concurrentLimitPoll)
 
             await promiseWhen(function(){
                 return concurrentLimitPoll == undefined;
@@ -105,7 +128,9 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
               });
 
         concurrentImageTracker++
-        if ( (parseInt($("#mass_download_limit").val()) > dldimages) && (index == 19) )
+
+
+        if (  (ind == 20) && (parseInt($("#mass_download_limit").val()) > dldimages)  )
         {
             console.log("reached end")
             mdl_pginc++
@@ -114,6 +139,10 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
             break;
         }
     }
+
+
+
+    //if downloaded images equals limit set dld to 0 & pginc to 1 for next
     if (dldimages == parseInt($("#mass_download_limit").val()))
     {
         dldimages = 0
@@ -125,7 +154,8 @@ function dlItem()
 {
     
     if (concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val()))
-    {console.log("dlitm")
+    {
+        // console.log("dlitm")
         chrome.runtime.sendMessage({"message": "wow_a_function", url: downloadLink, isMassDownload: true})
         clearInterval(concurrentLimitPoll)
         concurrentLimitPoll = undefined;
@@ -133,30 +163,11 @@ function dlItem()
     }
 }
 
-function awaitIfUndefined()
-{
-    console.log("promisebs")
-    return new Promise(function(resolve, reject){
-        setTimeout(() => {
-            if(concurrentLimitPoll == undefined)
-            {
-                console.log("promisebsresolve")
-                resolve()
-            }
-            else
-            {
-                console.log("promisebsreutn")
-                return;
-            }
-        }, 500);
-    })
-}
-
 
 // code
 function promiseWhen(condition, timeout){
   if(!timeout){
-    timeout = 99999;
+    timeout = 10000;
   }
   return new Promise(function(resolve, reject)
   {
@@ -174,15 +185,12 @@ function promiseWhen(condition, timeout){
 }
 
 
-// test case
-var myInterval;
-
 /**
  * page 1 ..., updates mdl pg w new pg
  */
 async function xmlHttpReqforMDL(url)
 {
-  console.log(url)
+//   console.log(url)
   var xhr22222222 = new XMLHttpRequest();
   var gettedCredentials;
 //   await async function (){
@@ -205,7 +213,7 @@ async function xmlHttpReqforMDL(url)
     if (this.status >= 200 && this.status < 300) {
 
         mdl_listpage = this.response
-        console.log(this.response)
+        // console.log(this.response)
         resolve("sdsdsd")
     }
     else{
