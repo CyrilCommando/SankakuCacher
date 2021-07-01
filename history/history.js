@@ -73,7 +73,7 @@ document.getElementById("sb").oninput = function(e) {
       }
       timeout2 = setTimeout(() => {
         lessthan5mssincelastkeypressed = true;
-      }, 799);
+      }, 599);
 
       timeout = setTimeout(() => {
         if (lessthan5mssincelastkeypressed)
@@ -81,7 +81,7 @@ document.getElementById("sb").oninput = function(e) {
           search_bar = true; sb_text = e.target.value; populateList(1, true);
           lessthan5mssincelastkeypressed = false;
         }
-      }, 800);
+      }, 600);
 }
 
   }
@@ -869,6 +869,13 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
         var split_strings_array = sb_text.split(/ +/)
         var tagvpairstagarray = [];
 
+        for (let index = 0; index < split_strings_array.length; index++) {
+          const str = split_strings_array[index];
+          var editedstringforjavascriptsdumbass = str.replace("(", "\\(")
+          var x2 = editedstringforjavascriptsdumbass.replace(")", "\\)")
+          split_strings_array[index] = x2
+        }
+
         result[x].list.forEach(HistoryMenuEntry => {
 
           try {
@@ -1067,6 +1074,12 @@ function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, 
       excluded_items_array.list = [];
       var split_strings_array = sb_text.split(/ +/)
       var tagvpairstagarray = [];
+      for (let index = 0; index < split_strings_array.length; index++) {
+        const str = split_strings_array[index];
+        var x = str.replace("(", "\\(")
+        var x2 = x.replace(")", "\\)")
+        split_strings_array[index] = x2
+      }
 
       result.list.forEach(HistoryMenuEntry => {
 
