@@ -73,7 +73,7 @@ document.getElementById("sb").oninput = function(e) {
       }
       timeout2 = setTimeout(() => {
         lessthan5mssincelastkeypressed = true;
-      }, 599);
+      }, 399);
 
       timeout = setTimeout(() => {
         if (lessthan5mssincelastkeypressed)
@@ -81,7 +81,7 @@ document.getElementById("sb").oninput = function(e) {
           search_bar = true; sb_text = e.target.value; populateList(1, true);
           lessthan5mssincelastkeypressed = false;
         }
-      }, 600);
+      }, 400);
 }
 
   }
