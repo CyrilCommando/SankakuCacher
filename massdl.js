@@ -167,7 +167,7 @@ function dlItem()
 // code
 function promiseWhen(condition, timeout){
   if(!timeout){
-    timeout = 20000;
+    timeout = 999999;
   }
   return new Promise(function(resolve, reject)
   {
