@@ -18,6 +18,8 @@ var autofavattr = document.getElementById("autofav");
 /*Search Tags onclick*/document.getElementById("searchtags").onclick = function() {openLinkWithTags()};
 /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
+/*scrolltocontent onclick*/ document.getElementById("scrolltocontent").onchange = function() {doc_onchanged(document.getElementById("scrolltocontent"))};
+/*resizecontent onclick*/ document.getElementById("resizecontent").onchange = function() {doc_onchanged(document.getElementById("resizecontent"))};
 
 /*limit onchange */ document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};
 /*concurrent limit onchange */ document.getElementById("mass_download_concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("mass_download_concurrentlimit"))};
@@ -78,17 +80,17 @@ function openLinkWithTags()
 
 function go(){
 
-        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav", "HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos"], function(result) {
+        chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav", "HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "scrolltocontent", "resizecontent"], function(result) {
             console.log('extension enabled: ' + result.enabled)
             console.log('arrangefiles value currently is ' + result.arrangefiles)
             console.log('savefolder value currently is ' + result.savefolder);
             console.log('previous search value currently is ' + result.prevsearch);
             setthethings(result.enabled, result.arrangefiles, result.savefolder);
-            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav, result.HMenu_downloadanimatedgifs, result.HMenu_downloadfullvideos);
+            update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav, result.HMenu_downloadanimatedgifs, result.HMenu_downloadfullvideos, result.scrolltocontent, result.resizecontent);
           })
 }
 
-function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10)
+function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12)
 {
     $("#enabled").attr("checked", n1);
     $("#arrangefiles").attr("checked", n2);
@@ -104,6 +106,8 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10)
     $("#middleclickfav").attr("checked", n8)
     $("#HMenu_downloadanimatedgifs").attr("checked", n9)
     $("#HMenu_downloadfullvideos").attr("checked", n10)
+    $("#scrolltocontent").attr("checked", n11)
+    $("#resizecontent").attr("checked", n12)
 }
 
 function setthethings(n1, n2, n3){
