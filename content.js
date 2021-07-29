@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
   if (request.message.match("(https:\/\/chan\.sankakucomplex\.com\/post\/show\/)[0-9]*$"))
   {
-    chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos"], function(result){
+    chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "resizecontent", "scrolltocontent"], function(result){
 
       if ($("#image").is("img"))
       {
@@ -77,6 +77,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       }
       // document.getElementById("image").crossOrigin = "anonymous"
+      if (result.resizecontent == true)
+      {
+        if ($("#image").attr("width") > window.innerWidth)
+        {
+          $("#image").attr("width", window.innerWidth)
+        }
+        if ($("#image").attr("height") > window.innerHeight)
+        {
+          $("#image").attr("height", window.innerHeight)
+        }
+      }
+
+      if (result.scrolltocontent == true)
+      {
+        window.scrollTo(undefined, document.getElementById("image").getBoundingClientRect().top)
+      }
 
     })
     // if ($(document.getElementById("image")).is("img"))
