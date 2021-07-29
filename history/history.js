@@ -43,6 +43,12 @@ var operlist;
 
 var base64data;
 
+//pageselectcountarray
+var global_element_array;
+
+//pageselectincrement
+var global_increment_factor;
+
 document.getElementById("menu").onchange = function(e) {
   pages_added = false; 
   search_bar = false;
@@ -488,7 +494,18 @@ function apply_to_anchors()
 anchors.forEach(element => {
         element.onclick = function(event){
         event.preventDefault()
-        if(element.innerText != current_page)
+        if (element.innerText == ">>")
+        {
+          global_increment_factor++
+          addpages(undefined, true, "forward")
+        }
+        if (element.innerText == "<<")
+        {
+          global_increment_factor--
+          addpages(undefined, true, "backward")
+        }
+
+        if((element.innerText != current_page) && (element.innerText != ">>") && (element.innerText != "<<"))
         {
           anchors.forEach(numbertwo => {
             $(numbertwo).attr("style", "")
@@ -1303,25 +1320,71 @@ function return_Limited_Array(selectedpage, result)
   else{}
 }
 
-function addpages(pagecount)
+function addpages(pagecount, shift = false, forwardorbackward)
 {
   while (document.getElementById("pageselect").firstChild) {
     document.getElementById("pageselect").removeChild(document.getElementById("pageselect").firstChild);
   }
-let elementarray = [];
-for (let index = 0; index < pagecount; index++) 
+let factor = 25
+if (shift==false)
 {
-  elementarray.push($("<a></a>").attr({"id": "PageNumberId_"+ (index + 1), "class": "page_number_select", "href": "/"}).text((index+1)));
+  let elementarray = [];
+  for (let index = 0; index < pagecount; index++) 
+  {
+    elementarray.push($("<a></a>").attr({"id": "PageNumberId_"+ (index + 1), "class": "page_number_select", "href": "/"}).text((index+1)));
+  }
+  global_element_array = elementarray.slice(0);
+  
+  //incremented in apply_to_anchors
+  global_increment_factor = 0;
+
+  if (elementarray.length > factor)
+  {
+    elementarray.splice(factor, 9999999999, $("<a></a>").attr({"id": "PageNumberId_"+ "forward", "class": "page_number_select", "href": "/"}).text(">>"))
+  }
+
+  elementarray.forEach(item => {
+    $("#pageselect").append(item)
+  });
+
+  apply_to_anchors();
+
+  $("#PageNumberId_1").attr("style", "text-decoration: underline;")
+
+  current_page = 1;
 }
-elementarray.forEach(item => {
-  $("#pageselect").append(item)
-});
 
-apply_to_anchors();
+else if (shift==true)
+{
+  let pages_to_display_array = global_element_array.slice(global_increment_factor * factor, global_increment_factor * factor + factor)
 
-$("#PageNumberId_1").attr("style", "text-decoration: underline;")
+  if (forwardorbackward == "forward")
+  {
+    if (Math.ceil(factor / global_element_array.length) > global_increment_factor)
+    {
+      pages_to_display_array.splice(factor, 9999999999, $("<a></a>").attr({"id": "PageNumberId_"+ "forward", "class": "page_number_select", "href": "/"}).text(">>"))
+    }
+    pages_to_display_array.splice(0, 0, $("<a></a>").attr({"id": "PageNumberId_"+ "backward", "class": "page_number_select", "href": "/"}).text("<<"))
+  }
+  else if (forwardorbackward == "backward")
+  {
+    if (!global_increment_factor <=0)
+    {
+      pages_to_display_array.splice(0, 0, $("<a></a>").attr({"id": "PageNumberId_"+ "backward", "class": "page_number_select", "href": "/"}).text("<<"))
+    }
+    pages_to_display_array.splice(factor+1, 0, $("<a></a>").attr({"id": "PageNumberId_"+ "forward", "class": "page_number_select", "href": "/"}).text(">>"))
+  }
+  // if (pages_to_display_array.length > factor)
+  // {
+  //   pages_to_display_array.splice(factor, 9999999999, $("<a></a>").attr({"id": "PageNumberId_"+ "forward", "class": "page_number_select", "href": "/"}).text(">>"))
+  // }
 
-current_page = 1;
+  pages_to_display_array.forEach(item => {
+    $("#pageselect").append(item)
+  });
+
+  apply_to_anchors();
+}
 
 }
 
