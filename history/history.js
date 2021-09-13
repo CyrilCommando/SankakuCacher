@@ -1360,7 +1360,7 @@ else if (shift==true)
 
   if (forwardorbackward == "forward")
   {
-    if (Math.ceil(factor / global_element_array.length) > global_increment_factor)
+    if (Math.floor((global_element_array.length / factor) -0.01) > global_increment_factor)
     {
       pages_to_display_array.splice(factor, 9999999999, $("<a></a>").attr({"id": "PageNumberId_"+ "forward", "class": "page_number_select", "href": "/"}).text(">>"))
     }
