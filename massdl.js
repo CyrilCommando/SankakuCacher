@@ -24,6 +24,10 @@ var dldimages = 0;
 
 var createdDlDict = {};
 
+var breakOutError = false;
+
+var end_Of_Postlist = false;
+
 chrome.downloads.onCreated.addListener(downloaditem => {
     createdDlDict[downloaditem.id] = true;
 })
@@ -57,6 +61,8 @@ function MDL_update()
 
 async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val()), persist = false)
 {
+    breakOutError = false;
+
     const factor = 20
     
     //populate page increment (page to use) & index if index >= factor
@@ -115,7 +121,20 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
 
     for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
         const image = popularExcludedArray[ind]; 
-        await xmlhttpReq(image.id.substr(1,), undefined, false, false)
+        await xmlhttpReq(image.id.substr(1,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
+            breakOutError = true; 
+            dldimages = 0; 
+            mdl_pginc = 1; 
+            // console.log("rate limited - dld set to 0, pginc 1"); 
+            // chrome.runtime.sendMessage({message: "alert", value: "image "+e_val+" out of " + $("#mass_download_limit").val() + " failed\nWait a minute and click download again. Offset set to last successfully downloaded file"})
+            // var v = parseInt($("#mass_download_offset").val())
+            // $("#mass_download_offset").val( v + (e_val - 1))
+            // chrome.storage.local.set({"mass_download_offset": parseInt($("#mass_download_offset").val())})
+        })
+        if (breakOutError)
+        {
+            break;
+        }
         concurrentLimitPoll = setInterval (dlItem, 500)
         // console.log(concurrentLimitPoll)
 
@@ -138,6 +157,14 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
             initiateMdlWTags(0, true)
             break;
         }
+
+        if (  (ind < 19) && (parseInt($("#mass_download_limit").val()) >= dldimages) && (popularExcludedArray.length < 20) )
+        {
+            console.log("reached end of postlist")
+            end_Of_Postlist = true;
+            dldimages = 0;
+            mdl_pginc = 1;
+        }
     }
 
 
@@ -147,6 +174,12 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     {
         dldimages = 0
         mdl_pginc = 1;
+    }
+
+    if (end_Of_Postlist)
+    {
+        // chrome.runtime.sendMessage({message: "alert", value: "End of posts!"})
+        // end_Of_Postlist = false;
     }
 }
 

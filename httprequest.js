@@ -1,5 +1,5 @@
 /**make XMLHttpRequest with PID and image DOM element (2nd var UNUSED) ((DOUBLE SYKE IT ACTUALLY IS USED!!! FUCK*/
-function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
+function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false, ind, limit)
 {
   var xhr = new XMLHttpRequest();
 
@@ -67,7 +67,11 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false)
     }
     else{
       console.log("request failed")
-      reject("failed")
+      if (this.status == 429) 
+      {
+        chrome.runtime.sendMessage({message: "alert", value: "Rate limited - " + ind + " out of " + limit + " images downloaded"})
+      }
+      reject(ind + 1, this.status)
     }
 }
 });

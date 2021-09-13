@@ -504,9 +504,25 @@ async function createBase64Image(type, page = undefined) {
 
           if ((resultval.HMenu_downloadanimatedgifs == true) || (page.getElementById("image").src.match(".jpg")))
           {
-              await newxmlHttpReq(page.getElementById("image").src).catch(async function(rejectedval){
-                await newxmlHttpReq(page.getElementById("image").src)
-              })
+              //broke as of 09-12
+              // await newxmlHttpReq(page.getElementById("image").src).catch(async function(rejectedval){
+              //   await newxmlHttpReq(page.getElementById("image").src)
+              // })
+
+              var canvas = document.createElement("canvas");
+
+              canvas.width = img.naturalWidth;
+              canvas.height = img.naturalHeight;
+  
+              // Copy the image contents to the canvas
+              var ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+    
+              var dataURL = canvas.toDataURL("image/jpeg", 1);
+              console.log("b64 img created")
+              // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
+              base64data = dataURL;
+
               if ((resultval.HMenu_downloadanimatedgifs == true) && (page.getElementById("image").src.match(".gif")))
               {
                 setCssOnElement(document.getElementsByClassName("preview_image_or_video_tag")[0], "red", true)

@@ -354,3 +354,5 @@ function wow_A_Function(download_link, isMassDownload = false)
  //chrome.tabs.getSelected
   }) //chrome.storage.local.get
 }
+
+chrome.storage.local.set({"fixlatency": true})
