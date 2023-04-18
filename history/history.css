@@ -1,3 +1,44 @@
+div.tsbg{
+    position: absolute;
+    filter: blur(4px);
+    opacity: 64%;
+    width: fit-content;
+    overflow: hidden;
+    height: 46px;
+    background-image: linear-gradient(to top, #000000, #ffffff);
+    display: none;
+}
+
+div.tsbg img{
+    transform: scaleY(-1);
+    opacity: inherit;
+    display: none;
+}
+
+#header {
+    height: 10.5em;
+    background-color: darkgray;
+    display: flex;
+    justify-content: space-around;
+}
+
+body{
+    background-color: dimgray;
+    margin: 0;
+}
+
+div#ct{
+    height: fit-content;
+    margin: 8px;
+    margin-top: 0px;
+}
+
+div#htext h1{
+    color: #969696;
+    font-size: 3.5em;
+    font-family: none;
+}
+
 .thumbs img
 {
     /* margin: 30px 20px 30px 20px; */

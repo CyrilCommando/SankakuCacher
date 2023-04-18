@@ -97,21 +97,26 @@ chrome.contextMenus.remove("Hide")
 chrome.contextMenus.remove("Reset Image Data")
 // chrome.contextMenus.remove("ResetR")
 
-chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Hide", onclick: function ()
-{
-  editHistoryMenuEntry(document.getElementById("menu").value, image_postid, true)
-}
-, 
-title:"Hide"})
+chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.runtime.getURL("/history/history.html")], id: "Hide", title:"Hide"})
 
-chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "Reset Image Data", onclick: function ()
-{
-  editBase64(image_postid)
-}
-, 
-title:"Reset Image Data"})
+chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.runtime.getURL("/history/history.html")], id: "Reset Image Data", title:"Reset Image Data"})
 
-// chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.extension.getURL("/history/history.html")], id: "ResetR", onclick: function ()
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  switch (info.menuItemId) {
+    case "Hide":
+      editHistoryMenuEntry(document.getElementById("menu").value, image_postid, true)
+      break;
+  
+    case "Reset Image Data":
+      editBase64(image_postid)
+      break;
+      
+    default:
+      break;
+  }
+})
+
+// chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.runtime.getURL("/history/history.html")], id: "ResetR", onclick: function ()
 // {
 //   chrome.storage.local.get([image_postid], async function(result)
 //   {
@@ -304,6 +309,44 @@ async function createBase64Image(page = xhr_received_page, obtainType) {
           }
 
         }  
+}
+
+function createReflectionImage(pid)
+{
+  var cp = $("#"+pid).clone()
+  $(cp).attr({"class": "", "id": pid+"_ref", "title": "", "muted": true})
+  var div = $("<div></div>")
+  $(div).attr("class", "tsbg")
+  $(div).append(cp)
+  $("#"+pid+"_parent").append(div)
+  document.getElementById(pid+"_ref").muted = true
+  document.getElementById(pid+"_ref").loop = false
+  $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].loop = false;
+  var bts = $(cp).parents("#"+pid+"_parent").children("div.preview-menu_bar").clone()
+  $(bts).css({"bottom": "-10px", "z-index": "1"})
+  $("#"+pid+"_parent").children("div.tsbg").prepend(bts)
+
+  // $(cp).on("load", function(){
+  //   if ( ($("#"+pid+"_parent").children("#"+pid)[0].width <= $("#"+pid+"_parent").children("#"+pid)[0].height) || ($("#"+pid+"_parent").children("#"+pid)[0].height == 338) )
+  //   {
+  //     $("#"+pid+"_parent").children("div.tsbg").css("width", ($("#"+pid+"_parent").children("#"+pid)[0].width + 25) + "px")
+  //   }
+  // })
+  
+  $(cp).on("play", function(ev){
+    // console.log("play")
+    $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].currentTime = 0
+    $(cp)[0].currentTime = $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].currentTime
+    $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].play()
+    $(cp)[0].play()
+  })
+  $(cp).on("ended", function(ev){
+    // console.log("play")
+    $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].currentTime = 0
+    $(cp)[0].currentTime = $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].currentTime
+    $(cp).parents("#"+pid+"_parent").children("#"+pid)[0].play()
+    $(cp)[0].play()
+  })
 }
 
 function makerequest(url, method) {
@@ -530,19 +573,19 @@ function createPreviewMenuBar(posturl)
 
 function createMenuBarDownloadButton(posturl)
 {
-  i = $("<img>").attr({"src": chrome.extension.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(function(){chrome.runtime.sendMessage({"message": "xhr", "link": posturl})})
+  i = $("<img>").attr({"src": chrome.runtime.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(function(){xmlhttpReq2(posturl)})
   return i;
 }
 
 function createMenuBarFullscreenButton()
 {
-  i = $("<img>").attr({"src": chrome.extension.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(console.log("thats a nice placeholder dude"))
+  i = $("<img>").attr({"src": chrome.runtime.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(console.log("thats a nice placeholder dude"))
   return i
 }
 
 function createMenuBarOpenButton(posturl)
 {
-  i = $("<img>").attr({"src": chrome.extension.getURL("open.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "open_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "open_button"})}).click(function(){chrome.tabs.create({url: posturl})})
+  i = $("<img>").attr({"src": chrome.runtime.getURL("open.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "open_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "open_button"})}).click(function(){chrome.tabs.create({url: posturl})})
   return i
 }
 
@@ -764,6 +807,7 @@ function toggleTransform(element)
     var img = $(element).children("img").attr("style", "outline: 3px solid yellow;")
     // setTimeout(() => {
       checkSize(element)
+      $(element).children("div.tsbg").css("display", "none")
     // }, 65);
   }
   else if (toggled)
@@ -772,6 +816,7 @@ function toggleTransform(element)
     $(element).children("img").attr("style", kvp[element.id])
     //toggled=false;
     addDynamicToggledVariableToObject(element.id, false)
+    $(element).children("div.tsbg").css("display", "initial")
   }
 
 }
@@ -826,6 +871,7 @@ else if ($(element.firstChild).is("video"))
     var img = $(element).children("video").attr("style", "outline: 3px solid yellow;")
     // setTimeout(() => {
       checkSize(element)
+      $(element).children("div.tsbg").css("display", "none")
     // }, 65);
   }
   else if (toggled)
@@ -834,6 +880,7 @@ else if ($(element.firstChild).is("video"))
     $(element).children("video").attr("style", kvp[element.id])
     //toggled=false;
     addDynamicToggledVariableToObject(element.id, false)
+    $(element).children("div.tsbg").css("display", "initial")
   }
 }
 
@@ -1325,7 +1372,7 @@ function addpages(pagecount, shift = false, forwardorbackward)
   while (document.getElementById("pageselect").firstChild) {
     document.getElementById("pageselect").removeChild(document.getElementById("pageselect").firstChild);
   }
-let factor = 25
+let factor = 22
 if (shift==false)
 {
   let elementarray = [];
@@ -1454,7 +1501,8 @@ function updateImagewithBase64(pid, classname, title, hidden)
         }
         return "data:image/png;base64,"+result[pid];
       } 
-    }(result, pid)
+    }(result, pid);
+    createReflectionImage(pid)
   })
 }
 
