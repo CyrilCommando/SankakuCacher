@@ -8,11 +8,25 @@ try {
 
 var video_Event_Fired_Once = false;
 
+var postlist_preview_scale_factor = 2.0
+
+var sbDisplaying = false;
+
+var mouseBasePositionReceived = false;
+
+var previousSizeValue;
+
 //get the tab url
 chrome.runtime.sendMessage({"message": "fuckgoogle"})
 
 //listener to tab URL
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+
+  localStorage.setItem('exoJsPop101Last', new Date().getTime());
+  setInterval(() => {
+    console.log('set')
+    localStorage.setItem('exoJsPop101Last', new Date().getTime());
+  }, 60000);
 
   if ( ( seconds(localStorage.getItem("plustitial"+"_last_run")) ) || ( seconds(localStorage.getItem("prestitial"+"_last_run")) ) )
   {
@@ -25,9 +39,37 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
   if (request.message != "https://chan.sankakucomplex.com/")
   {
-    getHighestCharacterTag();
+    //getHighestCharacterTag();
   }
-  if (request.message.match("(https:\/\/chan\.sankakucomplex\.com\/post\/show\/)[0-9]*$"))
+  if (!request.message.match("https:\/\/chan.sankakucomplex.com\/post\/show\/"))
+  {
+    chrome.storage.local.get(["scalersize"], function(result){
+      if (true)
+      {
+        postlist_preview_scale_factor = result.scalersize
+        sizeUpPreview()
+        sizeApplication.observe(document.getElementsByClassName("content")[0], nOpts)
+        paginatorObserver.observe(document.getElementsByClassName("content")[0], nOpts_)
+        $(document).keydown(function(keyDownEvent) {
+          if (keyDownEvent.keyCode === 17) {
+              if (!sbDisplaying)
+              {
+                modHtml()
+                sbDisplaying = true;
+              }
+          }
+        });
+        $(document).keyup(function(keyDownEvent) {
+          if (keyDownEvent.keyCode === 17) {
+              $("#sb").remove()
+              sbDisplaying = false;
+          }
+        });
+      }
+
+    })
+  }
+  if (request.message.match("https:\/\/chan.sankakucomplex.com\/post\/show\/"))
   {
     chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "resizecontent", "scrolltocontent"], function(result){
 
@@ -86,6 +128,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if ($("#image").attr("height") > window.innerHeight)
         {
           $("#image").attr("height", window.innerHeight)
+          // if (document.getElementById("image").src.match(".gif"))
+          // {
+            $("#image").removeAttr("width")
+          // }
         }
       }
 
@@ -106,6 +152,318 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 }
 )
 
+function modHtml()
+{
+  var div = "<div id=\"sb\" style=\"background-color: #d3d3d3d9;width: 254px;height: 65px;position: fixed;z-index: 10001;border-radius: 30px;\"><div id=\"words\" style=\"position: fixed;font-size: 12pt;left: 102px;font-family: monospace;\"><span style=\"-webkit-user-select: none;\">Scale:</span><h1 style=\"width: fit-content;position: relative;left: 96px;bottom: 14px;font-size: 19pt;-webkit-user-select: none;\">2.0</h1></div><div id=\"setcontainer\"><div id=\"button\" style=\"height: 20px;margin-left: auto;margin-right: auto;width: 20px;background-color: lightblue;margin-top: 18px;border-radius: 6px;position: relative;left: 0px;\"></div><div id=\"line\" style=\"height: 5px;width: 175px;background-color: black;margin-left: auto;margin-right: auto;top: 35px;\"></div></div></div>"
+  $("#preview-parent_container").prepend(div)
+  $("#words h1").text(postlist_preview_scale_factor)
+  var buttonInitialValue = parseInt($("#button").css("left"))
+  $(document).mousemove(function(mouseMoveEvent){
+
+    if (mouseMoveEvent.which === 1)
+    {
+      if (!mouseBasePositionReceived)
+      {
+        mouseBasePos = mouseMoveEvent.clientX
+        mouseBasePositionReceived = true;
+      }
+
+      if (mouseMoveEvent.clientX < mouseBasePos)
+      {
+        if (mouseBasePos - mouseMoveEvent.clientX > 1)
+        {
+          $("#button").css("left", (buttonInitialValue - (mouseBasePos - mouseMoveEvent.clientX)))
+
+          
+          switch (true) {
+            case (Math.abs(buttonInitialValue) + Math.abs((mouseMoveEvent.clientX - mouseBasePos))) / 15 < 2:
+              if ("1.9" != previousSizeValue)
+              {
+                chrome.storage.local.set({"scalersize": 1.9})
+                $("#words h1").text("1.9")
+                previousSizeValue = $("#words h1").text()
+                postlist_preview_scale_factor = 1.9
+                sizeUpPreview(true)
+              }
+              break;
+            
+            case (Math.abs(buttonInitialValue) + Math.abs((mouseMoveEvent.clientX - mouseBasePos))) / 15 < 3:
+              if ("1.8" != previousSizeValue)
+              {
+                chrome.storage.local.set({"scalersize": 1.8})
+                $("#words h1").text("1.8")
+                previousSizeValue = $("#words h1").text()
+                postlist_preview_scale_factor = 1.8
+                sizeUpPreview(true)
+              }
+              break;
+            
+            case (Math.abs(buttonInitialValue) + Math.abs((mouseMoveEvent.clientX - mouseBasePos))) / 15 < 4:
+              if ("1.7" != previousSizeValue)
+              {                
+                chrome.storage.local.set({"scalersize": 1.7})
+                $("#words h1").text("1.7")
+                previousSizeValue = $("#words h1").text()
+                postlist_preview_scale_factor = 1.7
+                sizeUpPreview(true)
+              }
+              break;
+
+            case (Math.abs(buttonInitialValue) + Math.abs((mouseMoveEvent.clientX - mouseBasePos))) / 15 < 5:
+              if ("1.6" != previousSizeValue)
+              {                
+                chrome.storage.local.set({"scalersize": 1.6})
+                $("#words h1").text("1.6")
+                previousSizeValue = $("#words h1").text()
+                postlist_preview_scale_factor = 1.6
+                sizeUpPreview(true)
+              }
+              break;
+
+            case (Math.abs(buttonInitialValue) + Math.abs((mouseMoveEvent.clientX - mouseBasePos))) / 15 < 6:
+              if ("1.5" != previousSizeValue)
+              {                
+                chrome.storage.local.set({"scalersize": 1.5})
+                $("#words h1").text("1.5")
+                previousSizeValue = $("#words h1").text()
+                postlist_preview_scale_factor = 1.5
+                sizeUpPreview(true)
+              }
+              break;
+
+            // case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 6:
+            //   $("#words h1").text("2.5")
+            //   break;
+            default:
+              break;
+          }
+        }
+      }
+
+      else if (mouseMoveEvent.clientX > mouseBasePos)
+      {
+        if (mouseMoveEvent.clientX - mouseBasePos > 1)
+        {
+          $("#button").css("left", (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)))
+
+            switch (true) {
+              case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 1:
+                if ("2.0" != previousSizeValue)
+                {               
+                  chrome.storage.local.set({"scalersize": 2.0})   
+                  $("#words h1").text("2.0")
+                  previousSizeValue = $("#words h1").text()
+                  postlist_preview_scale_factor = 2.0
+                  sizeUpPreview(true)
+                }
+                break;
+              
+              case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 2:
+                if ("2.1" != previousSizeValue)
+                {                  
+                  chrome.storage.local.set({"scalersize": 2.1})
+                  $("#words h1").text("2.1")
+                  previousSizeValue = $("#words h1").text()
+                  postlist_preview_scale_factor = 2.1
+                  sizeUpPreview(true)
+                }
+                break;
+              
+              case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 3:
+                if ("2.2" != previousSizeValue)
+                {
+                  chrome.storage.local.set({"scalersize": 2.2})
+                  $("#words h1").text("2.2")
+                  previousSizeValue = $("#words h1").text()
+                  postlist_preview_scale_factor = 2.2
+                  sizeUpPreview(true)
+                }
+                break;
+
+              case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 4:
+                if ("2.3" != previousSizeValue)
+                {                  
+                  chrome.storage.local.set({"scalersize": 2.3})
+                  $("#words h1").text("2.3")
+                  previousSizeValue = $("#words h1").text()
+                  postlist_preview_scale_factor = 2.3
+                  sizeUpPreview(true)
+                }
+                break;
+
+              case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 5:
+                if ("2.4" != previousSizeValue)
+                {                  
+                  chrome.storage.local.set({"scalersize": 2.4})
+                  $("#words h1").text("2.4")
+                  previousSizeValue = $("#words h1").text()
+                  postlist_preview_scale_factor = 2.4
+                  sizeUpPreview(true)
+                }
+                break;
+
+              case (buttonInitialValue + (mouseMoveEvent.clientX - mouseBasePos)) / 15 < 6:
+                if ("2.5" != previousSizeValue)
+                {                  
+                  chrome.storage.local.set({"scalersize": 2.5})
+                  $("#words h1").text("2.5")
+                  previousSizeValue = $("#words h1").text()
+                  postlist_preview_scale_factor = 2.5
+                  sizeUpPreview(true)
+                }
+                break;
+              default:
+                break;
+            }
+          
+        }
+      }
+    }
+  })
+}
+
+var sample_img_link;
+
+function sizeUpPreview(newAge = false){
+  var x = Array.prototype.slice.call(document.getElementsByClassName("preview"))
+
+  var y = Array.prototype.slice.call(document.getElementsByClassName("thumb"))
+
+  var z = Array.prototype.slice.call(document.getElementsByClassName("popular-preview-post"))
+
+  const preview_max_value = 150
+
+  const span_max_w = 170
+
+  const span_max_h = 180
+  
+  x.forEach(async function(preview) {
+    if (($(preview).attr("resized") == null) || ($(preview).attr("resized") != "true") || (newAge == true))
+    {
+      if (preview.width > preview.height)
+      {
+        $(preview).removeAttr("width")
+        $(preview).css("height", 150 * postlist_preview_scale_factor)
+        // await xmlhttpReq($(preview).parent().parent().attr("id").substr(1,), null, false)
+        // if ($(xhr_received_page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
+        // {
+          // var w = $(preview).css("width")
+          // var h = $(preview).css("height")
+          // var r = $(preview).attr("resized")
+          // var cs = $(preview).attr("class")
+          // var vid = $("<video></video>")
+          // $(vid).attr("class", cs)
+          // $(vid).attr("id", "p_"+$(preview).parent().parent().attr("id").substr(1,))
+          // $(vid).attr("autoplay", true)
+          // $(vid).attr("loop", true)
+          // $(vid).attr("resized", r)
+          // $(vid).css("height", h)
+          // $(vid).css("width", w)
+          // $(vid).attr("src", $(xhr_received_page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
+          // $(vid).attr("crossorigin", "anonymous")
+          // $(vid).attr("referrerpolicy", "no-referrer")
+          // $(preview).before($("<meta></meta>").attr({"name": "referrer", "content": "no-referrer"}))
+          // $(preview).before(vid)
+          // document.getElementById("p_"+$(preview).parent().parent().attr("id").substr(1,)).muted = true;
+          // $(preview).remove()
+        // }
+        // else
+        // {
+          // $(preview).attr("src", $(xhr_received_page.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
+          // $(preview).attr("referrerpolicy", "no-referrer")
+          // $(preview).attr("crossorigin", "anonymous")
+        // }
+      }
+      else
+      {
+        $(preview).css("width", parseInt($(preview).attr("width")) * postlist_preview_scale_factor)
+        $(preview).css("height", parseInt($(preview).attr("height")) * postlist_preview_scale_factor)
+      }
+      $(preview).attr("resized", "true")
+      $(preview).css("position", "relative")
+      if ($(preview).css("border").match("(none)"))
+      {
+        $(preview).css("border", "2px solid #1d205e00")
+      }
+    }
+  });
+
+  $("div.content").css("width", "auto")
+
+  y.forEach(span => {
+    if ((parseInt($(span).css("width")) == span_max_w) || (parseInt($(span).css("height")) == span_max_h) || (newAge == true))
+    {
+      if ($(span.parentElement).hasClass("popular-preview-post"))
+      {
+
+      }
+
+      else
+      {
+        $(span).css("width", span_max_w * postlist_preview_scale_factor)
+        $(span).css("height", span_max_h * postlist_preview_scale_factor)
+      }
+
+      var stimg = $(span).find("img.preview")[0]
+      
+
+        // console.log("high")
+        $(span).css("width", (parseInt($(span).css("width"))  -  (parseInt($(span).css("width")) - stimg.width - 32)) )
+
+
+      
+
+
+        var ar = stimg.width/stimg.height
+        // console.log("wide")
+        // console.log(stimg.naturalWidth)
+        // console.log(stimg.naturalHeight)
+        // console.log(stimg.naturalWidth + ((270 - stimg.naturalHeight) * ar) + 32)
+        if ($(span.parentElement).hasClass("popular-preview-post"))
+        {
+          $(span.parentElement).css("width", "570px")
+          $(span.parentElement).css("height", "inherit")
+          $(span).css("width", "-webkit-fill-available")
+          $(span).css("margin-left", "16px")
+          $(span).css("margin-right", "16px")
+        }
+        else
+        {
+          $(span).css("width", "fit-content")
+          $(span).css("margin-left", "16px")
+          $(span).css("margin-right", "16px")
+        }
+
+      $(span).css("height", (parseInt($(span).css("height"))  -  (parseInt($(span).css("height")) - parseInt($(stimg).css("height")) - 32)) )
+    }
+  });
+
+  z.forEach(div => {
+    if (parseInt($(div).css("width")) == span_max_w)
+    {
+      $(div).css("width", parseInt($(div).css("width")) * postlist_preview_scale_factor)
+      $(div).css("height", "inherit")
+    }
+  });
+}
+
+function movePosts(mutationsList)
+{
+  $("div.content").children().each((ind, div)  => {
+    if (div.hasAttribute("next-page-url"))
+    {
+      if ((!$(div).attr("next-page-url").match("page=2$")) && (div.id != "paginator"))
+      {
+        var d = div
+        $(div).children().each((ind2, ele) => {
+          $("div.content").children()[1].append(ele)
+        })
+      }
+    }
+
+  });
+}
+
 const mutationObserverTargetNode = document.querySelector("#someElement");
 const observerOptions = {
   childList: true,
@@ -115,7 +473,27 @@ const observerOptions = {
   subtree: true
 }
 
+const nOpts = {
+  childList: true,
+  // attributes: true,
+
+  // Omit (or set to false) to observe only changes to the parent node
+  subtree: true
+}
+
+const nOpts_ = {
+  childList: true,
+  // attributes: true,
+
+  // Omit (or set to false) to observe only changes to the parent node
+  subtree: false
+}
+
+var paginatorObserver = new MutationObserver(movePosts)
+
 var mutationObserver = new MutationObserver(clearb)
+
+var sizeApplication = new MutationObserver(sizeUpPreview)
 
 var context_menu_pid = undefined;
 
@@ -137,7 +515,7 @@ var holdclicktimeout;
 
 var hasHeldDownClick;
 
-console.log(chrome.extension.getURL("/history/history.html"))
+console.log(chrome.runtime.getURL("/history/history.html"))
 
 apply();
 
@@ -263,7 +641,7 @@ async function createHistoryMenuEntry(postid, menu, type, page)
           }
           else
           {
-            console.log("searching through history entries")
+            //console.log("searching through history entries")
             iteration += 1
           }
         }
@@ -505,23 +883,23 @@ async function createBase64Image(type, page = undefined) {
           if ((resultval.HMenu_downloadanimatedgifs == true) || (page.getElementById("image").src.match(".jpg")))
           {
               //broke as of 09-12
-              // await newxmlHttpReq(page.getElementById("image").src).catch(async function(rejectedval){
-              //   await newxmlHttpReq(page.getElementById("image").src)
-              // })
+              await newxmlHttpReq(page.getElementById("image").src).catch(async function(rejectedval){
+                await newxmlHttpReq(page.getElementById("image").src)
+              })
 
-              var canvas = document.createElement("canvas");
+              // var canvas = document.createElement("canvas");
 
-              canvas.width = img.naturalWidth;
-              canvas.height = img.naturalHeight;
+              // canvas.width = img.naturalWidth;
+              // canvas.height = img.naturalHeight;
   
-              // Copy the image contents to the canvas
-              var ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0);
+              // // Copy the image contents to the canvas
+              // var ctx = canvas.getContext("2d");
+              // ctx.drawImage(img, 0, 0);
     
-              var dataURL = canvas.toDataURL("image/jpeg", 1);
-              console.log("b64 img created")
-              // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
-              base64data = dataURL;
+              // var dataURL = canvas.toDataURL("image/jpeg", 1);
+              // console.log("b64 img created")
+              // // setCssOnElement(document.getElementById("image-link").firstChild.nextSibling, "red", true)
+              // base64data = dataURL;
 
               if ((resultval.HMenu_downloadanimatedgifs == true) && (page.getElementById("image").src.match(".gif")))
               {
@@ -671,7 +1049,7 @@ function makeVideoPlayer(e)
   var leftposition = e.currentTarget.getBoundingClientRect().left;
   var rightposittion = e.currentTarget.getBoundingClientRect().right;
   thumbresheight = parseInt($(e.currentTarget).attr("height")) 
-  thumbreswidth = parseInt($(e.currentTarget).attr("width"))
+  thumbreswidth = e.currentTarget.clientWidth
 
   //create video player
   var preview = $("<video></video>");
@@ -781,13 +1159,13 @@ function createPreviewMenuBar()
 
 function createMenuBarFullscreenButton()
 {
-  i = $("<img>").attr({"src": chrome.extension.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(toggleFullscreen)
+  i = $("<img>").attr({"src": chrome.runtime.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(toggleFullscreen)
   return i
 }
 
 function createMenuBarDownloadButton()
 {
-  i = $("<img>").attr({"src": chrome.extension.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(getTheGodDamnLink3)
+  i = $("<img>").attr({"src": chrome.runtime.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(getTheGodDamnLink3)
   return i;
 }
 
@@ -811,7 +1189,7 @@ function generateBase64Entry()
  */
 function getPostIdOfHoveredImage(image)
 {
-  return $(image).parent().parent().attr("id").substr(1,)
+  return $(image).parent().attr("href").substr(11,)
 }
 
 /**apply event handlers to thumbnails on screen*/
@@ -842,6 +1220,7 @@ $(".thumblink").on("mousedown", function(e)
         } 
         catch (error) 
         {
+          console.log(error)
           console.log("weren't hovering over a thumbnail")
         }
       }
@@ -916,7 +1295,7 @@ function addPreviewImg(e)
   var leftposition = e.currentTarget.getBoundingClientRect().left;
   var rightposittion = e.currentTarget.getBoundingClientRect().right;
   thumbresheight = parseInt($(e.currentTarget).attr("height")) 
-  thumbreswidth = parseInt($(e.currentTarget).attr("width"))
+  thumbreswidth = e.currentTarget.clientWidth
 
   var preview = $("<img></img>");
   $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 4px solid #bdbdbd;") 
@@ -924,6 +1303,7 @@ function addPreviewImg(e)
   $(preview).attr("class", "preview_image_or_video_tag")
   $(preview).attr("referrerpolicy", "no-referrer")
   $(preview).attr("crossorigin", "anonymous");
+  $(preview).on("click", toggleFullscreen)
 
   //assign preview image position
   $(preview).on("load", function() 
@@ -1171,12 +1551,13 @@ function createTime(day, m, y)
    
 function addscript()
 {
-  post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
+  //post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
 
+  $("#autofavscript").remove();
 
   var script = document.createElement("script");
+  script.src = chrome.runtime.getURL("autofave.js")
   script.id = "autofavscript"
-  script.innerHTML = "customfavfunction = function(){var post_id = document.getElementById(\"post-view\").firstChild.nextSibling.innerText; var enabled = true; if (enabled == true) {Favorite.create(post_id)}}"
   document.body.appendChild(script);
 }
 
@@ -1188,11 +1569,13 @@ function addscript()
 
 function addscript2()
 {
-  post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
+  //post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
+
+  $("#autofavscript").remove();
 
   var script = document.createElement("script");
+  script.src = chrome.runtime.getURL("autofavd.js")
   script.id = "autofavscript"
-  script.innerHTML = "customfavfunction = function(){var post_id = document.getElementById(\"post-view\").firstChild.nextSibling.innerText; var enabled = false; if (enabled == true) {Favorite.create(post_id)}}"
   document.body.appendChild(script);
 }
 

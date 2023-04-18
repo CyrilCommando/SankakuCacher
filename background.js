@@ -1,5 +1,11 @@
 // background.js
 
+
+//thanks mf v3
+importScripts("settingshelp.js")
+importScripts("saveFile.js")
+
+
 chrome.runtime.onInstalled.addListener(function(details)
 {
   default_settings();
@@ -14,76 +20,32 @@ chrome.runtime.onInstalled.addListener(function(details)
   // title:"Download"})
 })
 
-chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "downloadbuttonId", onclick: function ()
-{
+chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "downloadbuttonId", title:"Download"})
+
+chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "historymenubuttonId", title:"History"})
+
+chrome.contextMenus.create({contexts: ["action"], documentUrlPatterns: [], id: "settingsmenubuttonId", title:"Settings"})
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  console.log(info)
+  console.log(tab)
+  switch (info.menuItemId) {
+    case "downloadbuttonId":
+      chrome.tabs.sendMessage(tab.id, {message: "context_menu_clicked_download"})
+      break;
   
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {message: "context_menu_clicked_download"})
-}) 
-}
-, 
-title:"Download"})
+    case "historymenubuttonId":
+      chrome.tabs.create({url: chrome.runtime.getURL("/history/history.html")})
+      break;
+      
+    case "settingsmenubuttonId":
+      chrome.tabs.create({url: chrome.runtime.getURL("/settings/settings.html")})
+      break;
 
-chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "historymenubuttonId", onclick: function ()
-{
-  chrome.tabs.create({url: chrome.extension.getURL("/history/history.html")})
-}
-, 
-title:"History"})
-
-chrome.contextMenus.create({contexts: ["browser_action"], documentUrlPatterns: [], id: "settingsmenubuttonId", onclick: function ()
-{
-  chrome.tabs.create({url: chrome.extension.getURL("/settings/settings.html")})
-}
-, 
-title:"Settings"})
-
-function xmlhttpReq(url)
-{
-  var xhr = new XMLHttpRequest();
-
-  xhr.onload = function() {
-    console.log("xhr SENT")
+    default:
+      break;
   }
-
-  xhr.open("GET", url);
-  xhr.responseType = "document";
-  xhr.send();
-  xhr.onreadystatechange = function() {
-    if (this.readyState == 4) {
-
-      //if image link is undefined (if not an image)
-      if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
-      {
-        //preview source link
-        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
-        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
-      
-        //download link for videos (unused probably)
-        downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-        wow_A_Function(downloadLink)
-      }
-      else{
-        
-        var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
-        var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
-      
-        //download link for images
-        if (y === undefined)
-        {
-          downloadLink = v
-          wow_A_Function(downloadLink)
-        }
-      
-        else
-        {
-          downloadLink = y
-          wow_A_Function(downloadLink)
-        }
-      }
-    }
-}
-}
+})
 
 var positiveinstance = false;
 
@@ -91,6 +53,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     switch (request.message) {
       
+      //for settings menu & popup window mdl. when the hell did chrome allow xhr to be used by extension pages?
       case"wow_a_function":
       wow_A_Function(request.url, request.isMassDownload)
         break;
@@ -99,9 +62,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         chrome.tabs.reload(sender.tab.id)
         break;
 
-      //download from history menu
+      //download from history menu // broke as of 2022-09-11, mf v3
       case "xhr":
-        xmlhttpReq(request.link)
+        //xmlhttpReq(request.link)
+        alert("still using XHR! REPORT THIS AS BUG")
         break;
       
       case "chan":
@@ -132,7 +96,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       
         chrome.storage.local.get(["savefolder", "mp4swebms", "enabled", "advanced_settings_object"], function(newResult) { 
 
-        chrome.tabs.getSelected(tab => {
+        chrome.tabs.query({active: true}, (tab) => {
+
+          var tab = tab[0]
 
           //do a proper regex for that then
           //fuck it
@@ -238,7 +204,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               else{positiveinstance = false;}
             } //if not webm/mp4
           } /*if url*/ else{} ////////callback fucking heck 
-        }); //chrome.tabs.getSelected
+        }); //chrome.tabs.query
       }) //chrome.storage.local.get
         break;
 
@@ -247,6 +213,33 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         break;
     }
 });
+
+// Called when the user clicks on the browser action.
+chrome.action.onClicked.addListener(function(tab) {
+  // Send a message to the active tab
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var activeTab = tabs[0];
+    //sendMessage − chrome.runtime.sendMessage(string extensionId, any message, object options, function responseCallback)
+    chrome.tabs.sendMessage(activeTab.id, {"message": "clicked_browser_action"});
+  });
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  chrome.storage.local.set({"fixlatency": true})
+})
+
+
+
+///////////////
+///////////////
+///////////////
+///////////////
+///////////////
+///////////////
+///////////////
+///////////////
+
+
 
 function openLinkInBrowser()
 {
@@ -271,88 +264,3 @@ function getData(sKey) {
     });
   });
 }
-
-// Called when the user clicks on the browser action.
-chrome.browserAction.onClicked.addListener(function(tab) {
-  // Send a message to the active tab
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    var activeTab = tabs[0];
-    //sendMessage − chrome.runtime.sendMessage(string extensionId, any message, object options, function responseCallback)
-    chrome.tabs.sendMessage(activeTab.id, {"message": "clicked_browser_action"});
-  });
-});
-
-function wow_A_Function(download_link, isMassDownload = false)
-{
-  chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags"], function(newResult) { 
-
-
-
-      //do a proper regex for that then
-      //fuck it
-
-      
-        var includeshttps = download_link[0] + download_link[1] + download_link[2] + download_link[3] + download_link[4];
-      
-        if (includeshttps == "https")
-        {
-          download_link = download_link.substring(6)
-        } 
-  
-        var name = download_link.substr(34, 36)
-  
-        if (name[33] + name[34] + name[35] === "web")
-        {
-          name = name + "m"
-        }
-  
-        
-        var svfld ="SankakuCacher/"
-  
-        
-        if (newResult.savefolder == "SankakuCacher")
-        {
-          //break;
-        }
-        else 
-        {
-          //check if the input filename has a slash in it
-          if (newResult.savefolder.substr(0, 1) == "/") 
-          {
-            alert(newResult.savefolder.substr(0, 1))
-            newResult.savefolder = newResult.savefolder.substr(1);
-          } 
-
-          if (newResult.savefolder.substr(-1, 1) == "/")
-          {
-            alert(newResult.savefolder.substr(-1, 1))
-            newResult.savefolder = newResult.savefolder.substr(-1,) 
-          }
-
-        svfld = newResult.savefolder + "/"
-      
-        }
-
-        console.log(isMassDownload)
-        if (isMassDownload)
-        {
-          if (newResult.mass_download_prevtags != "")
-          {
-            svfld += newResult.mass_download_prevtags.replaceAll(":", "_")
-            svfld += "/"
-          }
-          else if (newResult.mass_download_prevtags == "")
-          {
-            svfld += "homepage"
-            svfld += "/"
-          }
-        }
-        console.log(svfld)
-
-        chrome.downloads.download({url: "https:" + download_link, filename: svfld + name, saveAs: false, conflictAction: "overwrite"})
-       /*if url*/  ////////callback fucking heck 
- //chrome.tabs.getSelected
-  }) //chrome.storage.local.get
-}
-
-chrome.storage.local.set({"fixlatency": true})

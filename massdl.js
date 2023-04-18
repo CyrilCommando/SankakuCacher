@@ -44,6 +44,16 @@ chrome.downloads.onChanged.addListener(downloaddelta => {
                 concurrentImageTracker --
             }
         }
+        if(downloaddelta.state.current == "interrupted")
+        {
+            concurrentImageTracker --
+            console.log("resumed failed dl")
+            setTimeout(() => {
+                chrome.runtime.sendMessage({"message": "wow_a_function", url: downloaddelta.url.current, isMassDownload: true})
+                // chrome.downloads.resume(downloaddelta.id)
+                concurrentImageTracker ++
+            }, 2500);
+        }
     }
 })
 
@@ -112,7 +122,12 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     var popularExcludedArray = [];
     for (let index = 0; index < thumbs.length; index++) {
         const element = thumbs[index];
-        if (element.parentElement.className != "popular-preview-post")
+        if ($(element.parentElement).hasClass("popular-preview-post") || $(element).find("img").hasClass("ai-art"))
+        {
+            
+        }
+
+        else
         {
             popularExcludedArray.push(element)
         }
@@ -121,7 +136,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
 
     for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
         const image = popularExcludedArray[ind]; 
-        await xmlhttpReq(image.id.substr(1,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
+        await xmlhttpReq($(image.firstChild).attr("href").substring(11,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
             breakOutError = true; 
             dldimages = 0; 
             mdl_pginc = 1; 

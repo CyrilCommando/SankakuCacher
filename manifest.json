@@ -1,22 +1,21 @@
 {
   "name": "SankakuCacher",
-  "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. More functionality soon.",
-  "version": "1.10.1",
+  "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. History menu, mass download, & QOL.",
+  "version": "2",
   "author": "CyrilCommando",
-  "web_accessible_resources": [
-    "animation.css",
-    "fs1.png",
-    "dl.png"
-  ],
-  "manifest_version": 2,
+  "web_accessible_resources": [{
+    "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js"],
+    "matches": ["https://chan.sankakucomplex.com/*"]
+  }],
+  "manifest_version": 3,
   "permissions": ["storage", "downloads", "tabs", "activeTab", "background", "contextMenus", "unlimitedStorage"],
-  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'self';"},
   "icons": {
     "16": "icon.png",
     "48": "squared48.png",
     "128": "squared.png" 
   },
-  "browser_action": {
+  "action": {
     "default_icon": "icon.png",
     "default_title": "SankakuCacher",
     "default_popup": "popup.html"
@@ -24,9 +23,10 @@
   "content_scripts": [ 
     {
       "matches": ["https://chan.sankakucomplex.com/post/*", "https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/", "https://s.sankakucomplex.com/data/*"],
-      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTags.js", "content.js"]
+      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTags.js", "content.js"],
+      "css": ["fix_chans_css_again.css"]
     } ],
   "background": {
-    "scripts": ["jquery-3.4.1.min.js", "settingshelp.js", "background.js" ]
+    "service_worker": "background.js" 
   }
 }
