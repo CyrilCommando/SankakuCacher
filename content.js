@@ -84,12 +84,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // document.getElementById("image").crossOrigin = "anonymous"
         var vid = $("#image")
         // var src1 = "https:"
-        var src2 = document.getElementById("image").src
+        var src2 = $(vid).find("source").attr("src")
         // var res = src1.concat(src2)
         $("#image").remove()
         $(vid).attr("src", src2)
         $(vid).attr("crossorigin", "anonymous")
         $(vid).attr("referrerpolicy", "no-referrer")
+        $(vid).find("source").remove()
+        $(vid).attr("autoplay", true)
         $("#post-content").append(vid)
 
         idName = "#image"
@@ -1009,6 +1011,7 @@ function makeFullScreen()
   $("#preview-all_container").attr("style", "position: fixed; display: flex; background-color: #0808089e; height: 100vh; width: 100%; justify-content: center; align-items: center; z-index: 111111;")
   $(".preview_image_or_video_tag").attr("style", "max-height: 100vh; max-width: 100%; border: 4px solid #bdbdbd;")
   $("#preview-image_container").attr("style", "width: fit-content;")
+  $("#preview-all_container > div:nth-child(2)").css("display", "none")
   isFullscreen = true;
 }
 
@@ -1017,6 +1020,7 @@ function undoFullScreen()
   $("#preview-all_container").attr("style", "position: relative;  z-index: 111111; display: inline-block; left: "+ isNotFullscreenPositionHorizontal +"px; top: "+ isNotFullscreenPositionVertical +"px;")
   $("#preview-image_container").attr("style", "")
   $(".preview_image_or_video_tag").attr("style", "border: 4px solid #bdbdbd; max-height: " + isNotFullscreenDimensionsHeight + "px; max-width: " + isNotFullscreenDimensionsWidth + "px;")
+  $("#preview-all_container > div:nth-child(2)").css("display", "flex")
   isFullscreen = false;
 }
 
@@ -1192,6 +1196,11 @@ function getPostIdOfHoveredImage(image)
   return $(image).parent().attr("href").substr(11,)
 }
 
+function getLegacyPostIdOfHoveredImage(image)
+{
+  return $(image).parent().parent().attr("id").substr(1,)
+}
+
 /**apply event handlers to thumbnails on screen*/
 function apply()
 {
@@ -1316,7 +1325,8 @@ function addPreviewImg(e)
     //calc top pos
     var h= topposition; 
     h -= this.height; 
-    h -= 8; 
+    h -= 8;
+    h -= 120;
 
     //assign vertical position
     //check if vertical position is out of bounds
@@ -1355,6 +1365,8 @@ function addPreviewImg(e)
     }
     else{$("#preview-all_container").css("left", lp); isNotFullscreenPositionHorizontal = lp;}
 
+    $(e.currentTarget).hasClass("favorited") ? $("#add-to-favs").css("display", "none") : $("#remove-from-favs").css("display", "none")
+
     createHistoryMenuEntry(postid, "Previewed", "preview", xhr_received_page)
 
     //
@@ -1373,6 +1385,50 @@ function addPreviewImg(e)
 
   //append preview image container to all container
   $(preview_all_container).append(preview_image_container)
+
+
+  var favbarid = getLegacyPostIdOfHoveredImage(e.currentTarget)
+
+  var isfaved = $(e.currentTarget).hasClass("favorited")
+
+var globalfavbar = "<div style=\"\
+    height: 120px;\
+    width: auto;\
+    background-color: #3e3e3e;\
+    border: 2px solid darkgrey;\
+    display: flex;\
+    justify-content: space-evenly;\
+    align-content: center;\
+    align-items: center;\
+\"><div id=\"rating\" style=\"display: inline-block;padding-bottom: 4px;margin-bottom: 20px;\"><ul class=\"unit-rating\">\
+<li class=\"star-full\"><a href=\"#\" title=\"1 Star\" class=\"r1-unit\" onclick=\"javascript:Post.vote(1, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"2 Stars\" class=\"r2-unit\" onclick=\"javascript:Post.vote(2, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"3 Stars\" class=\"r3-unit\" onclick=\"javascript:Post.vote(3, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"4 Stars\" class=\"r4-unit\" onclick=\"javascript:Post.vote(4, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"5 Stars\" class=\"r5-unit\" onclick=\"javascript:Post.vote(5, "+favbarid+"); return false;\"></a></li>\
+</ul></div>\
+\
+    <div id=\"add-to-favs\" style=\"\
+    display: inline-block;\
+    width: 170px;\
+    background: center;\
+    text-align: -webkit-center;\
+    margin-bottom: 20px;\
+\"><a class=\"favoriteIcon\" href=\"#\" onclick=\"Favorite.create("+favbarid+"); return false;\" title=\"Add to favorites\" style=\"\
+    margin: 0;\
+\"></a></div>\
+\
+\<div id=\"remove-from-favs\" style=\"\
+width: 170px;\
+background: center center;\
+text-align: -webkit-center;\
+margin-bottom: 20px;\
+\"><a class=\"favoriteIcon clicked\" href=\"#\" onclick=\"Favorite.destroy("+favbarid+"); return false;\" title=\"Remove from favorites\" style=\"\
+margin: 0;\
+\"></a></div>\
+</div>"
+
+  $(preview_all_container).append(globalfavbar)
 
   //append all
   $("#preview-parent_container").append(preview_all_container)
@@ -1420,6 +1476,7 @@ function clearb(mutationRecord, mutationwatcher)
   // console.log("SankakuCacher: set localstorage")
   localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
   localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
+  $("div#adContainer").remove();
 }
 
 /**add script button for adding fav class and creatting relative create function for IMG element*/

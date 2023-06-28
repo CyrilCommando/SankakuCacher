@@ -21,7 +21,7 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false, ind, limit)
       console.log("image link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src"))
 
       //log video url
-      console.log("video link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
+      console.log("video link: "+$(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").find("source").attr("src"))
 
       //if image link is undefined (if not an image)
       if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
@@ -30,14 +30,14 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false, ind, limit)
         {
           $("#preview-all_container").remove()
           makeVideoPlayer(e)
-          $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src"))
+          $(".preview_image_or_video_tag").attr("src", $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").find("source").attr("src"))
         }
         //preview source link
         var v = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src");
         var y = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").attr("href");
       
         //download link for videos (unused probably)
-        downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
+        downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").find("source").attr("src")
       }
       else{
         if (isPreview)

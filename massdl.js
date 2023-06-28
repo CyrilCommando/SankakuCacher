@@ -122,7 +122,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     var popularExcludedArray = [];
     for (let index = 0; index < thumbs.length; index++) {
         const element = thumbs[index];
-        if ($(element.parentElement).hasClass("popular-preview-post") || $(element).find("img").hasClass("ai-art"))
+        if ($(element.parentElement).hasClass("popular-preview-post") || $(element.parentElement.parentElement).hasClass("has-mail"))
         {
             
         }
