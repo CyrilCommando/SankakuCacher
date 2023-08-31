@@ -177,7 +177,6 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
         {
             console.log("reached end of postlist")
             end_Of_Postlist = true;
-            dldimages = 0;
             mdl_pginc = 1;
         }
     }

@@ -55,6 +55,8 @@ function wow_A_Function(download_link, isMassDownload = false)
           if (newResult.mass_download_prevtags != "")
           {
             svfld += newResult.mass_download_prevtags.replaceAll(":", "_")
+            svfld = svfld.replaceAll(">=", "greater_than_")
+            svfld = svfld.replaceAll("<=", "less_than_")
             svfld += "/"
           }
           else if (newResult.mass_download_prevtags == "")
