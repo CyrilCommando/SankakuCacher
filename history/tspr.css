@@ -1,0 +1,146 @@
+div.tsbg{
+    position: absolute;
+    filter: blur(4px);
+    opacity: 75%;
+    width: calc(400px + 25px);
+    bottom: -39px;
+    overflow: hidden;
+    height: 42px;
+    left: -12px;
+    background-image: linear-gradient(to top, #000000, #ffffff);
+    transform: perspective(82px) rotateX( 
+19deg);
+}
+
+div.tsbg img{
+    transform: scaleY(-1);
+    opacity: inherit;
+    max-width: 900px;
+    max-height: 900px;
+    width: inherit;
+}
+
+div.tsbg video{
+    transform: scaleY(-1);
+    opacity: inherit;
+    max-width: 900px;
+    max-height: 900px;
+    width: inherit;
+}
+
+#header {
+    background-color: #404040;
+    height: 10.5em;
+    display: flex;
+    justify-content: space-around;
+}
+
+body{
+    background-color: black;
+    margin: 0;
+}
+
+div#ct{
+    height: fit-content;
+    background-color: black;
+    margin: 8px;
+    margin-top: 0px;
+}
+
+div#htext h1{
+    color: #969696;
+    font-size: 3.5em;
+    font-family: Alfa Slab One;
+    -webkit-text-stroke: thin;
+    -webkit-text-stroke-color: #ffffff8c;
+}
+
+.thumbs img
+{
+    /* margin: 30px 20px 30px 20px; */
+    max-height: 338px;
+    max-width: 400px;
+    display: inline-block;
+    vertical-align: middle;
+    align-self: center;
+    transform-origin: center;
+    transition: transform 60ms ease-in-out;
+}
+
+.thumbs video
+{
+    /* margin: 30px 20px 30px 20px; */
+    max-height: 338px;
+    max-width: 400px;
+    display: inline-block;
+    vertical-align: middle;
+    align-self: center;
+    transform-origin: center;
+    transition: transform 60ms ease-in-out;
+}
+
+#header div
+{
+    display: inline-block;
+}
+
+#menubutton
+{
+    width: 84px;
+}
+
+/* .thumbs img:hover
+{
+    outline: 3px solid yellow;
+    transform: scale(2.2);
+} */
+
+div#header div {
+    width: 154.64px;
+    text-align: center;
+}
+
+#mppane {
+    line-height: 0px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    /* flex-flow: wrap-reverse; */
+    /* flex-direction: row-reverse; */
+}
+
+.preview-menu_bar
+{
+    display: flex;
+    justify-content: space-between;
+    height: 0;
+    position: relative;
+    bottom: 10px;
+}
+
+.preview-parent_div
+{
+    align-self: center;
+    transform-origin: center;
+    transition: transform 60ms ease-in-out;
+    margin: 30px 30px 76px 30px;
+    position: relative;
+}
+
+#pageselect
+{
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+.page_number_select
+{
+display: inline-block;
+color: #91dbfe;
+font-size: 16px;
+margin-left: 3px;
+margin-right: 3px;
+text-decoration: none;
+height: fit-content;
+}
