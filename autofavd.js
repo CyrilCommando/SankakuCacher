@@ -1,0 +1,1 @@
+customfavfunction = function(){var post_id = document.getElementById("post-view").firstChild.nextSibling.innerText; var enabled = false; if (enabled == true) {Favorite.create(post_id)}}
