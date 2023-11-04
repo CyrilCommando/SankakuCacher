@@ -1,7 +1,7 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. History menu, mass download, & QOL.",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
     "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js"],
