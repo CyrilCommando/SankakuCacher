@@ -7,7 +7,7 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false, ind, limit)
     // console.log("xhr SENT")
   }
 
-  xhr.open("GET", "https://chan.sankakucomplex.com/post/show/"+pid);
+  xhr.open("GET", "https://chan.sankakucomplex.com/posts/"+pid);
   xhr.responseType = "document";
   xhr.send();
   return new Promise(function (resolve, reject) {

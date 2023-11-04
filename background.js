@@ -20,9 +20,9 @@ chrome.runtime.onInstalled.addListener(function(details)
   // title:"Download"})
 })
 
-chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "downloadbuttonId", title:"Download"})
+chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/en/*", "https://chan.sankakucomplex.com/en/posts/*"], id: "downloadbuttonId", title:"Download"})
 
-chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://chan.sankakucomplex.com/", "https://chan.sankakucomplex.com/?tags*", "https://chan.sankakucomplex.com/post/*"], id: "historymenubuttonId", title:"History"})
+chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/en/*", "https://chan.sankakucomplex.com/en/posts/*"], id: "historymenubuttonId", title:"History"})
 
 chrome.contextMenus.create({contexts: ["action"], documentUrlPatterns: [], id: "settingsmenubuttonId", title:"Settings"})
 

@@ -113,8 +113,8 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     });
     //
 
-    //load page & save into mdl_listpage
-    var ustr = `https://chan.sankakucomplex.com/?tags=${concatenated}&commit=Search&page=${mdl_pginc}`
+    //load page & save into mdl_listpage    https://chan.sankakucomplex.com/posts/index.html?auto_page=t&next=34733274&page=3
+    var ustr = `https://chan.sankakucomplex.com/posts/index.html?tags=${concatenated}&auto_page=t&page=${mdl_pginc}`
     await xmlHttpReqforMDL(ustr)
 
     
@@ -136,7 +136,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
 
     for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
         const image = popularExcludedArray[ind]; 
-        await xmlhttpReq($(image.firstChild).attr("href").substring(11,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
+        await xmlhttpReq($(image).find("a").attr("href").substring(7,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
             breakOutError = true; 
             dldimages = 0; 
             mdl_pginc = 1; 

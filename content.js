@@ -41,7 +41,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   {
     //getHighestCharacterTag();
   }
-  if (!request.message.match("https:\/\/chan.sankakucomplex.com\/post\/show\/"))
+  if (!request.message.match("https://chan.sankakucomplex.com/posts/*"))
   {
     chrome.storage.local.get(["scalersize"], function(result){
       if (true)
@@ -69,14 +69,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     })
   }
-  if (request.message.match("https:\/\/chan.sankakucomplex.com\/post\/show\/"))
+  if (request.message.match("https://chan.sankakucomplex.com/*/*"))
   {
     chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "resizecontent", "scrolltocontent"], function(result){
 
       if ($("#image").is("img"))
       {
         document.getElementById("image").crossOrigin = "anonymous"
-        $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)})
+        $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(request.message.substr(46,), "Viewed", "postpage", document)})
       }
       
       else if ($("#image").is("video"))
@@ -103,7 +103,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           $("#image").on("timeupdate", function(e) {console.log("video loaded"); 
           if ((!video_Event_Fired_Once) && (readyNow))
           {
-            createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)
+            createHistoryMenuEntry(request.message.substr(46,), "Viewed", "postpage", document)
             video_Event_Fired_Once = true;
           }
           })
@@ -113,7 +113,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           $("#image").on("progress", function(e) {console.log("video loaded"); 
           if ((!video_Event_Fired_Once) && (document.getElementById("image").currentTime > 0))
           {
-            createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)
+            createHistoryMenuEntry(request.message.substr(46,), "Viewed", "postpage", document)
             video_Event_Fired_Once = true;
           }
           })
@@ -1193,7 +1193,7 @@ function generateBase64Entry()
  */
 function getPostIdOfHoveredImage(image)
 {
-  return $(image).parent().attr("href").substr(11,)
+  return $(image).parent().attr("href").substr(7,)
 }
 
 function getLegacyPostIdOfHoveredImage(image)
