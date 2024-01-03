@@ -622,7 +622,7 @@ async function createHistoryMenuEntry(postid, menu, type, page)
   options[''+postid]= b64image;
   console.log(options)
   imagedataentry = new ImageDataEntry(b64image)
-  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/post/show/"+postid, getImageTags(page))
+  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/en/posts/"+postid, getImageTags(page))
   chrome.storage.local.get([menu], function(result) {
     try {
       operlist = new History(result[menu].list);
@@ -1193,7 +1193,7 @@ function generateBase64Entry()
  */
 function getPostIdOfHoveredImage(image)
 {
-  return $(image).parent().attr("href").substr(7,)
+  return $(image).parent().attr("href").substr(10,)
 }
 
 function getLegacyPostIdOfHoveredImage(image)

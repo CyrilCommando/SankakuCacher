@@ -86,35 +86,24 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     chrome.storage.local.set({"mass_download_prevtags": document.getElementById("tagsdownload").value})
 
     // split tags
-    var x = document.getElementById("tagsdownload").value;
-    x = x.split(" ");
-    var concatenated;
-    var iterate = 0;
+    let rawinput = document.getElementById("tagsdownload").value;
+    let x = rawinput.split(" ");
+    var concatenated = "";
     var arr = Array.from(x);
-        arr.forEach(element => {
-        if ((concatenated == undefined) && (arr.length != 1))
-        {
-            concatenated = element + "+";
-            iterate = iterate++
-        }
-        else if ((concatenated == undefined) && (arr.length == 1))
-        {
-            concatenated = element;
-        }
-        else if ((arr.length > iterate) && (concatenated != undefined))
-        {
-            concatenated = concatenated + element + "+" 
-            iterate = iterate++;
-        }
-       else
-       {
-        concatenated = concatenated + element;
-       }
-    });
+
+    if (arr.length == 0) concatenated = rawinput;
+
+    if (arr.length > 0)
+    {
+        arr.forEach(tag => {
+            concatenated = concatenated + tag + "+"
+        })
+    }
+     
     //
 
     //load page & save into mdl_listpage    https://chan.sankakucomplex.com/posts/index.html?auto_page=t&next=34733274&page=3
-    var ustr = `https://chan.sankakucomplex.com/posts/index.html?tags=${concatenated}&auto_page=t&page=${mdl_pginc}`
+    var ustr = `https://chan.sankakucomplex.com/posts.html?tags=${concatenated}&auto_page=t&page=${mdl_pginc}`
     await xmlHttpReqforMDL(ustr)
 
     
@@ -136,7 +125,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
 
     for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
         const image = popularExcludedArray[ind]; 
-        await xmlhttpReq($(image).find("a").attr("href").substring(7,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
+        await xmlhttpReq($(image).find("a").attr("href").substring(10,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
             breakOutError = true; 
             dldimages = 0; 
             mdl_pginc = 1; 
