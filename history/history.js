@@ -1,14 +1,8 @@
-//image64ToImage();
-
-//var toggled=false;
-
-//NOT USED
-var downloadLink;
-//
-
+// for storing which previews are expanded
 var dynamicobjectobject = {};
 
 //WHY THE FUCK DIDNT I DO THIS SOONER
+// for storing the style to return to of the expanded images
 var kvp = {};
 
 var image_postid;
@@ -896,31 +890,35 @@ function addDynamicToggledVariableToObject(id, toggled)
  */
 function populateList(selectedpage = 1, sb = false, sbpersistent = false)
 {
+  //while the page has any children remove them to prepare
   while (document.getElementById("mppane").firstChild) {
     document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
   }
-  var x = document.getElementById("menu").value
-  console.log(x)
+  var menuName = document.getElementById("menu").value
+  console.log(menuName)
 
-  if (x != "All"){
+  if (menuName == "All") menuName = ["Viewed", "Downloaded", "Previewed"]
     
-  //get array by menu selected
-  chrome.storage.local.get([x], function(result){
-    while (document.getElementById("mppane").firstChild) {
-      document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
-    }
+  //get array by menuName selected
+  chrome.storage.local.get(menuName, function(result){
     // history_entry_list = result
     console.log(result)
     try {
-      //sort array by date
-      result[x].list.sort(function(a, b){return b.date - a.date});
+
+      if (document.getElementById("menu").value == "All")
+      {
+        result.All = combineHistoryMenuArrays(result)
+        menuName = "All"
+      }
       
+      result[menuName].list.sort(function(a,b) {return b.date - a.date })
+
       //add pages by length / page_image_limit
       if (!sb)
       {
           if (!pages_added){
             pages_added = true;
-            addpages(Math.ceil(result[x].list.length/page_image_limit))
+            addpages(Math.ceil(result[menuName].list.length/page_image_limit))
           }
         }
 
@@ -940,7 +938,7 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
           split_strings_array[index] = x2
         }
 
-        result[x].list.forEach(HistoryMenuEntry => {
+        result[menuName].list.forEach(HistoryMenuEntry => {
 
           try {
 
@@ -990,12 +988,12 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
 
       if(!sb)
       {
-        var use_array = result[x]
+        var use_array = result[menuName]
       }
 
       // if (sb_text == "")
       // {
-      //   addpages(Math.ceil(result[x].list.length/page_image_limit))
+      //   addpages(Math.ceil(result[menuName].list.length/page_image_limit))
       // }
 
       return_Limited_Array(selectedpage, use_array).forEach(obj => {
@@ -1059,8 +1057,7 @@ function populateList(selectedpage = 1, sb = false, sbpersistent = false)
       console.log(error)
       console.log("history list not defined")
     }
-  })}
-  else {chrome.storage.local.get(["Viewed", "Downloaded", "Previewed"], function (result) {noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, sb, sbpersistent, result)})}
+  })
 }
 
 function combineHistoryMenuArrays(result)
@@ -1096,165 +1093,6 @@ function combineHistoryMenuArrays(result)
   return HistoryMenuArray;
 }
 
-/**
- * a fitting name for a function in javascript
- */
-function noJumpsHuhJavaScript_CloneFunctionForAsynchronousGarbage(selectedpage, sb, sbpersistent, result)
-{
-  while (document.getElementById("mppane").firstChild) {
-    document.getElementById("mppane").removeChild(document.getElementById("mppane").firstChild);
-  }
-  // history_entry_list = result
-  var HistoryMenuArray;
-
-  try {
-    //sort array by date
-    //for each history menu in result
-
-    HistoryMenuArray = combineHistoryMenuArrays(result)
-
-    HistoryMenuArray.list.sort(function(a, b){return b.date - a.date});
-
-    result = HistoryMenuArray;
-
-    history_entry_list = result;
-
-    console.log(result)
-    
-    //add pages by length / page_image_limit
-    if (!sb)
-    {
-        if (!pages_added){
-          pages_added = true;
-          addpages(Math.ceil(result.list.length/page_image_limit))
-        }
-      }
-
-    //god fuck i hate the way indexes are counted
-
-    if (sb)
-    {
-      var excluded_items_array = {};
-      excluded_items_array.list = [];
-      var split_strings_array = sb_text.split(/ +/)
-      var tagvpairstagarray = [];
-      for (let index = 0; index < split_strings_array.length; index++) {
-        const str = split_strings_array[index];
-        var x = str.replace("(", "\\(")
-        var x2 = x.replace(")", "\\)")
-        split_strings_array[index] = x2
-      }
-
-      result.list.forEach(HistoryMenuEntry => {
-
-        try {
-
-          HistoryMenuEntry.tags.forEach(tag => {
-            if (tag.tag.match("(^"+split_strings_array[0]+")"))
-            {
-              if(!excluded_items_array.list.includes(HistoryMenuEntry))
-              {
-                excluded_items_array.list.push(HistoryMenuEntry)
-              }
-            }
-          });
-          
-        } catch (error) {
-          console.log ("many images don't have tags! old version images must be updated if you want to search for them by tags!")
-        }
-
-      });
-
-      console.log(excluded_items_array.list)
-
-      excluded_items_array.list = returnFilteredArray(excluded_items_array.list, split_strings_array)
-
-      console.log(excluded_items_array.list)
-
-    }
-
-    if ((sb == true) && (sbpersistent == false))
-    {
-      addpages(Math.ceil(excluded_items_array.list.length/page_image_limit))
-    }
-
-    if (sb)
-    {
-      var use_array = excluded_items_array
-    }
-
-    if(!sb)
-    {
-      var use_array = result
-    }
-
-    // if (sb_text == "")
-    // {
-    //   addpages(Math.ceil(result[x].list.length/page_image_limit))
-    // }
-
-    return_Limited_Array(selectedpage, use_array).forEach(obj => {
-      if (!obj.hidden || document.getElementById("showhidden").checked)
-      {
-        var image = new Image();
-        image.id = obj.pid
-        try {
-          var tTitle = []
-          obj.tags.forEach(tagObj => {
-            if (tagObj.type == "metadata_tag")
-            {
-              if ((tagObj.tag.match("^animated")) )//|| (tagObj.tag.match("video$")))
-              {
-                tTitle.push(tagObj.tag)
-              }
-            }
-            else if (tagObj.type == "general_tag")
-            {
-
-            }
-            else
-            {
-              tTitle.push(tagObj.tag)
-            }
-          });
-          image.title = tTitle.join(" ")
-        } catch (error) {
-          
-        }
-        image.className = "preview_image"
-        parent_div = $("<div></div>").attr({"id": obj.pid+"_parent", "class": "preview-parent_div"})
-        $(parent_div).append(image)
-        $("#mppane").append(parent_div)
-        updateImagewithBase64(obj.pid, image.className, image.title, obj.hidden)
-        mb = createPreviewMenuBar(obj.posturl)
-        $("#"+obj.pid+"_parent").append(mb)
-      }
-      else{console.log("hid "+obj.pid)}
-    });
-
-    //assign transform to images
-    var preview_images = Array.prototype.slice.call(document.getElementsByClassName("preview_image"))
-
-    preview_images.forEach(element => {
-      element.onclick = function() {toggleTransform(element.parentElement)}
-    });
-
-    //track which image to hide
-    Array.prototype.slice.call(document.getElementsByClassName("preview_image")).forEach(element => {
-      $(element).mousedown(function(e){
-        if (e.which == 3)
-        {
-          image_postid = e.currentTarget.id;
-          console.log(image_postid)
-        }
-      })
-    });
-    
-  } catch (error) {
-    console.log(error)
-    console.log("history list not defined")
-  }
-}
 
 /**
  * returns index
@@ -1535,6 +1373,12 @@ function updateImagewithBase64(pid, classname, title, hidden)
   });
   }
 
+
+
+//#region unused
+
+
+
 function createImagefromUrl(url)
 {
     image = new Image();
@@ -1548,6 +1392,10 @@ function createImagefromUrl(url)
         });
     }
 }
+
+
+
+
 
 function getBase64Image(img) {
     // Create an empty canvas element
@@ -1568,6 +1416,11 @@ function getBase64Image(img) {
     return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
+
+
+
+
+
 function image64ToImage() {
     return new Promise((resolve, reject) => {
       const image = new Image();
@@ -1582,3 +1435,6 @@ function image64ToImage() {
     });
   }
   
+
+
+  //#endregion
