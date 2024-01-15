@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       if ($("#image").is("img"))
       {
         document.getElementById("image").crossOrigin = "anonymous"
-        $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(request.message.substr(46,), "Viewed", "postpage", document)})
+        $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(request.message.substr(41,), "Viewed", "postpage", document)})
       }
       
       else if ($("#image").is("video"))
@@ -103,7 +103,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           $("#image").on("timeupdate", function(e) {console.log("video loaded"); 
           if ((!video_Event_Fired_Once) && (readyNow))
           {
-            createHistoryMenuEntry(request.message.substr(46,), "Viewed", "postpage", document)
+            createHistoryMenuEntry(request.message.substr(41,), "Viewed", "postpage", document)
             video_Event_Fired_Once = true;
           }
           })
@@ -113,7 +113,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           $("#image").on("progress", function(e) {console.log("video loaded"); 
           if ((!video_Event_Fired_Once) && (document.getElementById("image").currentTime > 0))
           {
-            createHistoryMenuEntry(request.message.substr(46,), "Viewed", "postpage", document)
+            createHistoryMenuEntry(request.message.substr(41,), "Viewed", "postpage", document)
             video_Event_Fired_Once = true;
           }
           })
@@ -490,6 +490,10 @@ const nOpts_ = {
   // Omit (or set to false) to observe only changes to the parent node
   subtree: false
 }
+
+$(".companion--row").remove();
+
+$("#draggableElement").remove();
 
 var paginatorObserver = new MutationObserver(movePosts)
 
@@ -1009,7 +1013,7 @@ function toggleFullscreen()
 function makeFullScreen()
 {
   $("#preview-all_container").attr("style", "position: fixed; display: flex; background-color: #0808089e; height: 100vh; width: 100%; justify-content: center; align-items: center; z-index: 111111;")
-  $(".preview_image_or_video_tag").attr("style", "max-height: 100vh; max-width: 100%; border: 4px solid #bdbdbd;")
+  $(".preview_image_or_video_tag").attr("style", "max-height: 100vh; max-width: 100%; border: 2px solid #bdbdbd;")
   $("#preview-image_container").attr("style", "width: fit-content;")
   $("#preview-all_container > div:nth-child(2)").css("display", "none")
   isFullscreen = true;
@@ -1019,7 +1023,7 @@ function undoFullScreen()
 {
   $("#preview-all_container").attr("style", "position: relative;  z-index: 111111; display: inline-block; left: "+ isNotFullscreenPositionHorizontal +"px; top: "+ isNotFullscreenPositionVertical +"px;")
   $("#preview-image_container").attr("style", "")
-  $(".preview_image_or_video_tag").attr("style", "border: 4px solid #bdbdbd; max-height: " + isNotFullscreenDimensionsHeight + "px; max-width: " + isNotFullscreenDimensionsWidth + "px;")
+  $(".preview_image_or_video_tag").attr("style", "border: 2px solid #bdbdbd; max-height: " + isNotFullscreenDimensionsHeight + "px; max-width: " + isNotFullscreenDimensionsWidth + "px;")
   $("#preview-all_container > div:nth-child(2)").css("display", "flex")
   isFullscreen = false;
 }
@@ -1057,7 +1061,7 @@ function makeVideoPlayer(e)
 
   //create video player
   var preview = $("<video></video>");
-  $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 4px solid #bdbdbd;")
+  $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 2px solid #bdbdbd;")
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_image_or_video_tag")
   $(preview).attr("referrerpolicy", "no-referrer")
@@ -1125,25 +1129,71 @@ function makeVideoPlayer(e)
   var div = $("<div></div>").attr({"style": "width: 0px; height: 0px;"})
   $(div).attr("id", "preview-video_container")
   $(div).append($("<meta></meta>").attr({"name": "referrer", "content": "no-referrer"}))
-  $(div).attr("style", "max-width: 970px; max-height: 580px;")
+  $(div).attr("style", "max-height: 580px;")
   $(div).append(preview)
 
   //append close button to video container
   var cb = createPreviewCloseButton();
   $(div).append(cb)
+
   
+
   //append preview
   $(preview_all_container).append(div)
 
+  var favbarid = getLegacyPostIdOfHoveredImage(e.currentTarget)
+  
+  var globalfavbar = "<div style=\"\
+    height: 120px;\
+    width: auto;\
+    background-color: #3e3e3e;\
+    border: 2px solid darkgrey;\
+    display: flex;\
+    justify-content: space-evenly;\
+    align-content: center;\
+    align-items: center;\
+\"><div id=\"rating\" style=\"display: inline-block;padding-bottom: 4px;margin-bottom: 20px;\"><ul class=\"unit-rating\">\
+<li class=\"star-full\"><a href=\"#\" title=\"1 Star\" class=\"r1-unit\" onclick=\"javascript:Post.vote(1, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"2 Stars\" class=\"r2-unit\" onclick=\"javascript:Post.vote(2, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"3 Stars\" class=\"r3-unit\" onclick=\"javascript:Post.vote(3, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"4 Stars\" class=\"r4-unit\" onclick=\"javascript:Post.vote(4, "+favbarid+"); return false;\"></a></li>\
+<li class=\"star-full\"><a href=\"#\" title=\"5 Stars\" class=\"r5-unit\" onclick=\"javascript:Post.vote(5, "+favbarid+"); return false;\"></a></li>\
+</ul></div>\
+\
+    <div id=\"add-to-favs\" style=\"\
+    display: inline-block;\
+    \
+    background: center;\
+    text-align: -webkit-center;\
+    margin-bottom: 20px;\
+\"><a class=\"favoriteIcon\" href=\"#\" onclick=\"Favorite.create("+favbarid+"); return false;\" title=\"Add to favorites\" style=\"\
+    margin: 0;\
+\"></a></div>\
+\
+\<div id=\"remove-from-favs\" style=\"\
+\
+background: center center;\
+text-align: -webkit-center;\
+margin-bottom: 20px;\
+\"><a class=\"favoriteIcon clicked\" href=\"#\" onclick=\"Favorite.destroy("+favbarid+"); return false;\" title=\"Remove from favorites\" style=\"\
+margin: 0;\
+\"></a></div>\
+</div>"
+
+  $(preview_all_container).append(globalfavbar)
+
+
   //append all
   $("#preview-parent_container").append(preview_all_container)
+
+  $(e.currentTarget).hasClass("favorited") ? $("#add-to-favs").css("display", "none") : $("#remove-from-favs").css("display", "none")
 
   document.getElementsByClassName("preview_image_or_video_tag")[0].muted = true;
 }
 /**only for videos now */
 function createPreviewCloseButton()
 {
-  x = $("<div></div>").attr({"id": "preview-close_button", "style": "position: relative; left: 4px; bottom: 26px; width: fit-content;"})
+  x = $("<div></div>").attr({"id": "preview-close_button", "style": "position: relative; left: 4px; bottom: 26px; height: 0; width: fit-content;"})
   y = $("<input>").attr({"type": "button", "value": "x", "style": "padding: 0px; width: 34px; height: 20px;"})
   $(y).on("click", function(e) {removePreview();})
   $(x).append(y)
@@ -1307,7 +1357,7 @@ function addPreviewImg(e)
   thumbreswidth = e.currentTarget.clientWidth
 
   var preview = $("<img></img>");
-  $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 4px solid #bdbdbd;") 
+  $(preview).attr("style", "max-width: 970px; max-height: 580px; border: 2px solid #bdbdbd;") 
   $(preview).attr("src", "")
   $(preview).attr("class", "preview_image_or_video_tag")
   $(preview).attr("referrerpolicy", "no-referrer")
@@ -1410,7 +1460,7 @@ var globalfavbar = "<div style=\"\
 \
     <div id=\"add-to-favs\" style=\"\
     display: inline-block;\
-    width: 170px;\
+    \
     background: center;\
     text-align: -webkit-center;\
     margin-bottom: 20px;\
@@ -1419,7 +1469,7 @@ var globalfavbar = "<div style=\"\
 \"></a></div>\
 \
 \<div id=\"remove-from-favs\" style=\"\
-width: 170px;\
+\
 background: center center;\
 text-align: -webkit-center;\
 margin-bottom: 20px;\
