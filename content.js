@@ -979,7 +979,8 @@ function updateProgressBar(){
         console.log(videoDuration)
 
         //If finished buffering buffering quit calling it
-        if (buffered >= videoDuration) {
+        //call it anyway because firefox is weird as ass 2024-02-11
+        if (Math.round(buffered) >= Math.round(videoDuration)) {
           readyNow = true;
                 clearInterval(this.watchBuffer);
         }

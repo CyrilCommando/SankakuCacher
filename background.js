@@ -24,7 +24,7 @@ chrome.contextMenus.create({contexts: ["image"], documentUrlPatterns: ["https://
 
 chrome.contextMenus.create({contexts: ["all"], documentUrlPatterns: ["https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/en/*", "https://chan.sankakucomplex.com/en/posts/*"], id: "historymenubuttonId", title:"History"})
 
-chrome.contextMenus.create({contexts: ["action"], documentUrlPatterns: [], id: "settingsmenubuttonId", title:"Settings"})
+chrome.contextMenus.create({contexts: ["action"], id: "settingsmenubuttonId", title:"Settings"})
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   console.log(info)

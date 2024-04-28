@@ -107,7 +107,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     await xmlHttpReqforMDL(ustr)
 
     
-    var thumbs = Array.prototype.slice.call(mdl_listpage.getElementsByClassName("thumb"))
+    var thumbs = Array.prototype.slice.call(mdl_listpage.getElementsByClassName("post-preview-link"))
     var popularExcludedArray = [];
     for (let index = 0; index < thumbs.length; index++) {
         const element = thumbs[index];
@@ -125,7 +125,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
 
     for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
         const image = popularExcludedArray[ind]; 
-        await xmlhttpReq($(image).find("a").attr("href").substring(10,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
+        await xmlhttpReq($(image).attr("href").substring(10,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
             breakOutError = true; 
             dldimages = 0; 
             mdl_pginc = 1; 
