@@ -16,34 +16,34 @@ var mouseBasePositionReceived = false;
 
 var previousSizeValue;
 
-if (!window.location.href.match("https://chan.sankakucomplex.com/posts/*"))
-{
-  chrome.storage.local.get(["scalersize"], function(result){
-    if (true)
-    {
-      postlist_preview_scale_factor = result.scalersize
-      sizeUpPreview()
-      sizeApplication.observe(document.getElementsByClassName("content")[0], nOpts)
-      paginatorObserver.observe(document.getElementsByClassName("content")[0], nOpts_)
-      $(document).keydown(function(keyDownEvent) {
-        if (keyDownEvent.keyCode === 17) {
-            if (!sbDisplaying)
-            {
-              modHtml()
-              sbDisplaying = true;
-            }
-        }
-      });
-      $(document).keyup(function(keyDownEvent) {
-        if (keyDownEvent.keyCode === 17) {
-            $("#sb").remove()
-            sbDisplaying = false;
-        }
-      });
-    }
+// if (!window.location.href.match("https://chan.sankakucomplex.com/posts/*"))
+// {
+//   chrome.storage.local.get(["scalersize"], function(result){
+//     if (true)
+//     {
+//       postlist_preview_scale_factor = result.scalersize
+//       sizeUpPreview()
+//       sizeApplication.observe(document.getElementsByClassName("content")[0], nOpts)
+//       paginatorObserver.observe(document.getElementsByClassName("content")[0], nOpts_)
+//       $(document).keydown(function(keyDownEvent) {
+//         if (keyDownEvent.keyCode === 17) {
+//             if (!sbDisplaying)
+//             {
+//               modHtml()
+//               sbDisplaying = true;
+//             }
+//         }
+//       });
+//       $(document).keyup(function(keyDownEvent) {
+//         if (keyDownEvent.keyCode === 17) {
+//             $("#sb").remove()
+//             sbDisplaying = false;
+//         }
+//       });
+//     }
 
-  })
-}
+//   })
+// }
 
 if (window.location.href.match("https://chan.sankakucomplex.com/*/*"))
 {
