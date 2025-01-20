@@ -109,14 +109,14 @@ var xhr_received_page;
 //string array, tag array for individual post
 var tag_array;
 
-var unmod_tag_array = [];
+var thumbnail_title_tag_array = [];
 
 //#region scripdefs
 
 function adthumbnail(thumbel)
 {
 	var parent_div = $("<div></div>").attr({"id": postId+"_parent", "class": "preview-parent_div"})
-	$(parent_div).append(`<img title="${unmod_tag_array}" id="${postId}" src="https:${booru_.findThumbnailUrlOn_IndexPageHtmlElement(thumbel).substring(14)}">`)
+	$(parent_div).append(`<img title="${thumbnail_title_tag_array}" id="${postId}" src="https:${booru_.findThumbnailUrlOn_IndexPageHtmlElement(thumbel).substring(14)}">`)
 	$("#mppane").prepend(parent_div)
 	$("#"+postId+"_parent").append("<div class=\"preview-menu_bar\"><div class=\"progress-menu_bar\" style=\"width: 10%;\"></div></div>")
 	createReflection(postId)
@@ -145,40 +145,57 @@ function dlItem()
     {
         // console.log("dlitm")
         //chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloadLink, isMassDownload: true})
-		unmod_tag_array = [];
+		thumbnail_title_tag_array = [];
 		tag_array = getImageTags(xhr_received_page)
+
 		tag_array.forEach(tg => {
 			if ((tg.type == "character_tag") || (tg.type == "artist_tag"))
 			{
-				unmod_tag_array.push(tg.tag)
+				thumbnail_title_tag_array.push(tg.tag)
 			}
 		});
+		
 		var chartag = "";
+		var ctlimit = 0;
 		tag_array.forEach(tag => {
-			if (tag.type == "character_tag")
+			if ((tag.type == "character_tag") && (ctlimit < 3) )
 			{
 				chartag = chartag.concat(tag.tag + " ")
+				ctlimit++
 			}
 		});
-		tag_array = chartag.trimEnd()
-		tag_array = tag_array.replaceAll(":", "_")
+		chartag = chartag.trimEnd()
+		chartag = chartag.replaceAll(":", "_")
+
+		var artisttag = "";
+		var atlimit = 0;
+		tag_array.forEach(tag => {
+			if ((tag.type == "artist_tag") && (atlimit < 3))
+			{
+				artisttag = artisttag.concat(tag.tag + " ")
+				atlimit++
+			}
+		});
+		artisttag = artisttag.trimEnd()
+		artisttag = artisttag.replaceAll(":", "_")
+
 		// if (tag_array.length + 47 > 200)
 		// {
-			var work = tag_array.split(" ")
-			var work2 = "";
-			var iter = 0;
-			for (let index = 0; index < 3 && index < work.length; index++) {
-				const tagstr = work[index];
-				work2 = work2.concat(work[index] + " ")
-			}
-			// while (work2.length + 47 + work[iter].length < 255) {
-			// 	work2 = work2.concat(work[iter] + " ")
-			// 	iter++
+			// var work = tag_array.split(" ")
+			// var work2 = "";
+			// var iter = 0;
+			// for (let index = 0; index < 3 && index < work.length; index++) {
+			// 	const tagstr = work[index];
+			// 	work2 = work2.concat(work[index] + " ")
 			// }
-			tag_array = work2
-			tag_array = tag_array.trimEnd()
+			// // while (work2.length + 47 + work[iter].length < 255) {
+			// // 	work2 = work2.concat(work[iter] + " ")
+			// // 	iter++
+			// // }
+			// tag_array = work2
+			// tag_array = tag_array.trimEnd()
 		// }
-		bcacher_save_file(downloadLink, true, uploadDate, tag_array)
+		bcacher_save_file(downloadLink, true, uploadDate, chartag, artisttag)
         clearInterval(BooruCacherState.concurrentLimitPoll)
         BooruCacherState.concurrentLimitPoll = undefined;
         BooruCacherState.downloadedPosts += 1;
