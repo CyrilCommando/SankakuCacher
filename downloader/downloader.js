@@ -116,7 +116,7 @@ var thumbnail_title_tag_array = [];
 function adthumbnail(thumbel)
 {
 	var parent_div = $("<div></div>").attr({"id": postId+"_parent", "class": "preview-parent_div"})
-	$(parent_div).append(`<img title="${thumbnail_title_tag_array}" id="${postId}" src="https:${booru_.findThumbnailUrlOn_IndexPageHtmlElement(thumbel).substring(14)}">`)
+	$(parent_div).append(`<img title="${thumbnail_title_tag_array}" id="${postId}" src="https:${booru_.findThumbnailUrlOn_IndexPageHtmlElement(thumbel).substring(17)}">`)
 	$("#mppane").prepend(parent_div)
 	$("#"+postId+"_parent").append("<div class=\"preview-menu_bar\"><div class=\"progress-menu_bar\" style=\"width: 10%;\"></div></div>")
 	createReflection(postId)
@@ -364,12 +364,7 @@ async function massDownloadMaster(booru, persist = false)
 //#region exec
 chrome.downloads.onCreated.addListener(downloaditem => 
 {
-	if (downloaditem.byExtensionName == "SankakuCacher")
-	{
-		
-		downloadedDlTrackDict[downloaditem.id] = {exists: true, pid: postId, item: downloaditem, uploddate: uploadDate, tags: tag_array};
-	}
-    
+	downloadedDlTrackDict[downloaditem.id] = {exists: true, pid: postId, item: downloaditem, uploddate: uploadDate, tags: tag_array};
 })
 chrome.downloads.onChanged.addListener(downloaddelta => 
 {
