@@ -1,7 +1,12 @@
-.settings_block
-{
-    width: 377px;
-    outline: auto;
+.settings_block {
+    width: 376px;
     display: inline-block;
     vertical-align: top;
-}
+    height: 100%;
+    border-right: 1px solid #040404;
+  }
+
+  .settings_block:last-child {
+    border-right: none;
+    width: 377px;
+  }
