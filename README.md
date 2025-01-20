@@ -10,7 +10,7 @@ automatically download images sankakucomplex
 #### Improved popup menu.
 ![alt text](https://i.imgur.com/dVimzgW.gif)
 
-#### New settings menu (with a 'fun images' feature [R18!!])
+#### New settings menu
 ![alt text](https://i.imgur.com/3hZ8nE0.gif)
 
 #### Really sweet new redesign for the downloader. 
@@ -41,6 +41,9 @@ Also, the "include character" & whatnot settings will sometimes fail a download 
 #### Automatically download images you open.
 ![alt text](https://i.imgur.com/oPnb08O.gif)
 
+#### Automatically favorite images you choose to download. 
+![alt text](https://i.imgur.com/6clAxCs.gif)
+
 #### History menu with image expansion, search bar, download buttons, & open in new tab buttons
 ![alt text](https://i.imgur.com/FPYGFXz.gif)
 
@@ -50,9 +53,6 @@ Unfortunately Sankaku keeps breaking everything, & I've got limited patience to 
 
 #### Hold click on a thumbnail to bring up a preview. (gone)
 ![alt text](https://i.imgur.com/GRgM1Jf.gif)
-
-#### Automatically favorite images you choose to download. (broken)
-![alt text](https://i.imgur.com/6clAxCs.gif)
 
 #### Favorite/Unfavorite images with a middle click (broken)
 ![alt text](https://i.imgur.com/IttuyK6.gif)
