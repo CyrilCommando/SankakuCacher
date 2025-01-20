@@ -20,10 +20,11 @@ var autofavattr = document.getElementById("autofav");
 /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
 /*scrolltocontent onclick*/ document.getElementById("scrolltocontent").onchange = function() {doc_onchanged(document.getElementById("scrolltocontent"))};
 /*resizecontent onclick*/ document.getElementById("resizecontent").onchange = function() {doc_onchanged(document.getElementById("resizecontent"))};
+document.getElementById("autofavinclude").onchange = function() {doc_onchanged(document.getElementById("autofavinclude"))};
 
 document.getElementById("date").onchange = function() {doc_onchanged(document.getElementById("date"))};
 document.getElementById("character").onchange = function() {doc_onchanged(document.getElementById("character"))};
-// document.getElementById("artist").onchange = function() {doc_onchanged(document.getElementById("artist"))};
+document.getElementById("artist").onchange = function() {doc_onchanged(document.getElementById("artist"))};
 // document.getElementById("md5").onchange = function() {doc_onchanged(document.getElementById("md5"))};
 document.getElementById("imgs").onchange = function() {doc_onchanged(document.getElementById("imgs"))};
 
@@ -101,7 +102,7 @@ function go(){
 
     var num = Math.round(Math.random() * 10)
     
-    chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav", "HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "scrolltocontent", "resizecontent", "md5", "date", "character", "artist", "imgs"], function(result) {
+    chrome.storage.local.get(["enabled", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "mp4swebms", "middleclickfav", "HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "scrolltocontent", "resizecontent", "md5", "date", "character", "artist", "imgs", "autofavinclude"], function(result) {
         console.log('extension enabled: ' + result.enabled)
         console.log('arrangefiles value currently is ' + result.arrangefiles)
         console.log('savefolder value currently is ' + result.savefolder);
@@ -111,11 +112,11 @@ function go(){
             document.getElementById("mainbox").style.backgroundImage = `url(bg/${flist[num]})`
         }
         setthethings(result.enabled, result.arrangefiles, result.savefolder);
-        update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav, result.HMenu_downloadanimatedgifs, result.HMenu_downloadfullvideos, result.scrolltocontent, result.resizecontent, result.date, result.md5, result.character, result.artist, result.imgs);
+        update_options_page(result.enabled, result.arrangefiles, result.savefolder, result.prevsearch, result.autofav, result.newwindow, result.mp4swebms, result.middleclickfav, result.HMenu_downloadanimatedgifs, result.HMenu_downloadfullvideos, result.scrolltocontent, result.resizecontent, result.date, result.md5, result.character, result.artist, result.imgs, result.autofavinclude);
     })
 }
 
-function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17)
+function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15, n16, n17, n18)
 {
     $("#enabled").attr("checked", n1);
     $("#arrangefiles").attr("checked", n2);
@@ -138,6 +139,7 @@ function update_options_page(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, 
     $("#character").attr("checked", n15)
     $("#artist").attr("checked", n16)
     $("#imgs").attr("checked", n17)
+    $("#autofavinclude").attr("checked", n18)
 }
 
 function setthethings(n1, n2, n3){
