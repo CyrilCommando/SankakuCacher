@@ -1,15 +1,16 @@
 div.tsbg{
     position: absolute;
-    filter: blur(4px);
+    filter: blur(5px);
     opacity: 75%;
-    width: calc(400px + 25px);
-    bottom: -39px;
+    width: calc(100%);
+    bottom: -41px;
     overflow: hidden;
     height: 42px;
-    left: -12px;
+    /* left: -13px; */
     background-image: linear-gradient(to top, #000000, #ffffff);
     transform: perspective(82px) rotateX( 
 19deg);
+scale: 1.08;
 }
 
 div.tsbg img{
