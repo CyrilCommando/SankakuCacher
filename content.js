@@ -503,17 +503,63 @@ aparse();
 
 var downloadLink;
 
-chrome.storage.local.get(["autofav"], function(result)
+chrome.storage.local.get(["autofav", "enabled", "autofavinclude", "mp4swebms"], function(result)
 {
-  if (result.autofav == true)
+  if ((result.autofav == true) && (result.autofavinclude == true) && (result.enabled == true))
+  {
+    var button = $("<input>").attr("type", "button").attr("value", "at").attr("id", "autofbutton").attr("onclick", "customfavfunction();").attr("style", "display: none;")
+
+    $("#post-content").before(button)
+    if ((checkifismp4orwemb()) && !(result.mp4swebms))
+    {
+      
+    }
+    else {
+      addscript3();
+    }
+    //getlink
+  }
+  else if ((result.autofav == true) && (result.autofavinclude == false))
   {
     addscript();
+    //getlink check if enabled later
   }
   else if (result.autofav == false)
   {
     addscript2();
   }
+  else if ((result.autofav == true) && (result.autofavinclude == true) && (result.enabled == false))
+  {
+    addscript();
+  }
 })
+
+function checkifismp4orwemb()
+{
+  var v = $("#image").attr("src");
+  var y = $("#image-link").attr("href");
+
+  if (y === undefined)
+  {
+    if (v != undefined)
+    {
+      if (v.substring(67, 70) == "web" || v.substring(67, 70) == "mp4")
+      {
+        return true;
+      }
+    }
+  }
+
+  else
+  {
+    if (y.substring(67, 70) == "web" || y.substring(67, 70) === "mp4")
+      {
+        return true;
+      }
+  }
+
+  return false;
+}
 
 /**make XMLHttpRequest for sample image base64*/
 function newxmlHttpReq(url)
@@ -1570,7 +1616,17 @@ function addscript()
 }
 
 
+function addscript3()
+{
+  //post_id = document.getElementById("post-view").firstChild.nextSibling.innerText;
 
+  $("#autofavscript").remove();
+
+  var script = document.createElement("script");
+  script.src = chrome.runtime.getURL("autofave2.js")
+  script.id = "autofavscript"
+  document.body.appendChild(script);
+}
 
 
 /** adds autofav disabled script */

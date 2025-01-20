@@ -124,6 +124,10 @@ function doc_onchanged(htmlelement){
         case "imgs":
         chrome.storage.local.set({"imgs": htmlelement.checked})
         break;
+
+        case "autofavinclude":
+        chrome.storage.local.set({"autofavinclude": htmlelement.checked})
+        break;
     }
     //var x = document.getElementById("savefolder");
     //chrome.storage.local.set({"savefolder": htmlelement.value})

@@ -4,7 +4,7 @@
   "version": "3.0",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
-    "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js"],
+    "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js", "autofave2.js"],
     "matches": ["https://chan.sankakucomplex.com/*", "https://idol.sankakucomplex.com/*"]
   }],
   "manifest_version": 3,

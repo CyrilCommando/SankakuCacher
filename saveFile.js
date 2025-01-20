@@ -1,6 +1,6 @@
-function bcacher_save_file(download_link, isMassDownload = false, date = "", charactertags ="")
+function bcacher_save_file(download_link, isMassDownload = false, date = "", charactertags ="", artisttags ="")
 {
-	chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags", "date", "md5", "character"], function(newResult) { 
+	chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags", "date", "md5", "character", "artist"], function(newResult) { 
 
 		var includeshttps = download_link[0] + download_link[1] + download_link[2] + download_link[3] + download_link[4];
 		
@@ -61,7 +61,7 @@ function bcacher_save_file(download_link, isMassDownload = false, date = "", cha
 		}
 		console.log(svfld)
 
-		chrome.downloads.download({url: "https:" + download_link, filename: svfld + (`${newResult.date ? date + " ": ""}` + `${newResult.character ? charactertags + " ": ""}` + name).trimStart(), saveAs: false, conflictAction: "overwrite"})
+		chrome.downloads.download({url: "https:" + download_link, filename: svfld + (`${newResult.date ? date + " ": ""}` + `${newResult.character ? charactertags + " ": ""}` + `${newResult.artist ? artisttags + " ": ""}` + name).trimStart(), saveAs: false, conflictAction: "overwrite"})
  		//chrome.tabs.getSelected
   	})//chrome.storage.local.get
 }
