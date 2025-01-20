@@ -10,7 +10,7 @@ automatically download images sankakucomplex
 #### Improved popup menu.
 ![alt text](https://i.imgur.com/dVimzgW.gif)
 
-#### New settings menu (with a 'fun images' feature [Only enable if you are over 18 ;)!])
+#### New settings menu (with a 'fun images' feature [Only enable if you are over 18 ;)])
 ![alt text](https://i.imgur.com/3hZ8nE0.gif)
 
 #### Really sweet new redesign for the downloader. 
