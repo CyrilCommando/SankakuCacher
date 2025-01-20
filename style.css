@@ -1,7 +1,20 @@
-.dot {
-    height: 25px;
-    width: 25px;
-    background-color: #bbb;
-    border-radius: 50%;
-    display: inline-block;
-  }
+.hoverb
+{
+  height: 66px;
+  background-color: gray;
+  border-radius: 20px;
+  width: 90%;
+  margin-left: 5%;
+  margin-top: 16px;
+  font-family: Ultra;
+  color: white;
+  text-align: center;
+  line-height: 66px;
+  user-select: none;
+}
+
+.hoverb:hover
+{
+  background-color: lightgray;
+  cursor: pointer;
+}

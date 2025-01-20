@@ -1,40 +1,47 @@
 go();
 
-/*Open in New Window*/ document.getElementById("newwindow").onchange = function() {doc_onchanged(document.getElementById("newwindow"))}
-/*autofav onchange*/document.getElementById("autofav").onchange = function() {doc_onchanged(document.getElementById("autofav"))}
-/* Enabled onchange*/document.getElementById("enabled").onchange = function() {doc_onchanged(document.getElementById("enabled"))};
-/*MP4's/WEBM's onchange*/document.getElementById("mp4swebms").onchange = function() {doc_onchanged(document.getElementById("mp4swebms"))}
-/*Arrange Files onchange*/document.getElementById("arrangefiles").onchange = function() {doc_onchanged(document.getElementById("arrangefiles"))};
-/*Save Folder onchange*/document.getElementById("savefolder").onchange = function() {doc_onchanged(document.getElementById("savefolder"))};
-/*Delete Settings onclick*/document.getElementById("deletesettings").onclick = function() {delete_all_settings()};
-/*Delete Images onclick*/ //document.getElementById("deleteimages").onclick = function() {delete_all_images()};
-/*Default Settings onlick*/document.getElementById("defaultsettings").onclick = function() {default_settings()};
-/*Open Folder onclick*/document.getElementById("openfolder").onclick = function() {chrome.downloads.showDefaultFolder()};
-/*Download This onclick*/document.getElementById("DownloadThis").onclick = function() {sendMessage2()};
-/*Chan onclick*/document.getElementById("chan").onclick = function() {sendMessage()};
-/*Search Tags onclick*/document.getElementById("searchtags").onclick = function() {openLinkWithTags()};
-/*SankakuIcon onclick*/document.getElementById("SankakuIcon").onclick = function() {sendMessage()};
-/*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
-/*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
+// /*Open in New Window*/ document.getElementById("newwindow").onchange = function() {doc_onchanged(document.getElementById("newwindow"))}
+// /*autofav onchange*/document.getElementById("autofav").onchange = function() {doc_onchanged(document.getElementById("autofav"))}
+// /* Enabled onchange*/document.getElementById("enabled").onchange = function() {doc_onchanged(document.getElementById("enabled"))};
+// /*MP4's/WEBM's onchange*/document.getElementById("mp4swebms").onchange = function() {doc_onchanged(document.getElementById("mp4swebms"))}
+// /*Arrange Files onchange*/document.getElementById("arrangefiles").onchange = function() {doc_onchanged(document.getElementById("arrangefiles"))};
+// /*Save Folder onchange*/document.getElementById("savefolder").onchange = function() {doc_onchanged(document.getElementById("savefolder"))};
+// /*Delete Settings onclick*/document.getElementById("deletesettings").onclick = function() {delete_all_settings()};
+// /*Delete Images onclick*/ //document.getElementById("deleteimages").onclick = function() {delete_all_images()};
+// /*Default Settings onlick*/document.getElementById("defaultsettings").onclick = function() {default_settings()};
+// /*Open Folder onclick*/document.getElementById("openfolder").onclick = function() {chrome.downloads.showDefaultFolder()};
+// /*Download This onclick*/document.getElementById("DownloadThis").onclick = function() {sendMessage2()};
+// /*Chan onclick*/document.getElementById("chan").onclick = function() {sendMessage()};
+// /*Search Tags onclick*/document.getElementById("searchtags").onclick = function() {openLinkWithTags()};
+// /*SankakuIcon onclick*/document.getElementById("SankakuIcon").onclick = function() {sendMessage()};
+// /*MiddleClickFav onclick*/ document.getElementById("middleclickfav").onchange = function() {doc_onchanged(document.getElementById("middleclickfav"))};
+// /*History onclick*/ //document.getElementById("history").onclick = function() {window.open("/history/history.html")};
 
-/*limit onchange */ document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};
-/*concurrent limit onchange */ document.getElementById("mass_download_concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("mass_download_concurrentlimit"))};
-/*offset onchange */ document.getElementById("mass_download_offset").onchange = function() {doc_onchanged(document.getElementById("mass_download_offset"))};
-/*Download Button onclick*/document.getElementById("mass_download_downloadbutton").onclick = function() {initiateMdlWTags()};
+// /*limit onchange */ document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};
+// /*concurrent limit onchange */ document.getElementById("mass_download_concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("mass_download_concurrentlimit"))};
+// /*offset onchange */ document.getElementById("mass_download_offset").onchange = function() {doc_onchanged(document.getElementById("mass_download_offset"))};
+// /*Download Button onclick*/document.getElementById("mass_download_downloadbutton").onclick = function() {initiateMdlWTags()};
 
-var x = Array.prototype.slice.call(document.getElementsByTagName("a"))
+$(".hoverb").on("click",  function(e) {
+    switch (e.currentTarget.innerText) {
+        case "Download":
+            chrome.tabs.create({url: chrome.runtime.getURL("/downloader/downloader.html")})
+            break;
 
-x.forEach(element => {
-    if (element.id != "advl"){
-        element.onclick = function(event){
-        event.preventDefault()
-        if(element.id == "chan")
-        {
-            sendMessage();
-        }
-        }
-  }
-});
+        case "History":
+            chrome.tabs.create({url: chrome.runtime.getURL("/history/history.html")})
+            break;
+
+        case "Settings":
+            chrome.tabs.create({url: chrome.runtime.getURL("/settings/settings.html")})
+            break;
+    
+        default:
+            break;
+    } 
+})
+
+
 
 $("#tagstosearch").keyup(function(event) {
     if (event.keyCode === 13) {

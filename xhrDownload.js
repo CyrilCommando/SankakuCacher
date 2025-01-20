@@ -16,6 +16,8 @@ function xmlhttpReq2(url)
   xhr.onreadystatechange = function() {
     if (this.readyState == 4) {
 
+      xhr_received_page = this.responseXML
+
       //if image link is undefined (if not an image)
       if ($(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("#image-link").find("img").attr("src") == undefined)
       {
@@ -25,7 +27,23 @@ function xmlhttpReq2(url)
       
         //download link for videos (unused probably)
         downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-        wow_A_Function(downloadLink)
+        bcacher_save_file(downloadLink, false, undefined,  
+          function() {
+            var use = ""
+            getImageTags(xhr_received_page).forEach(tag => {
+              if (tag.type == "character_tag")
+              {
+                use = use.concat(tag.tag + " ")
+              }
+            });
+            use = use.trimEnd()
+            use = use.replaceAll(":", "_")
+            
+            return use;
+
+          }()
+          
+          )
       }
       else{
         
@@ -36,13 +54,13 @@ function xmlhttpReq2(url)
         if (y === undefined)
         {
           downloadLink = v
-          wow_A_Function(downloadLink)
+          bcacher_save_file(downloadLink)
         }
       
         else
         {
           downloadLink = y
-          wow_A_Function(downloadLink)
+          bcacher_save_file(downloadLink)
         }
       }
     }

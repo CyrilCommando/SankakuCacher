@@ -73,6 +73,8 @@ function xmlhttpReq(pid, e, isPreview = true, isContextMenu = false, ind, limit)
       }
       reject(ind + 1, this.status)
     }
+
+    uploadDate = $(this.responseXML.body).find("#stats").find("a")[0].title.substr(0, 10)
 }
 });
 }

@@ -1,7 +1,8 @@
 function default_settings()
 {
     var aso = new AdvancedSettingsObject();
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 20, "mass_download_concurrentlimit": 5, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false, "resizecontent": true, "scrolltocontent": true})
+    console.log("settings set default")
+    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 20, "mass_download_concurrentlimit": 5, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false, "resizecontent": true, "scrolltocontent": true, "mass_download_prevtags": "", "date": true, "md5": true, "character": true, "imgs": false})
     //chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 
@@ -99,6 +100,30 @@ function doc_onchanged(htmlelement){
 
             chrome.storage.local.set({"scrolltocontent": htmlelement.checked})
             break;
+
+        case "date":
+
+        chrome.storage.local.set({"date": htmlelement.checked})
+        break;
+
+        case "character":
+
+        chrome.storage.local.set({"character": htmlelement.checked})
+        break;
+
+        case "artist":
+
+        chrome.storage.local.set({"artist": htmlelement.checked})
+        break;
+
+        case "md5":
+
+        chrome.storage.local.set({"md5": htmlelement.checked})
+        break;
+
+        case "imgs":
+        chrome.storage.local.set({"imgs": htmlelement.checked})
+        break;
     }
     //var x = document.getElementById("savefolder");
     //chrome.storage.local.set({"savefolder": htmlelement.value})

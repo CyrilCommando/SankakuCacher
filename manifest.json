@@ -1,22 +1,22 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. History menu, mass download, & QOL.",
-  "version": "2.1.4",
+  "version": "3.0",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
     "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js"],
     "matches": ["https://chan.sankakucomplex.com/*", "https://idol.sankakucomplex.com/*"]
   }],
   "manifest_version": 3,
-  "permissions": ["storage", "downloads", "tabs", "activeTab", "background", "contextMenus", "unlimitedStorage"],
+  "permissions": ["storage", "downloads", "tabs", "activeTab", "contextMenus", "unlimitedStorage"],
   "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'self';"},
   "icons": {
-    "16": "icon.png",
-    "48": "squared48.png",
-    "128": "squared.png" 
+    "16": "n16.png",
+    "48": "n48.png",
+    "128": "n128.png" 
   },
   "action": {
-    "default_icon": "icon.png",
+    "default_icon": "n48.png",
     "default_title": "SankakuCacher",
     "default_popup": "popup.html"
   },
@@ -27,6 +27,6 @@
       "css": ["fix_chans_css_again.css"]
     } ],
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["jquery-3.4.1.min.js", "settingshelp.js", "saveFile.js", "background.js" ]
   }
 }

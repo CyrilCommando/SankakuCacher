@@ -7,7 +7,7 @@ var mdl_listpage;
 /**
  * page increment (number)
  */
-var mdl_pginc = 1;
+var pageNumber = 1;
 
 var concurrentImageTracker = 0;
 
@@ -20,7 +20,7 @@ var downloadLink;
 
 var concurrentLimitPoll;
 
-var dldimages = 0;
+var downloadedPosts = 0;
 
 var createdDlDict = {};
 
@@ -49,7 +49,7 @@ chrome.downloads.onChanged.addListener(downloaddelta => {
             concurrentImageTracker --
             console.log("resumed failed dl")
             setTimeout(() => {
-                chrome.runtime.sendMessage({"message": "wow_a_function", url: downloaddelta.url.current, isMassDownload: true})
+                chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloaddelta.url.current, isMassDownload: true})
                 // chrome.downloads.resume(downloaddelta.id)
                 concurrentImageTracker ++
             }, 2500);
@@ -78,8 +78,8 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     //populate page increment (page to use) & index if index >= factor
     if ((index >= factor) && (persist == false))
     {
-        mdl_pginc = Math.ceil(((index + 1) / factor))
-        index = index - (factor * (Math.floor(mdl_pginc - 0.05)));
+        pageNumber = Math.ceil(((index + 1) / factor))
+        index = index - (factor * (Math.floor(pageNumber - 0.05)));
     }
 
     //set prevtags
@@ -103,7 +103,7 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     //
 
     //load page & save into mdl_listpage    https://chan.sankakucomplex.com/posts/index.html?auto_page=t&next=34733274&page=3
-    var ustr = `https://chan.sankakucomplex.com/posts.html?tags=${concatenated}&auto_page=t&page=${mdl_pginc}`
+    var ustr = `https://chan.sankakucomplex.com/posts.html?tags=${concatenated}&auto_page=t&page=${pageNumber}`
     await xmlHttpReqforMDL(ustr)
 
     
@@ -123,12 +123,12 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     }
     
 
-    for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > dldimages); ind++) {
+    for (let ind = index; (ind < popularExcludedArray.length && parseInt($("#mass_download_limit").val()) > downloadedPosts); ind++) {
         const image = popularExcludedArray[ind]; 
-        await xmlhttpReq($(image).attr("href").substring(10,), undefined, false, false, dldimages, $("#mass_download_limit").val()).catch(function(e_val){
+        await xmlhttpReq($(image).attr("href").substring(10,), undefined, false, false, downloadedPosts, $("#mass_download_limit").val()).catch(function(e_val){
             breakOutError = true; 
-            dldimages = 0; 
-            mdl_pginc = 1; 
+            downloadedPosts = 0; 
+            pageNumber = 1; 
             // console.log("rate limited - dld set to 0, pginc 1"); 
             // chrome.runtime.sendMessage({message: "alert", value: "image "+e_val+" out of " + $("#mass_download_limit").val() + " failed\nWait a minute and click download again. Offset set to last successfully downloaded file"})
             // var v = parseInt($("#mass_download_offset").val())
@@ -153,30 +153,30 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
         concurrentImageTracker++
 
 
-        if (  (ind == 19) && (parseInt($("#mass_download_limit").val()) > dldimages)  )
+        if (  (ind == 19) && (parseInt($("#mass_download_limit").val()) > downloadedPosts)  )
         {
             console.log("reached end")
-            mdl_pginc++
+            pageNumber++
             //set index to 0 V
             initiateMdlWTags(0, true)
             break;
         }
 
-        if (  (ind < 19) && (parseInt($("#mass_download_limit").val()) >= dldimages) && (popularExcludedArray.length < 20) )
+        if (  (ind < 19) && (parseInt($("#mass_download_limit").val()) >= downloadedPosts) && (popularExcludedArray.length < 20) )
         {
             console.log("reached end of postlist")
             end_Of_Postlist = true;
-            mdl_pginc = 1;
+            pageNumber = 1;
         }
     }
 
 
 
     //if downloaded images equals limit set dld to 0 & pginc to 1 for next
-    if (dldimages == parseInt($("#mass_download_limit").val()))
+    if (downloadedPosts == parseInt($("#mass_download_limit").val()))
     {
-        dldimages = 0
-        mdl_pginc = 1;
+        downloadedPosts = 0
+        pageNumber = 1;
     }
 
     if (end_Of_Postlist)
@@ -192,10 +192,10 @@ function dlItem()
     if (concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val()))
     {
         // console.log("dlitm")
-        chrome.runtime.sendMessage({"message": "wow_a_function", url: downloadLink, isMassDownload: true})
+        chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloadLink, isMassDownload: true})
         clearInterval(concurrentLimitPoll)
         concurrentLimitPoll = undefined;
-        dldimages += 1;
+        downloadedPosts += 1;
     }
 }
 

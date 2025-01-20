@@ -16,144 +16,119 @@ var mouseBasePositionReceived = false;
 
 var previousSizeValue;
 
-//get the tab url
-chrome.runtime.sendMessage({"message": "fuckgoogle"})
-
-//listener to tab URL
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-
-  localStorage.setItem('exoJsPop101Last', new Date().getTime());
-  setInterval(() => {
-    console.log('set')
-    localStorage.setItem('exoJsPop101Last', new Date().getTime());
-  }, 60000);
-
-  if ( ( seconds(localStorage.getItem("plustitial"+"_last_run")) ) || ( seconds(localStorage.getItem("prestitial"+"_last_run")) ) )
-  {
-    localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
-    localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
-    chrome.runtime.sendMessage({message: "reload"})
-  }
-
-  mutationObserver.observe(document, observerOptions)
-
-  if (request.message != "https://chan.sankakucomplex.com/")
-  {
-    //getHighestCharacterTag();
-  }
-  if (!request.message.match("https://chan.sankakucomplex.com/posts/*"))
-  {
-    chrome.storage.local.get(["scalersize"], function(result){
-      if (true)
-      {
-        postlist_preview_scale_factor = result.scalersize
-        sizeUpPreview()
-        sizeApplication.observe(document.getElementsByClassName("content")[0], nOpts)
-        paginatorObserver.observe(document.getElementsByClassName("content")[0], nOpts_)
-        $(document).keydown(function(keyDownEvent) {
-          if (keyDownEvent.keyCode === 17) {
-              if (!sbDisplaying)
-              {
-                modHtml()
-                sbDisplaying = true;
-              }
-          }
-        });
-        $(document).keyup(function(keyDownEvent) {
-          if (keyDownEvent.keyCode === 17) {
-              $("#sb").remove()
-              sbDisplaying = false;
-          }
-        });
-      }
-
-    })
-  }
-  if (request.message.match("https://chan.sankakucomplex.com/*/*"))
-  {
-    chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "resizecontent", "scrolltocontent"], function(result){
-
-      if ($("#image").is("img"))
-      {
-        document.getElementById("image").crossOrigin = "anonymous"
-        $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(request.message.substr(41,), "Viewed", "postpage", document)})
-      }
-      
-      else if ($("#image").is("video"))
-      {
-        // document.getElementById("image").crossOrigin = "anonymous"
-        var vid = $("#image")
-        // var src1 = "https:"
-        var src2 = $(vid).find("source").attr("src")
-        // var res = src1.concat(src2)
-        $("#image").remove()
-        $(vid).attr("src", src2)
-        $(vid).attr("crossorigin", "anonymous")
-        $(vid).attr("referrerpolicy", "no-referrer")
-        $(vid).find("source").remove()
-        $(vid).attr("autoplay", true)
-        $("#post-content").append(vid)
-
-        idName = "#image"
-
-        watchBuffer = setInterval(updateProgressBar, 500)
-
-        if(result.HMenu_downloadfullvideos)
-        {
-          $("#image").on("timeupdate", function(e) {console.log("video loaded"); 
-          if ((!video_Event_Fired_Once) && (readyNow))
-          {
-            createHistoryMenuEntry(request.message.substr(41,), "Viewed", "postpage", document)
-            video_Event_Fired_Once = true;
-          }
-          })
+if (!window.location.href.match("https://chan.sankakucomplex.com/posts/*"))
+{
+  chrome.storage.local.get(["scalersize"], function(result){
+    if (true)
+    {
+      postlist_preview_scale_factor = result.scalersize
+      sizeUpPreview()
+      sizeApplication.observe(document.getElementsByClassName("content")[0], nOpts)
+      paginatorObserver.observe(document.getElementsByClassName("content")[0], nOpts_)
+      $(document).keydown(function(keyDownEvent) {
+        if (keyDownEvent.keyCode === 17) {
+            if (!sbDisplaying)
+            {
+              modHtml()
+              sbDisplaying = true;
+            }
         }
-        else if(result.HMenu_downloadfullvideos != true)
-        {
-          $("#image").on("progress", function(e) {console.log("video loaded"); 
-          if ((!video_Event_Fired_Once) && (document.getElementById("image").currentTime > 0))
-          {
-            createHistoryMenuEntry(request.message.substr(41,), "Viewed", "postpage", document)
-            video_Event_Fired_Once = true;
-          }
-          })
+      });
+      $(document).keyup(function(keyDownEvent) {
+        if (keyDownEvent.keyCode === 17) {
+            $("#sb").remove()
+            sbDisplaying = false;
         }
+      });
+    }
 
-      }
-      // document.getElementById("image").crossOrigin = "anonymous"
-      if (result.resizecontent == true)
-      {
-        if ($("#image").attr("width") > window.innerWidth)
-        {
-          $("#image").attr("width", window.innerWidth)
-        }
-        if ($("#image").attr("height") > window.innerHeight)
-        {
-          $("#image").attr("height", window.innerHeight)
-          // if (document.getElementById("image").src.match(".gif"))
-          // {
-            $("#image").removeAttr("width")
-          // }
-        }
-      }
-
-      if (result.scrolltocontent == true)
-      {
-        window.scrollTo(undefined, document.getElementById("image").getBoundingClientRect().top)
-      }
-
-    })
-    // if ($(document.getElementById("image")).is("img"))
-    // {
-
-      
-      // var img = $("<img></img>").attr({"src": document.getElementById("image").src, "crossOrigin": "anonymous", "id": "canvasimg", "style": "display: none;"}).on("load", function(e){createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)})
-      // $("#image").after(img)
-    // }
-  }
+  })
 }
-)
 
+if (window.location.href.match("https://chan.sankakucomplex.com/*/*"))
+{
+  chrome.storage.local.get(["HMenu_downloadanimatedgifs", "HMenu_downloadfullvideos", "resizecontent", "scrolltocontent"], function(result){
+
+    if ($("#image").is("img"))
+    {
+      document.getElementById("image").crossOrigin = "anonymous"
+      $("#image").on("load", function(e) {console.log("image loaded"); createHistoryMenuEntry(window.location.href.substr(41,), "Viewed", "postpage", document)})
+    }
+    
+    else if ($("#image").is("video"))
+    {
+      // document.getElementById("image").crossOrigin = "anonymous"
+      var vid = $("#image")
+      // var src1 = "https:"
+      var src2 = $(vid).find("source").attr("src")
+      // var res = src1.concat(src2)
+      $("#image").remove()
+      $(vid).attr("src", src2)
+      $(vid).attr("crossorigin", "anonymous")
+      $(vid).attr("referrerpolicy", "no-referrer")
+      $(vid).find("source").remove()
+      $(vid).attr("autoplay", true)
+      $("#post-content").append(vid)
+
+      idName = "#image"
+
+      watchBuffer = setInterval(updateProgressBar, 500)
+
+      if(result.HMenu_downloadfullvideos)
+      {
+        $("#image").on("timeupdate", function(e) {console.log("video loaded"); 
+        if ((!video_Event_Fired_Once) && (readyNow))
+        {
+          createHistoryMenuEntry(window.location.href.substr(41,), "Viewed", "postpage", document)
+          video_Event_Fired_Once = true;
+        }
+        })
+      }
+      else if(result.HMenu_downloadfullvideos != true)
+      {
+        $("#image").on("progress", function(e) {console.log("video loaded"); 
+        if ((!video_Event_Fired_Once) && (document.getElementById("image").currentTime > 0))
+        {
+          createHistoryMenuEntry(window.location.href.substr(41,), "Viewed", "postpage", document)
+          video_Event_Fired_Once = true;
+        }
+        })
+      }
+
+    }
+    // document.getElementById("image").crossOrigin = "anonymous"
+    if (result.resizecontent == true)
+    {
+      if ($("#image").attr("width") > window.innerWidth)
+      {
+        $("#image").attr("width", window.innerWidth)
+      }
+      if ($("#image").attr("height") > window.innerHeight)
+      {
+        $("#image").attr("height", window.innerHeight)
+        // if (document.getElementById("image").src.match(".gif"))
+        // {
+          $("#image").removeAttr("width")
+        // }
+      }
+    }
+
+    if (result.scrolltocontent == true)
+    {
+      window.scrollTo(undefined, document.getElementById("image").getBoundingClientRect().top)
+    }
+
+  })
+  // if ($(document.getElementById("image")).is("img"))
+  // {
+
+    
+    // var img = $("<img></img>").attr({"src": document.getElementById("image").src, "crossOrigin": "anonymous", "id": "canvasimg", "style": "display: none;"}).on("load", function(e){createHistoryMenuEntry(request.message.substr(42,), "Viewed", "postpage", document)})
+    // $("#image").after(img)
+  // }
+}
+
+//for image scaler bar
 function modHtml()
 {
   var div = "<div id=\"sb\" style=\"background-color: #d3d3d3d9;width: 254px;height: 65px;position: fixed;z-index: 10001;border-radius: 30px;\"><div id=\"words\" style=\"position: fixed;font-size: 12pt;left: 102px;font-family: monospace;\"><span style=\"-webkit-user-select: none;\">Scale:</span><h1 style=\"width: fit-content;position: relative;left: 96px;bottom: 14px;font-size: 19pt;-webkit-user-select: none;\">2.0</h1></div><div id=\"setcontainer\"><div id=\"button\" style=\"height: 20px;margin-left: auto;margin-right: auto;width: 20px;background-color: lightblue;margin-top: 18px;border-radius: 6px;position: relative;left: 0px;\"></div><div id=\"line\" style=\"height: 5px;width: 175px;background-color: black;margin-left: auto;margin-right: auto;top: 35px;\"></div></div></div>"
@@ -324,8 +299,6 @@ function modHtml()
   })
 }
 
-var sample_img_link;
-
 function sizeUpPreview(newAge = false){
   var x = Array.prototype.slice.call(document.getElementsByClassName("preview"))
 
@@ -466,15 +439,6 @@ function movePosts(mutationsList)
   });
 }
 
-const mutationObserverTargetNode = document.querySelector("#someElement");
-const observerOptions = {
-  childList: true,
-  // attributes: true,
-
-  // Omit (or set to false) to observe only changes to the parent node
-  subtree: true
-}
-
 const nOpts = {
   childList: true,
   // attributes: true,
@@ -497,8 +461,6 @@ $("#draggableElement").remove();
 
 var paginatorObserver = new MutationObserver(movePosts)
 
-var mutationObserver = new MutationObserver(clearb)
-
 var sizeApplication = new MutationObserver(sizeUpPreview)
 
 var context_menu_pid = undefined;
@@ -510,8 +472,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
     xmlhttpReq(context_menu_pid, operatingthumbnail, false, true);
   }
 })
-
-// clearbs();
 
 //$("head").append( $("meta").attr({"content": "no-referrer", "name": "referrer"}) )
 
@@ -585,21 +545,6 @@ function newxmlHttpReq(url)
     }
 }
 });
-}
-
-function seconds(localStorageLastSetTimeInMilliseconds, interval = 21600) {
-  //Math.round(((new Date()).getTime() - parseInt(timeInSeconds))/1000);
-            //MILLISECONDS       //SECONDS                                  //SECONDS CONVERSION
-            // console.log(new Date().getTime())
-            // console.log(localStorageLastSetTimeInMilliseconds)
-            // console.log(Math.round( ( new Date().getTime() - parseInt(localStorageLastSetTimeInMilliseconds) ) ) / 1000)
-            // console.log(interval)
-  if ( Math.round( ( new Date().getTime() - parseInt(localStorageLastSetTimeInMilliseconds) ) ) / 1000 > interval)
-  {
-    return true
-  }
-
-  else return false;
 }
 
 /**prepare DOM for preview*/
@@ -939,17 +884,6 @@ async function createBase64Image(type, page = undefined) {
       })
     // }
   }
-  // var canvas = document.createElement("canvas");
-  // canvas.width = img.naturalWidth;
-  // canvas.height = img.naturalHeight;
-
-  // Copy the image contents to the canvas
-  // var ctx = canvas.getContext("2d");
-  // ctx.drawImage(img, 0, 0);
-
-  // var dataURL = canvas.toDataURL("image/jpeg", 1);
-  // console.log("b64 img created")
-  // return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
 var isFullscreen = false;
@@ -1259,8 +1193,8 @@ setTimeout(() => {
   apply();
   //console.log("apply")
 }, 500);
-$("div#content").find("img.preview").off("mouseenter mouseleave")
-$("div#content").find("img.preview").hover(setPreviewImage, unsetPreviewImage)
+$("div#content").find("img.post-preview-image").off("mouseenter mouseleave")
+$("div#content").find("img.post-preview-image").hover(setPreviewImage, unsetPreviewImage)
 $("div#sp1").remove();
 
 $(".thumblink").off("mousedown")
@@ -1496,40 +1430,6 @@ function removePreview(e)
   isNotFullscreenPositionHorizontal = undefined;
 }
 
-/**
- * clears ads
- */
-function clearbs() {
-  setTimeout(() => {
-    $("div[style*='-webkit-tap-highlight-color: transparent !important; background: none !important; border: 0px !important; display: block !important; height: 100vh !important; left: 0px !important; margin: 0px !important; outline: 0px !important; padding: 0px !important; position: fixed !important; top: 0px !important; width: 100vw !important; z-index: 2147483647 !important;'").remove();
-    $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647;'").remove();
-    $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647 !important;'").remove();
-    $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
-    $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
-    $(".eww").remove()
-    $("iframe").remove()
-    // console.log("SankakuCacher: set localstorage")
-    localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
-    localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
-    clearbs();
-  }, 1000);
-  }
-
-function clearb(mutationRecord, mutationwatcher)
-{
-  $("div[style*='-webkit-tap-highlight-color: transparent !important; background: none !important; border: 0px !important; display: block !important; height: 100vh !important; left: 0px !important; margin: 0px !important; outline: 0px !important; padding: 0px !important; position: fixed !important; top: 0px !important; width: 100vw !important; z-index: 2147483647 !important;'").remove();
-  $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647;'").remove();
-  $("iframe[style*='border: none !important; bottom: 7px !important; display: block; height: 96px !important; max-width: 405px !important; position: fixed !important; right: 7px !important; top: auto !important; width: 100% !important; z-index: 2147483647 !important;'").remove();
-  $("div[style*='border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.3) 0px 3px 5px; cursor: pointer; display: flex; height: 100%; overflow: hidden; transform: translateX(0px); transition: background-color 0.3s ease 0s, transform 0.3s ease 0s; width: 100%;'").remove();
-  $("body[style*='box-sizing: border-box; font: 16px / 1.4 medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, Montserrat, \"Open Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"; height: 100%; margin: 0px; overflow: hidden; padding: 8px; -webkit-tap-highlight-color: transparent; text-size-adjust: none; user-select: none; width: 100%; color: rgb(65, 74, 89);'").remove();
-  $(".eww").remove()
-  $("iframe").remove()
-  // console.log("SankakuCacher: set localstorage")
-  localStorage.setItem("plustitial"+"_last_run", (new Date()).getTime());
-  localStorage.setItem("prestitial"+"_last_run", (new Date()).getTime());
-  $("div#adContainer").remove();
-}
-
 /**add script button for adding fav class and creatting relative create function for IMG element*/
 function addInvisibleScriptButton(post_id, element)
 {
@@ -1559,12 +1459,12 @@ function aparse() {
     aparse();
   }, 500);
 
-var x = Array.prototype.slice.call(document.getElementsByClassName("thumb"))
+  var x = Array.prototype.slice.call(document.getElementsByClassName("post-preview-container"))
 
-x.forEach(element => {
-  $(element).children("a").attr("class", "thumblink")
-});
-preventdefaultthumblink();
+  x.forEach(element => {
+    $(element).children("a").attr("class", "thumblink")
+  });
+  preventdefaultthumblink();
 }
 
 /**prevent default thumblink behavior and handle */
@@ -1582,7 +1482,7 @@ function preventdefaultthumblink()
     thumblinks.forEach(element => {
 
       //get post id of element
-      var pid = $(element).parent().attr("id").substr(1,)
+      var pid = $(element).attr("href").substr(10,)
 
       //when clicking thumbnail element
       element.onauxclick = (e => { 
@@ -1800,6 +1700,3 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
 }
 );
-
-  "<div id=\"dlbutton\" style=\"padding-top: 250px\;\> <input type=\"button\" value=\"Download\"\> </div>"
-  
