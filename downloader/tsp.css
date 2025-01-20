@@ -1,0 +1,180 @@
+div.tsbg{
+    position: absolute;
+    filter: blur(4px);
+    opacity: 64%;
+    width: fit-content;
+    overflow: hidden;
+    height: 31px;
+    background-image: linear-gradient(to top, #000000, #ffffff);
+}
+
+div.tsbg img{
+    transform: scaleY(-1);
+    opacity: inherit;
+}
+
+div.tsbg video{
+    transform: scaleY(-1);
+    opacity: inherit;
+}
+
+#header {
+    background-color: #00000047;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+div#ct{
+    height: fit-content;
+    background-color: #000000bf;
+    margin: 8px;
+    margin-top: 0px;
+    backdrop-filter: blur(9px);
+}
+
+div#htext h1{
+    color: #969696;
+    font-size: 2.5em;
+    font-family: Ultra;
+    -webkit-text-stroke: thin;
+    -webkit-text-stroke-color: #ffffff8c;
+}
+
+#downloadbutton {
+    width: 200px;
+    background-color: dimgrey;
+    height: 50px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2.6em;
+    margin-bottom: 2.6em;
+    border-radius: 20px;
+    font-family: 'Ultra';
+    color: white;
+    text-align: center;
+    transition: background-color 0.2s;
+}
+
+.thumbs img
+{
+    /* margin: 30px 20px 30px 20px; */
+    max-height: 218px;
+    max-width: 280px;
+    display: inline-block;
+    vertical-align: middle;
+    align-self: center;
+    transform-origin: center;
+    transition: transform 60ms ease-in-out;
+}
+
+.thumbs video
+{
+    /* margin: 30px 20px 30px 20px; */
+    max-height: 338px;
+    max-width: 400px;
+    display: inline-block;
+    vertical-align: middle;
+    align-self: center;
+    transform-origin: center;
+    transition: transform 60ms ease-in-out;
+}
+
+#downloadbutton:hover {
+    cursor: pointer;
+    background-color: #a9a8a8;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background-image: url();
+    margin: 0;
+    background-blend-mode: overlay;
+    background-color: #000c;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    background-position: center;
+}
+
+/* .preview-parent_div:hover
+{
+    outline: 3px solid yellow;
+    transform: scale(2.2);
+    position: relative;
+    bottom: 22vh;
+    z-index: 900;
+    border: 27px solid #000000ba;
+    backdrop-filter: blur(15px);
+    border-bottom-width: 59px;
+    transition: left 0.5s, bottom 0.5s, right 0.5s, top 0.5s, transform 0.5s ease-in-out;
+    margin: 0;
+} */
+
+div#header div {
+    text-align: center;
+}
+
+#mppane {
+    line-height: 0px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    /* flex-flow: wrap-reverse; */
+    /* flex-direction: row-reverse; */
+    margin-top: 10px;
+}
+
+.preview-menu_bar
+{
+    display: flex;
+    justify-content: space-between;
+    height: 0;
+    position: relative;
+    bottom: 28px;
+}
+
+.preview-parent_div
+{
+    align-self: center;
+    transform-origin: center;
+    transition: transform 0.5s, bottom 0.5s, right 0.5s, left 0.5s ease-in-out;
+    margin: 30px 30px 76px 30px;
+    position: relative;
+    bottom: 0vh;
+    right: 0;
+}
+
+#pageselect
+{
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+}
+
+.page_number_select
+{
+display: inline-block;
+color: #91dbfe;
+font-size: 16px;
+margin-left: 3px;
+margin-right: 3px;
+text-decoration: none;
+height: fit-content;
+}
+
+.tsbg .preview-menu_bar
+{
+    bottom: -10px;
+    z-index: 1;
+    opacity: 0.5;
+}
+
+.progress-menu_bar
+{
+    background-image: linear-gradient(70deg, #31c140, #14ff00);
+    width: 100%;
+    height: 19;
+    scale: 0.9;
+    transition: width 0.5s cubic-bezier(.77,0,.18,1);
+}

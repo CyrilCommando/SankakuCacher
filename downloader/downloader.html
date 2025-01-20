@@ -1,0 +1,90 @@
+<html><head>
+    <link rel="stylesheet" href="tsp.css" type="text/css">
+    <link rel="stylesheet" href="tspr.css" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&amp;family=Carattere&amp;family=Qwitcher+Grypen&amp;family=Ultra&amp;family=Source+Code+Pro&amp;display=swap" rel="stylesheet">
+</head><body>
+    <div id="header">
+        <div id="htext" style="
+    flex-basis: 100%;
+">
+    <h1>Downloader</h1>
+        </div>
+    <div id="scic" style="display: flex;flex-basis: 100%;flex-direction: row;align-items: center;justify-content: center;">
+    <img src="../squared.png" style="
+    margin-left: 0px;
+">
+    <select id="booru" style=" display: none;
+    transform: translateX(35%) translateY(5%);
+">        <option value="Sankaku">Sankaku</option>
+          <option value="Rule34">Rule34</option>
+          <option value="yande.re">yande.re</option>
+          <option value="moebooru">moebooru</option>
+          <option value="e621.net">e621.net</option>
+        </select>
+        </div>
+        
+    <div style="
+    flex-basis: 100%;
+"><div id="sb" style="margin-top: 40px;">
+        <input id="tags" type="text" style="width: 158px;">
+    </div>
+    <div id="downloadbutton">
+        <span style="position: relative;top: 50%;transform: translateY(-50%);display: inline-block;">Download</span>
+    </div>
+    </div></div>
+    <div id="menu" style="
+    height: 130px;
+    background: dimgrey;
+    display: flex;
+    outline: 3px solid white;
+    margin-left: 3px;
+    margin-right: 3px;
+    flex-wrap: wrap;
+    padding-bottom: 1em;
+    margin-left: 1em;
+    margin-right: 1em;
+    border-radius: 2px;
+    transition: height 0.5s;
+    transition-timing-function: ease-in-out;
+    overflow: hidden;
+    /* justify-content: space-around; */
+"><div style="flex-basis: 100%;align-self: center;height: fit-content;font-family: 'Source Code Pro';outline: 0px;overflow: hidden;">
+        <span style="
+    display: inline-block;
+    width: min-content;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+">Menu</span><span style="display: inline-block;width: min-content;position: relative;left: 50%;transform: translateX(-50%);">V</span>
+    </div>
+    
+    <div style="flex-basis: 100%;font-family: 'Source Code Pro';color: white;text-align: center;">
+<span title="How many to download at once">Concurrent Download Limit:</span><input id="mass_download_concurrentlimit" type="text" style="
+        width: 40px;"> 
+        <br><span title="Max number to download. Defaults to 20">Limit:</span><input id="mass_download_limit" type="text" style="
+        width: 40px;">
+        <br><span title="Where to begin downloading in the results (1 starts at post #2, 35 at post 36, etc)">Offset:</span><input id="mass_download_offset" type="text" style="
+        width: 40px;"> 
+        <br>
+    </div>
+
+    
+</div>
+<div id="ct">
+<div id="mppane" class="thumbs">
+
+
+    
+
+        </div></div>
+
+<script src="../jquery-3.4.1.min.js"></script>
+<script src="../getImageTags.js"></script>
+<script src="../httprequest.js"></script>
+<script src="../saveFile.js"></script>
+<script src="../xhrDownload.js"></script>
+
+<script src="downloader.js"></script>
+</body></html>
