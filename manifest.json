@@ -26,7 +26,7 @@
       "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTags.js", "content.js"],
       "css": ["fix_chans_css_again.css"]
     } ],
-  "background": {
-    "scripts": ["jquery-3.4.1.min.js", "settingshelp.js", "saveFile.js", "background.js" ]
-  }
+    "background": {
+      "service_worker": "background.js"
+    }
 }

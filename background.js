@@ -1,8 +1,8 @@
 // background.js
 
 //thanks mf v3
-//importScripts("settingshelp.js")
-//importScripts("saveFile.js")
+importScripts("settingshelp.js")
+importScripts("saveFile.js")
 
 var positiveinstance = false;
 
