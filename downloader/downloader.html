@@ -12,6 +12,11 @@
     <h1>Downloader</h1>
         </div>
     <div id="scic" style="display: flex;flex-basis: 100%;flex-direction: row;align-items: center;justify-content: center;">
+        <div style="height: 12vh;background-color: #4d4d4d;position: absolute;aspect-ratio: 2/1;left: 13%;top: 18%;font-family: source code pro;color: white;">
+            <div id="completeleveltext" style="margin-top: 34;">
+            <span id="completeleveltext_1">-</span>/<span id="completeleveltext_2">-</span> successfully downloaded
+          </div>
+            </div>
     <img src="../squared.png" style="
     margin-left: 0px;
 ">
@@ -28,29 +33,25 @@
     <div style="
     flex-basis: 100%;
 "><div id="sb" style="margin-top: 40px;">
-        <input id="tags" type="text" style="width: 158px;">
+        <input id="tags" type="text" style="width: 158px; scale: 1.3;">
     </div>
     <div id="downloadbutton">
         <span style="position: relative;top: 50%;transform: translateY(-50%);display: inline-block;">Download</span>
     </div>
     </div></div>
     <div id="menu" style="
-    height: 130px;
+    height: 110px;
     background: dimgrey;
     display: flex;
     outline: 3px solid white;
-    margin-left: 3px;
-    margin-right: 3px;
     flex-wrap: wrap;
     padding-bottom: 1em;
     margin-left: 1em;
     margin-right: 1em;
     border-radius: 2px;
-    transition: height 0.5s;
-    transition-timing-function: ease-in-out;
     overflow: hidden;
-    /* justify-content: space-around; */
-"><div style="flex-basis: 100%;align-self: center;height: fit-content;font-family: 'Source Code Pro';outline: 0px;overflow: hidden;">
+    justify-content: space-around;
+"><div style="flex-basis: 100%;align-self: center;height: fit-content;font-family: 'Source Code Pro';outline: 0px;overflow: hidden;margin-top: 5;">
         <span style="
     display: inline-block;
     width: min-content;
@@ -60,14 +61,28 @@
 ">Menu</span><span style="display: inline-block;width: min-content;position: relative;left: 50%;transform: translateX(-50%);">V</span>
     </div>
     
-    <div style="flex-basis: 100%;font-family: 'Source Code Pro';color: white;text-align: center;">
-<span title="How many to download at once">Concurrent Download Limit:</span><input id="mass_download_concurrentlimit" type="text" style="
+    <div style="flex-basis: 33%;font-family: 'Source Code Pro';color: white;text-align: center;display: inline-block;">
+<br><span title="How many to download at once">Concurrent Download Limit:</span><input id="mass_download_concurrentlimit" type="text" style="
         width: 40px;"> 
         <br><span title="Max number to download. Defaults to 20">Limit:</span><input id="mass_download_limit" type="text" style="
         width: 40px;">
         <br><span title="Where to begin downloading in the results (1 starts at post #2, 35 at post 36, etc)">Offset:</span><input id="mass_download_offset" type="text" style="
         width: 40px;"> 
-        <br>
+        
+    </div><div style="flex-basis: 33%;font-family: 'Source Code Pro';color: white;text-align: center;display: inline-block;">
+Include date: <input id="date" type="checkbox"><br>Include character tag: <input id="character" type="checkbox">    
+   
+   <br>Include artist: <input type="checkbox" id="artist">  <br>
+  
+        Include IP: <input type="checkbox" id="IP">
+    </div><div style="flex-basis: 33%;font-family: 'Source Code Pro';color: white;text-align: center;display: inline-block;">
+<br><span title="">Character Tag Limit:</span><input type="text" style="
+        width: 40px;" id="character_tag_limit"> 
+        <br><span title="">Artist Tag Limit:</span><input type="text" style="
+        width: 40px;" id="artist_tag_limit"> 
+        <br><span title="">IP Tag Limit:</span><input type="text" style="
+        width: 40px;" id="ip_tag_limit">
+        
     </div>
 
     
@@ -84,7 +99,6 @@
 <script src="../getImageTags.js"></script>
 <script src="../httprequest.js"></script>
 <script src="../saveFile.js"></script>
-<script src="../xhrDownload.js"></script>
 
 <script src="downloader.js"></script>
 </body></html>
