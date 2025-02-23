@@ -1,4 +1,4 @@
-console.log("mdl mod imported")
+//#region defs
 
 //pg 1, 2 (element)
 var mdl_listpage;
@@ -27,37 +27,6 @@ var createdDlDict = {};
 var breakOutError = false;
 
 var end_Of_Postlist = false;
-
-chrome.downloads.onCreated.addListener(downloaditem => {
-    createdDlDict[downloaditem.id] = true;
-})
-
-chrome.downloads.onChanged.addListener(downloaddelta => {
-    // console.log(downloaddelta)
-    if (downloaddelta.state)
-    {
-        if(downloaddelta.state.current == "complete")
-        {
-            if (createdDlDict[downloaddelta.id])
-            {
-                // console.log("dec 1")
-                concurrentImageTracker --
-            }
-        }
-        if(downloaddelta.state.current == "interrupted")
-        {
-            concurrentImageTracker --
-            console.log("resumed failed dl")
-            setTimeout(() => {
-                chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloaddelta.url.current, isMassDownload: true})
-                // chrome.downloads.resume(downloaddelta.id)
-                concurrentImageTracker ++
-            }, 2500);
-        }
-    }
-})
-
-MDL_update()
 
 function MDL_update()
 {
@@ -186,41 +155,6 @@ async function initiateMdlWTags(index = parseInt ($("#mass_download_offset").val
     }
 }
 
-function dlItem()
-{
-    
-    if (concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val()))
-    {
-        // console.log("dlitm")
-        chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloadLink, isMassDownload: true})
-        clearInterval(concurrentLimitPoll)
-        concurrentLimitPoll = undefined;
-        downloadedPosts += 1;
-    }
-}
-
-
-// code
-function promiseWhen(condition, timeout){
-  if(!timeout){
-    timeout = 999999;
-  }
-  return new Promise(function(resolve, reject)
-  {
-    setTimeout(function(){
-        reject();
-      }, timeout);
-      function loop(){
-        if(condition()){
-          resolve();
-        }
-        setTimeout(loop,0);
-      }
-      setTimeout(loop,0);
-  })
-}
-
-
 /**
  * page 1 ..., updates mdl pg w new pg
  */
@@ -261,3 +195,76 @@ async function xmlHttpReqforMDL(url)
 }
 });
 }
+
+function dlItem()
+{
+    
+    if (concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val()))
+    {
+        // console.log("dlitm")
+        chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloadLink, isMassDownload: true})
+        clearInterval(concurrentLimitPoll)
+        concurrentLimitPoll = undefined;
+        downloadedPosts += 1;
+    }
+}
+
+
+// code
+function promiseWhen(condition, timeout){
+  if(!timeout){
+    timeout = 999999;
+  }
+  return new Promise(function(resolve, reject)
+  {
+    setTimeout(function(){
+        reject();
+      }, timeout);
+      function loop(){
+        if(condition()){
+          resolve();
+        }
+        setTimeout(loop,0);
+      }
+      setTimeout(loop,0);
+  })
+}
+
+//#endregion
+
+//#region exec
+
+console.log("mdl mod imported")
+
+chrome.downloads.onCreated.addListener(downloaditem => {
+    createdDlDict[downloaditem.id] = true;
+})
+
+chrome.downloads.onChanged.addListener(downloaddelta => {
+    // console.log(downloaddelta)
+    if (downloaddelta.state)
+    {
+        if(downloaddelta.state.current == "complete")
+        {
+            if (createdDlDict[downloaddelta.id])
+            {
+                // console.log("dec 1")
+                concurrentImageTracker --
+            }
+        }
+        if(downloaddelta.state.current == "interrupted")
+        {
+            concurrentImageTracker --
+            console.log("resumed failed dl")
+            setTimeout(() => {
+                chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloaddelta.url.current, isMassDownload: true})
+                // chrome.downloads.resume(downloaddelta.id)
+                concurrentImageTracker ++
+            }, 2500);
+        }
+    }
+})
+
+MDL_update()
+
+//#endregion

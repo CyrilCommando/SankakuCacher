@@ -138,68 +138,83 @@ function createReflection(pid)
 	$("#"+pid+"_parent").children("div.tsbg").prepend(bts)
 }
 
-function dlItem()
-{
-    
-    if (BooruCacherState.concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val()))
-    {
-        // console.log("dlitm")
-        //chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloadLink, isMassDownload: true})
+function dlItem() {
+	if (BooruCacherState.concurrentImageTracker < parseInt($("#mass_download_concurrentlimit").val())) {
+		// console.log("dlitm")
+		//chrome.runtime.sendMessage({"message": "bcacher_save_file", url: downloadLink, isMassDownload: true})
+
 		thumbnail_title_tag_array = [];
+
 		tag_array = getImageTags(xhr_received_page)
 
+		//add arbitrarily selected tags to thumbnail tooltip
 		tag_array.forEach(tg => {
-			if ((tg.type == "character_tag") || (tg.type == "artist_tag"))
-			{
+			if ((tg.type == "character_tag") || (tg.type == "artist_tag")) {
 				thumbnail_title_tag_array.push(tg.tag)
 			}
 		});
-		
+
+
+		//character tags
 		var chartag = "";
 		var ctlimit = 0;
 		tag_array.forEach(tag => {
-			if ((tag.type == "character_tag") && (ctlimit < 3) )
-			{
+			if ((tag.type == "character_tag") && (ctlimit < parseInt($("#character_tag_limit").val()))) {
 				chartag = chartag.concat(tag.tag + " ")
 				ctlimit++
 			}
 		});
 		chartag = chartag.trimEnd()
 		chartag = chartag.replaceAll(":", "_")
+		//end character tags
 
+		//artist tags
 		var artisttag = "";
 		var atlimit = 0;
 		tag_array.forEach(tag => {
-			if ((tag.type == "artist_tag") && (atlimit < 3))
-			{
+			if ((tag.type == "artist_tag") && (atlimit < parseInt($("#artist_tag_limit").val()))) {
 				artisttag = artisttag.concat(tag.tag + " ")
 				atlimit++
 			}
 		});
 		artisttag = artisttag.trimEnd()
 		artisttag = artisttag.replaceAll(":", "_")
+		//end artist tags
+
+		//IP tags
+		var iptag = "";
+		var iplimit = 0;
+		tag_array.forEach(tag => {
+			if ((tag.type == "copyright_tag") && (iplimit < parseInt($("#ip_tag_limit").val()))) {
+				iptag = iptag.concat(tag.tag + " ")
+				iplimit++
+			}
+		});
+		iptag = iptag.trimEnd()
+		iptag = iptag.replaceAll(":", "_")
+		//end IP tags
 
 		// if (tag_array.length + 47 > 200)
 		// {
-			// var work = tag_array.split(" ")
-			// var work2 = "";
-			// var iter = 0;
-			// for (let index = 0; index < 3 && index < work.length; index++) {
-			// 	const tagstr = work[index];
-			// 	work2 = work2.concat(work[index] + " ")
-			// }
-			// // while (work2.length + 47 + work[iter].length < 255) {
-			// // 	work2 = work2.concat(work[iter] + " ")
-			// // 	iter++
-			// // }
-			// tag_array = work2
-			// tag_array = tag_array.trimEnd()
+		// var work = tag_array.split(" ")
+		// var work2 = "";
+		// var iter = 0;
+		// for (let index = 0; index < 3 && index < work.length; index++) {
+		// 	const tagstr = work[index];
+		// 	work2 = work2.concat(work[index] + " ")
 		// }
-		bcacher_save_file(downloadLink, true, uploadDate, chartag, artisttag)
-        clearInterval(BooruCacherState.concurrentLimitPoll)
-        BooruCacherState.concurrentLimitPoll = undefined;
-        BooruCacherState.downloadedPosts += 1;
-    }
+		// // while (work2.length + 47 + work[iter].length < 255) {
+		// // 	work2 = work2.concat(work[iter] + " ")
+		// // 	iter++
+		// // }
+		// tag_array = work2
+		// tag_array = tag_array.trimEnd()
+		// }
+		bcacher_save_file(downloadLink, true, uploadDate, chartag, artisttag, iptag)
+		clearInterval(BooruCacherState.concurrentLimitPoll)
+		BooruCacherState.concurrentLimitPoll = undefined;
+		BooruCacherState.downloadedPosts += 1;
+	}
 }
 
 function promiseWhen(condition, timeout){
@@ -253,7 +268,21 @@ function splitTagsSuitablyFromRawInput(rawInput, booru)
 
 async function start()
 {
-	chrome.storage.local.set({"mass_download_prevtags": document.getElementById("tags").value, "mass_download_concurrentlimit": document.getElementById("mass_download_concurrentlimit").value,"mass_download_limit": document.getElementById("mass_download_limit").value, "mass_download_offset": document.getElementById("mass_download_offset").value}, function()
+	chrome.storage.local.set({
+		"mass_download_prevtags": document.getElementById("tags").value, 
+		"mass_download_concurrentlimit": document.getElementById("mass_download_concurrentlimit").value,
+		"mass_download_limit": document.getElementById("mass_download_limit").value, 
+		"mass_download_offset": document.getElementById("mass_download_offset").value,
+		"date": document.getElementById("date").checked,
+		"character": document.getElementById("character").checked,
+		"artist": document.getElementById("artist").checked,
+		"IP": document.getElementById("IP").checked,
+		"character_tag_limit": document.getElementById("character_tag_limit").value,
+		"artist_tag_limit": document.getElementById("artist_tag_limit").value,
+		"ip_tag_limit": document.getElementById("ip_tag_limit").value}
+		, 
+	//callback so we can get the settings fresh
+	async function()
 	{
 		//booru to use = page booru selected value
 		for (let index = 0; index < boorus.length; index++) {
@@ -264,11 +293,17 @@ async function start()
 			}
 		}
 
+		//split the tags in query based on booru
 		let tags_ = document.getElementById("tags").value
 		tags = splitTagsSuitablyFromRawInput(tags_, booru_)
+
 		BooruCacherState.offset = document.getElementById("mass_download_offset").value
 		BooruCacherState.concurrentlimit = document.getElementById("mass_download_concurrentlimit").value
 		BooruCacherState.limit = document.getElementById("mass_download_limit").value
+
+		$("#completeleveltext_1").text(0)
+		$("#completeleveltext_2").text(BooruCacherState.limit)
+
 		massDownloadMaster(booru_)
 	})
 	
@@ -287,6 +322,24 @@ async function massDownloadMaster(booru, persist = false)
 	}
 
 	await booru.loadIndexPage(tags, BooruCacherState.pageNumber)
+
+	if (booru.getPostHtmlElementsOn_IndexPage().length == 0)
+	{
+		//emergency return
+		//its gonna fire an empty page at the end
+		alert("End of post list!")
+		return; 
+	}
+
+	if ((BooruCacherState.offset < booru.perPage) && (booru.getPostHtmlElementsOn_IndexPage().length <= BooruCacherState.offset))
+	{
+		//what a fuckin shit FUCKIN MESS HOLY SUFIUCKS all because the site doesn't return 25 pages consistently. This is why grabber does pages
+		BooruCacherState.pageNumber++
+		BooruCacherState.offset = 0
+		await booru.loadIndexPage(tags, BooruCacherState.pageNumber)
+	}
+
+
 
 	//booru speciic call
 	var thumbs = booru.getPostHtmlElementsOn_IndexPage()
@@ -332,24 +385,16 @@ async function massDownloadMaster(booru, persist = false)
 		BooruCacherState.concurrentImageTracker++
 
 
-		if (  (ind == (booru.perPage -1)) && (BooruCacherState.limit > BooruCacherState.downloadedPosts)  )
+		if (  (parseInt(ind) + 1 == booru.getPostHtmlElementsOn_IndexPage().length) && (parseInt(BooruCacherState.limit) > parseInt(BooruCacherState.downloadedPosts)))  
 		{
-			console.log("reached end")
+			console.log("reached end of current page")
 			BooruCacherState.pageNumber++
 			//set BooruCacherState.offset to 0 V
 			BooruCacherState.offset = 0;
 			massDownloadMaster(booru, true)
 			break;
 		}
-
-		if (  (ind < (booru.perPage - 1)) && (BooruCacherState.limit >= BooruCacherState.downloadedPosts) && (popularExcludedArray.length < booru.perPage) )
-		{
-			console.log("reached end of postlist")
-			BooruCacherState.pageNumber = 1;
-		}
 	}
-
-
 
 	//if downloaded images equals limit set dld to 0 & pginc to 1 for next
 	if (BooruCacherState.downloadedPosts == BooruCacherState.limit)
@@ -357,6 +402,7 @@ async function massDownloadMaster(booru, persist = false)
 		BooruCacherState.downloadedPosts = 0
 		BooruCacherState.pageNumber = 1;
 	}
+
 }
 //#endregion
 
@@ -366,6 +412,7 @@ chrome.downloads.onCreated.addListener(downloaditem =>
 {
 	downloadedDlTrackDict[downloaditem.id] = {exists: true, pid: postId, item: downloaditem, uploddate: uploadDate, tags: tag_array};
 })
+
 chrome.downloads.onChanged.addListener(downloaddelta => 
 {
 	if (downloadedDlTrackDict[downloaddelta.id].exists)
@@ -376,6 +423,7 @@ chrome.downloads.onChanged.addListener(downloaddelta =>
 			{
 				if (downloadedDlTrackDict[downloaddelta.id].exists)
 				{
+					$("#completeleveltext_1").text((parseInt($("#completeleveltext_1").text())) + 1)
 					downloadedDlTrackDict[downloaddelta.id].item.state = downloaddelta.state.current
 					BooruCacherState.concurrentImageTracker --
 				}
@@ -392,13 +440,20 @@ chrome.downloads.onChanged.addListener(downloaddelta =>
 			}
 		}
 	}
-    
 })
-chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlimit", "mass_download_limit", "mass_download_offset", "imgs"], function(rs){
+
+chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlimit", "mass_download_limit", "mass_download_offset", "imgs", "date", "character", "artist", "IP", "character_tag_limit", "artist_tag_limit", "ip_tag_limit"], function(rs){
 	document.getElementById("mass_download_concurrentlimit").value = rs.mass_download_concurrentlimit
 	document.getElementById("mass_download_limit").value = rs.mass_download_limit
 	document.getElementById("mass_download_offset").value = rs.mass_download_offset
+	document.getElementById("date").checked = rs.date
+	document.getElementById("character").checked = rs.character
+	document.getElementById("artist").checked = rs.artist
+	document.getElementById("IP").checked = rs.IP
 	document.getElementById("tags").value = rs.mass_download_prevtags
+	document.getElementById("character_tag_limit").value = rs.character_tag_limit,
+	document.getElementById("artist_tag_limit").value = rs.artist_tag_limit,
+ 	document.getElementById("ip_tag_limit").value = rs.ip_tag_limit
 	if (rs.imgs == true)
 	{
 		document.getElementsByTagName("body")[0].style.backgroundImage = `url("../settings/bg/9c9cc066d95471087060c66f163c2b35.png")`
@@ -408,6 +463,7 @@ chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlim
 		document.getElementsByTagName("body")[0].style.backgroundColor = "#000"
 	}
 })
+
 // document.getElementById("mass_download_concurrentlimit").value = BooruCacherState.concurrentlimit
 // document.getElementById("mass_download_limit").value = BooruCacherState.limit
 // document.getElementById("mass_download_offset").value = BooruCacherState.offset

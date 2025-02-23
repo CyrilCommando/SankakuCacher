@@ -34,6 +34,8 @@ function getImageTags(docu)
   });
   tag_array.forEach(element => {
     element.tag = element.tag.replace(/ /g, "_")
+    element.tag = element.tag.replace("?", "_")
+    element.tag = element.tag.replaceAll(/["\/><\?\\:*|]/g, "_")
   });
   return tag_array
 }

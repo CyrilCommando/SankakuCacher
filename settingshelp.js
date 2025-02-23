@@ -2,7 +2,7 @@ function default_settings()
 {
     var aso = new AdvancedSettingsObject();
     console.log("settings set default")
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 20, "mass_download_concurrentlimit": 5, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false, "resizecontent": true, "scrolltocontent": true, "mass_download_prevtags": "", "date": true, "md5": true, "character": true, "imgs": false})
+    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 20, "mass_download_concurrentlimit": 5, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false, "resizecontent": true, "scrolltocontent": true, "mass_download_prevtags": "", "date": true, "md5": true, "character": true, "imgs": false, "artist": false, "IP": false, "character_tag_limit": 3, "artist_tag_limit": 1, "ip_tag_limit": 1})
     //chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 

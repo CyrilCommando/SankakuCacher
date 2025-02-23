@@ -483,7 +483,7 @@ var hasHeldDownClick;
 
 console.log(chrome.runtime.getURL("/history/history.html"))
 
-apply();
+// apply();
 
 prepare();
 
@@ -499,7 +499,7 @@ var xhr_received_page;
 
 var base64data;
 
-aparse();
+// aparse();
 
 var downloadLink;
 
@@ -1233,60 +1233,60 @@ function getLegacyPostIdOfHoveredImage(image)
 }
 
 /**apply event handlers to thumbnails on screen*/
-function apply()
-{
-setTimeout(() => {
-  apply();
-  //console.log("apply")
-}, 500);
-$("div#content").find("img.post-preview-image").off("mouseenter mouseleave")
-$("div#content").find("img.post-preview-image").hover(setPreviewImage, unsetPreviewImage)
-$("div#sp1").remove();
+// function apply()
+// {
+// setTimeout(() => {
+//   apply();
+//   //console.log("apply")
+// }, 500);
+// $("div#content").find("img.post-preview-image").off("mouseenter mouseleave")
+// $("div#content").find("img.post-preview-image").hover(setPreviewImage, unsetPreviewImage)
+// $("div#sp1").remove();
 
-$(".thumblink").off("mousedown")
-$(".thumblink").on("mousedown", function(e)
-{
-  if (e.buttons == 1) {
-    holdclicktimeout = setTimeout(() => {
-      hasHeldDownClick = true;
-      if (hasHeldDownClick)
-      {
-        $(".thumblink").off("click")
-        $(e.currentTarget).on("click", function(e){ e.preventDefault(); hasHeldDownClick = false; $(e.currentTarget).off("click")})
-        try 
-        {
-          setCssOnElement(operatingthumbnail)
-          addPreviewImg(operatingthumbnail)
-        } 
-        catch (error) 
-        {
-          console.log(error)
-          console.log("weren't hovering over a thumbnail")
-        }
-      }
-    }, 500);
-  }
-  if (e.buttons == 2)
-  {
-    let postid = getPostIdOfHoveredImage(operatingthumbnail.currentTarget)
-    console.log(postid)
+// // $(".thumblink").off("mousedown")
+// // $(".thumblink").on("mousedown", function(e)
+// // {
+// //   if (e.buttons == 1) {
+// //     holdclicktimeout = setTimeout(() => {
+// //       hasHeldDownClick = true;
+// //       if (hasHeldDownClick)
+// //       {
+// //         $(".thumblink").off("click")
+// //         $(e.currentTarget).on("click", function(e){ e.preventDefault(); hasHeldDownClick = false; $(e.currentTarget).off("click")})
+// //         try 
+// //         {
+// //           setCssOnElement(operatingthumbnail)
+// //           addPreviewImg(operatingthumbnail)
+// //         } 
+// //         catch (error) 
+// //         {
+// //           console.log(error)
+// //           console.log("weren't hovering over a thumbnail")
+// //         }
+// //       }
+// //     }, 500);
+// //   }
+// //   if (e.buttons == 2)
+// //   {
+// //     let postid = getPostIdOfHoveredImage(operatingthumbnail.currentTarget)
+// //     console.log(postid)
   
-    context_menu_pid = postid;
+// //     context_menu_pid = postid;
 
-    //chrome.runtime.sendMessage({"message": "setpostid", pid: postid})
+// //     //chrome.runtime.sendMessage({"message": "setpostid", pid: postid})
 
-    //xmlhttpReq(postid, operatingthumbnail, false, true);
-  }
-})
+// //     //xmlhttpReq(postid, operatingthumbnail, false, true);
+// //   }
+// // })
 
-$(".thumblink").off("mouseup")
-$(".thumblink").on("mouseup", function(e)
-{
-  clearTimeout(holdclicktimeout)
-  hasHeldDownClick = false;
-})
+// $(".thumblink").off("mouseup")
+// $(".thumblink").on("mouseup", function(e)
+// {
+//   clearTimeout(holdclicktimeout)
+//   hasHeldDownClick = false;
+// })
 
-}
+// }
 
 function setCssOnElement(element, color = "springgreen", isAnActualElement = false)
 {
@@ -1499,52 +1499,52 @@ function addInvisibleScriptButton(post_id, element)
 }
 
 /**parse entire dom for thumbnail elements and apply custom */
-function aparse() {
+// function aparse() {
 
-  setTimeout(() => {
-    aparse();
-  }, 500);
+//   setTimeout(() => {
+//     aparse();
+//   }, 500);
 
-  var x = Array.prototype.slice.call(document.getElementsByClassName("post-preview-container"))
+//   var x = Array.prototype.slice.call(document.getElementsByClassName("post-preview-container"))
 
-  x.forEach(element => {
-    $(element).children("a").attr("class", "thumblink")
-  });
-  preventdefaultthumblink();
-}
+//   x.forEach(element => {
+//     $(element).children("a").attr("class", "thumblink")
+//   });
+//   preventdefaultthumblink();
+// }
 
 /**prevent default thumblink behavior and handle */
-function preventdefaultthumblink()
-{
-  chrome.storage.local.get(["middleclickfav"], function(result) {
+// function preventdefaultthumblink()
+// {
+//   chrome.storage.local.get(["middleclickfav"], function(result) {
 
 
 
-    if (result.middleclickfav == true) {
-    //console.log("result was true")
+//     if (result.middleclickfav == true) {
+//     //console.log("result was true")
     
-    var thumblinks = Array.prototype.slice.call(document.getElementsByClassName("thumblink"))
+//     var thumblinks = Array.prototype.slice.call(document.getElementsByClassName("thumblink"))
 
-    thumblinks.forEach(element => {
+//     thumblinks.forEach(element => {
 
-      //get post id of element
-      var pid = $(element).attr("href").substr(10,)
+//       //get post id of element
+//       var pid = $(element).attr("href").substr(10,)
 
-      //when clicking thumbnail element
-      element.onauxclick = (e => { 
-        e.preventDefault()
+//       //when clicking thumbnail element
+//       element.onauxclick = (e => { 
+//         e.preventDefault()
 
-        //for each thumblink apply auxclick
-        if(e.button == 1)
-          {//alert("how did it get here")
-            addInvisibleScriptButton(pid, element);
-            $("#invisiblescriptbutton").trigger("click")
-            console.log("middleclick")
-          }
-        $("#invisiblescriptbutton").remove();
-      })
-    });     }   else{}    }) //////////////////////CALLBACK FUCKING HECK
-}
+//         //for each thumblink apply auxclick
+//         if(e.button == 1)
+//           {//alert("how did it get here")
+//             addInvisibleScriptButton(pid, element);
+//             $("#invisiblescriptbutton").trigger("click")
+//             console.log("middleclick")
+//           }
+//         $("#invisiblescriptbutton").remove();
+//       })
+//     });     }   else{}    }) //////////////////////CALLBACK FUCKING HECK
+// }
 
 /**get image tags (if url ==) */
 function getHighestCharacterTag()

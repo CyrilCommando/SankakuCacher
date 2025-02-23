@@ -1,6 +1,6 @@
-function bcacher_save_file(download_link, isMassDownload = false, date = "", charactertags ="", artisttags ="")
+function bcacher_save_file(download_link, isMassDownload = false, date = "", charactertags ="", artisttags ="", iptags="")
 {
-	chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags", "date", "md5", "character", "artist"], function(newResult) { 
+	chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags", "date", "md5", "character", "artist", "IP"], function(newResult) { 
 
 		var includeshttps = download_link[0] + download_link[1] + download_link[2] + download_link[3] + download_link[4];
 		
@@ -9,17 +9,15 @@ function bcacher_save_file(download_link, isMassDownload = false, date = "", cha
 			download_link = download_link.substring(6)
 		} 
 
-		var name = download_link.substr(34, 36)
+		var name = download_link.substr(34, 37)
 
-		if (name[33] + name[34] + name[35] === "web")
+		if (name[36] === "?")
 		{
-			name = name + "m"
+			name = name.substr(0, 36)
 		}
 
-		
 		var svfld ="SankakuCacher/"
 
-		
 		if (newResult.savefolder == "SankakuCacher")
 		{
 			//break;
@@ -44,13 +42,16 @@ function bcacher_save_file(download_link, isMassDownload = false, date = "", cha
 		}
 
 		console.log(isMassDownload)
+
 		if (isMassDownload)
 		{
 			if (newResult.mass_download_prevtags != "")
 			{
+				newResult.mass_download_prevtags = newResult.mass_download_prevtags.replaceAll(/["\/><\?\\:*|]/g, "_")
 				svfld += newResult.mass_download_prevtags.replaceAll(":", "_")
 				svfld = svfld.replaceAll(">=", "greater_than_")
 				svfld = svfld.replaceAll("<=", "less_than_")
+				svfld = svfld.replaceAll("?", "")
 				svfld += "/"
 			}
 			else if (newResult.mass_download_prevtags == "")
@@ -59,9 +60,10 @@ function bcacher_save_file(download_link, isMassDownload = false, date = "", cha
 				svfld += "/"
 			}
 		}
+
 		console.log(svfld)
 
-		chrome.downloads.download({url: "https:" + download_link, filename: svfld + (`${newResult.date ? date + " ": ""}` + `${newResult.character ? charactertags + " ": ""}` + `${newResult.artist ? artisttags + " ": ""}` + name).trimStart(), saveAs: false, conflictAction: "overwrite"})
+		chrome.downloads.download({url: "https:" + download_link, filename: svfld + (`${newResult.date ? date + " ": ""}` + `${newResult.character ? charactertags + " ": ""}` + `${newResult.artist ? artisttags + " ": ""}` + `${newResult.IP ? iptags + " ": ""}` + name).trimStart(), saveAs: false, conflictAction: "overwrite"})
  		//chrome.tabs.getSelected
   	})//chrome.storage.local.get
 }
