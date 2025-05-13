@@ -654,16 +654,24 @@ async function createHistoryMenuEntry(postid, menu, type, page)
     chrome.storage.local.set(sets)
   })
   // chrome.storage.local.remove(postid, function(x){console.log("removed "+postid)})
+
+  //save the base64 to the browser
+
   chrome.storage.local.get([postid], function(result){
     if ((result[postid] == undefined) || (result[postid] == "data:,"))
     {
-      chrome.storage.local.set(options, function(x){console.log("set "+postid)})
+      console.log("sent message to indexdb")
+      console.log(postid)
+      console.log(options)
+      chrome.runtime.sendMessage({"message": "saveToIndexedDB", "pid": postid, "options": options})
+      //chrome.storage.local.set(options, function(x){console.log("set "+postid)})
     }
     else if ((result[postid] != undefined) || (result[postid] != "data:,"))
     {
       console.log("post id "+postid+" appears to already exist in database. not overwriting")
     }
   })
+  
 }
 
 class DatabaseLookupTable

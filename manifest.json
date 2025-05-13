@@ -1,8 +1,8 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. History menu, mass download, & QOL.",
-  "version": "3.0",
-  "version_name": "2025-03-11-ffox-master",
+  "version": "3.1",
+  "version_name": "2025-05-12-ffox-master",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
     "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js", "autofave2.js"],
@@ -29,5 +29,10 @@
     } ],
   "background": {
     "scripts": ["jquery-3.4.1.min.js", "settingshelp.js", "saveFile.js", "background.js" ]
+  },
+  "browser_specific_settings": {
+  "gecko": {
+    "id": "comCyr@blah"
   }
+}
 }
