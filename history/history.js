@@ -110,6 +110,23 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 })
 
+function moveFromLocalStorageToIndexedDB()
+{
+  chrome.storage.local.get(["Viewed", "Downloaded", "Previewed"], function (s_HistoryMenus) { 
+    Object.keys(s_HistoryMenus).forEach(n_hMenu => { 
+      s_HistoryMenus[n_hMenu].list.forEach(entry => { 
+        chrome.storage.local.get([entry.pid], function (base64_result) {
+          var ob = {};
+          ob[entry.pid] = base64_result[entry.pid]
+          chrome.runtime.sendMessage({"message": "saveToIndexedDB", "pid": entry.pid, "options": ob})
+          editBase64(entry.pid)
+        })
+
+      }) 
+    }) 
+  })
+}
+
 // chrome.contextMenus.create({contexts: ["image", "video"], documentUrlPatterns: [chrome.runtime.getURL("/history/history.html")], id: "ResetR", onclick: function ()
 // {
 //   chrome.storage.local.get([image_postid], async function(result)
@@ -1275,13 +1292,15 @@ else if (shift==true)
 
 function updateImagewithBase64(pid, classname, title, hidden)
 {
-  chrome.storage.local.get([pid], function(result){
+  chrome.runtime.sendMessage({"message": "getBase64", pid: pid}, function(result){
     //console.log(result)
     document.getElementById(pid).src = function(result, pid)
     {
-      if (result[pid].match(/^data:(image|video)\/(jpeg|gif|mp4|webm);base64,/))
+      console.log(result)
+      console.log(pid)
+      if (result.match(/^data:(image|video)\/(jpeg|gif|mp4|webm);base64,/))
       {
-        if (result[pid].match(/^data:(video)\/(mp4|webm);base64,/))
+        if (result.match(/^data:(video)\/(mp4|webm);base64,/))
         {
           $("#"+pid).remove()
           // image = new HTMLVideoElement();
@@ -1292,7 +1311,7 @@ function updateImagewithBase64(pid, classname, title, hidden)
           // image.className = classname
           
           var video = $("<video></video>");
-          $(video).attr({"id": pid, "title": title, "class": classname, "src": result[pid], "controls": false, "loop": true, autoplay: true})
+          $(video).attr({"id": pid, "title": title, "class": classname, "src": result, "controls": false, "loop": true, autoplay: true})
           $(video).prop("muted", true)
 
           if (hidden)
@@ -1329,7 +1348,7 @@ function updateImagewithBase64(pid, classname, title, hidden)
         {
           $("#"+pid).attr("style", "outline: 3px groove red;")
         }
-        return result[pid]
+        return result
       }
       else
       {
@@ -1339,7 +1358,7 @@ function updateImagewithBase64(pid, classname, title, hidden)
         }
         return "data:image/png;base64,"+result[pid];
       } 
-    }(result, pid);
+    }(result.base64, pid);
     createReflectionImage(pid)
   })
 }
