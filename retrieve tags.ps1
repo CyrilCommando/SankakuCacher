@@ -2,12 +2,16 @@
 # Pass the directory and your Sankaku Cookie
 # Files all have to be named what they were named before the tag naming function was implemented (MD5)
 
+# tooltip url https://chan.sankakucomplex.com/posts/${postID}?variant=tooltip&preview=false
+# not used because tooltip doesn't have date
+
 param (
     [string]$inputDirectory,
     [string]$cookie,
     [string]$maxArtistTags = 1,
     [string]$maxCharacterTags = 3,
-    [string]$maxIpTags = 1
+    [string]$maxIpTags = 1,
+    [bool]$includeDate = $true
 )
 
 if ($inputDirectory -eq $null -or $inputDirectory -eq "") {
@@ -82,7 +86,7 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
 
         $postID = $postUrl.href.Substring(16)
 
-        $nUrl = "https://chan.sankakucomplex.com/posts/${postID}?variant=tooltip&preview=false"
+        $nUrl = "https://chan.sankakucomplex.com/en/posts/$postID"
 
         Start-Sleep -Seconds 2
 
@@ -100,6 +104,11 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
             $src = [System.Text.Encoding]::Unicode.GetBytes($response)
             $HTML.write($src)
             # Write-Host $HTML.body.innerHTML
+        }
+
+        if ($includeDate) {
+            $dateTaken = $HTML.getElementById("stats").childNodes.item(5).innerText.Substring(0,10)
+            $fileName += "$dateTaken "
         }
 
         # Find all elements with the class "tag-type-artist"
