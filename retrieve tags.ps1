@@ -83,9 +83,9 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
 
         $postUrl = $HTML.getElementsByTagName("*") | Where-Object {
             $_.className -eq "post-preview-link"
-        }
+        } | Select-Object -First 1
 
-        if ($postUrl -eq $null -or $postUrl.href -eq $null) {
+        if ($null -eq $postUrl -or $null -eq $postUrl.href) {
             Write-Host "No post found for MD5: $placeholder"
             continue
         }
