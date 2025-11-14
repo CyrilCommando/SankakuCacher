@@ -64,6 +64,7 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
         }
     
         Start-Sleep -Seconds 2
+        Write-Host "Loading page"
         $response = $httpClient.GetStringAsync($url).Result
 
         # Load the HTML content into an HtmlDocument
@@ -84,12 +85,18 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
             $_.className -eq "post-preview-link"
         }
 
+        if ($postUrl -eq $null -or $postUrl.href -eq $null) {
+            Write-Host "No post found for MD5: $placeholder"
+            continue
+        }
+
         $postID = $postUrl.href.Substring(16)
 
         $nUrl = "https://chan.sankakucomplex.com/en/posts/$postID"
 
         Start-Sleep -Seconds 2
 
+        Write-Host "Loading post data"
         $response = $httpClient.GetStringAsync($nUrl).Result
 
         # Load the HTML content into an HtmlDocument
