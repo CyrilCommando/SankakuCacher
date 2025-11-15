@@ -60,7 +60,7 @@ class Booru
 class Sankaku extends Booru
 {
 	name = "Sankaku"
-	perPage = 30;
+	perPage = 25;
 }
 
 class Rule34 extends Booru
