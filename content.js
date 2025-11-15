@@ -455,7 +455,7 @@ const nOpts_ = {
   subtree: false
 }
 
-$(".companion--row").remove();
+//$(".companion--row").remove();
 
 $("#draggableElement").remove();
 
