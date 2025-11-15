@@ -76,6 +76,9 @@ Pin the extension (for convenience). <br>
 #### Waterfox
 Waterfox can just load the zip. Use Waterfox!!!1
 
+#### Firefox
+Good luck.
+
 ## Mass Download instructions
 The window where the download was started must stay open.
 Enter tags just like you would the site. So for example <br>
@@ -83,6 +86,3 @@ fav:cyrilcommando genshin_impact -animated <br>
 would download all the posts that match that tag combination. <br>
 limit is how many to download, concurrent is how many can be downloaded simultaneously at once, and offset is where to begin in the selected tags. To start at page 2, type 25. To start at page 3, type 50. every page has 25 images. (This changes frequently, blame Sankaku. They can barely keep it running in the first place. I'll try to update the extension ASAP when a per-page number change occurs. It may even be different for different account types, god knows.) <br>
 This works for restricted images too, if you're logged in.
-
-## Firefox?..
-Uhhh, good luck. Mozilla is the wokest thing this side of the mississipi, you can't install extensions that aren't verified by the Experts™.
