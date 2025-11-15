@@ -3,8 +3,7 @@ Chrome extension that does a couple things for chan.sankakucomplex.com
 
 automatically download images sankakucomplex
 
-## SankakuCacher is a browser extension that provides you with rich history and download options for all images you browse on chan.sankakucomplex.com.
-## It mainly allows for batch/mass download of many posts at once on Sankaku.
+## SankakuCacher is a browser extension that provides you with rich history and download options for all images you browse on chan.sankakucomplex.com. <br> Its main feature is a batch/mass download function to download many posts in a group of tags at once from Sankaku.
 
 If you'd like to support my work, I made a ko-fi. Any donations are appreciated. <br><br>
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P11NN58X)
