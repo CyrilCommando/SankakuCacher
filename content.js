@@ -1685,13 +1685,13 @@ function getTheGodDamnLink()
   {
     if (v != undefined)
     {
-      chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document})
+      chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML})
     }
   }
 
   else
   {
-    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML})
   }
 }
 
@@ -1705,19 +1705,19 @@ function getTheGodDamnLink2()
   if (y === undefined)
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML})
   }
 
   else if ((v === undefined) && (y === undefined))
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: z, documentObjectM: document})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: z, documentObjectM: document.body.innerHTML})
   }
 
   else
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML})
   }
 }
 
@@ -1730,7 +1730,7 @@ function getTheGodDamnLink3()
   console.log(downloadLink)
   
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, documentObjectM: document})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, documentObjectM: document.body.innerHTML})
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

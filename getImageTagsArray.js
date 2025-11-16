@@ -1,9 +1,9 @@
-function getArrayOfFormattedTagStrings(tag_array) {
+function getArrayOfFormattedTagStrings(tag_array, chartaglimit = parseInt($("#character_tag_limit").val()), artisttaglimit = parseInt($("#artist_tag_limit").val()), iptaglimit = parseInt($("#ip_tag_limit").val())) {
     //character tags
     var chartag = "";
     var ctlimit = 0;
     tag_array.forEach(tag => {
-        if ((tag.type == "character_tag") && (ctlimit < parseInt($("#character_tag_limit").val()))) {
+        if ((tag.type == "character_tag") && (ctlimit < chartaglimit)) {
             chartag = chartag.concat(tag.tag + " ")
             ctlimit++
         }
@@ -16,7 +16,7 @@ function getArrayOfFormattedTagStrings(tag_array) {
     var artisttag = "";
     var atlimit = 0;
     tag_array.forEach(tag => {
-        if ((tag.type == "artist_tag") && (atlimit < parseInt($("#artist_tag_limit").val()))) {
+        if ((tag.type == "artist_tag") && (atlimit < artisttaglimit)) {
             artisttag = artisttag.concat(tag.tag + " ")
             atlimit++
         }
@@ -29,7 +29,7 @@ function getArrayOfFormattedTagStrings(tag_array) {
     var iptag = "";
     var iplimit = 0;
     tag_array.forEach(tag => {
-        if ((tag.type == "copyright_tag") && (iplimit < parseInt($("#ip_tag_limit").val()))) {
+        if ((tag.type == "copyright_tag") && (iplimit < iptaglimit)) {
             iptag = iptag.concat(tag.tag + " ")
             iplimit++
         }

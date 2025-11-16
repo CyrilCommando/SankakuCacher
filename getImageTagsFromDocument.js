@@ -1,5 +1,11 @@
 function getImageTagsFromDocument(docu)
 {
+  if (typeof docu === "string") {
+    const parser = new DOMParser();
+    docu = parser.parseFromString(docu, "text/html");
+  } else if (!(docu instanceof Document)) {
+    throw new Error("Invalid input: docu must be a string or a Document.");
+  }
   var charactertags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
   var seriestags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-copyright"))
   var artisttags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-artist"))

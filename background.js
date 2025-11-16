@@ -221,7 +221,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 		case "content_script_download":
 
-			chrome.storage.local.get(["mp4swebms", "enabled"], function (newResult) {
+			chrome.storage.local.get(["mp4swebms", "enabled", "character_tag_limit", "artist_tag_limit", "ip_tag_limit"], function (newResult) {
 
 				enabled = newResult.enabled;
 
@@ -233,20 +233,20 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				//if is webm/mp4
 				if (name[33] + name[34] + name[35] + name[36] === "webm" || name[33] + name[34] + name[35] === "mp4") {
 					if (newResult.mp4swebms == true && positiveinstance == false && enabled == true) {
-						var jijeirjIE = getArrayOfFormattedTagStrings(getimageTagsFromDocument(documentObjectM))
+						var jijeirjIE = getArrayOfFormattedTagStrings(getImageTagsFromDocument(request.documentObjectM), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.ip_tag_limit)
 						var __chartag = jijeirjIE[0]
 						var __artisttag = jijeirjIE[1]
 						var __iptag = jijeirjIE[2]
-						bcacher_save_file(request.url, false, $(documentObjectM.body).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
+						bcacher_save_file(request.url, false, $(request.documentObjectM).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
 						positiveinstance = false;
 					}
 					else if (positiveinstance == true) {
 						if ((enabled == true) || (positiveinstance == true)) {
-							var jijeirjIE = getArrayOfFormattedTagStrings(getimageTagsFromDocument(documentObjectM))
+							var jijeirjIE = getArrayOfFormattedTagStrings(getImageTagsFromDocument(request.documentObjectM), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.ip_tag_limit)
 							var __chartag = jijeirjIE[0]
 							var __artisttag = jijeirjIE[1]
 							var __iptag = jijeirjIE[2]
-							bcacher_save_file(request.url, false, $(documentObjectM.body).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
+							bcacher_save_file(request.url, false, $(request.documentObjectM).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
 							positiveinstance = false;
 						}
 						else { positiveinstance = false; }
@@ -257,11 +257,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 				//other
 				else if (name[33] + name[34] + name[35] + name[36] != "webm" || name[33] + name[34] + name[35] != "mp4") {
 					if ((enabled == true) || (positiveinstance == true)) {
-						var jijeirjIE = getArrayOfFormattedTagStrings(getimageTagsFromDocument(documentObjectM))
+						var jijeirjIE = getArrayOfFormattedTagStrings(getImageTagsFromDocument(request.documentObjectM), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.ip_tag_limit)
 						var __chartag = jijeirjIE[0]
 						var __artisttag = jijeirjIE[1]
 						var __iptag = jijeirjIE[2]
-						bcacher_save_file(request.url, false, $(documentObjectM.body).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
+						bcacher_save_file(request.url, false, $(request.documentObjectM).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
 						positiveinstance = false;
 					}
 					else { positiveinstance = false; }
