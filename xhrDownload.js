@@ -15,7 +15,7 @@ function xmlhttpReq2(url) {
 	xhr.onreadystatechange = function () {
 		if (this.readyState == 4) {
 
-			chrome.storage.local.get(["character_tag_limit", "artist_tag_limit", "ip_tag_limit"], function (newResult) {
+			chrome.storage.local.get(["character_tag_limit", "artist_tag_limit", "IP_tag_limit"], function (newResult) {
 
 				xhr_received_page = this.responseXML
 
@@ -27,7 +27,7 @@ function xmlhttpReq2(url) {
 
 					//download link for videos (unused probably)
 					downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-					var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.ip_tag_limit)
+					var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.IP_tag_limit)
 					var chartag = tagarr[0]
 					var artisttag = tagarr[1]
 					var iptag = tagarr[2]
@@ -42,7 +42,7 @@ function xmlhttpReq2(url) {
 					//download link for images
 					if (y === undefined) {
 						downloadLink = v
-						var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page, newResult.character_tag_limit, newResult.artist_tag_limit, newResult.ip_tag_limit))
+						var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page, newResult.character_tag_limit, newResult.artist_tag_limit, newResult.IP_tag_limit))
 						var chartag = tagarr[0]
 						var artisttag = tagarr[1]
 						var iptag = tagarr[2]
@@ -52,7 +52,7 @@ function xmlhttpReq2(url) {
 
 					else {
 						downloadLink = y
-						var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.ip_tag_limit)
+						var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page), newResult.character_tag_limit, newResult.artist_tag_limit, newResult.IP_tag_limit)
 						var chartag = tagarr[0]
 						var artisttag = tagarr[1]
 						var iptag = tagarr[2]

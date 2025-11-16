@@ -1,4 +1,4 @@
-function getArrayOfFormattedTagStrings(tag_array, chartaglimit = parseInt($("#character_tag_limit").val()), artisttaglimit = parseInt($("#artist_tag_limit").val()), iptaglimit = parseInt($("#ip_tag_limit").val())) {
+function getArrayOfFormattedTagStrings(tag_array, chartaglimit = parseInt($("#character_tag_limit").val()), artisttaglimit = parseInt($("#artist_tag_limit").val()), iptaglimit = parseInt($("#IP_tag_limit").val())) {
     //character tags
     var chartag = "";
     var ctlimit = 0;

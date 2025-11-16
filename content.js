@@ -963,8 +963,8 @@ function updateProgressBar(){
 
         // console.log("what the fuc")
 
-        console.log(buffered)
-        console.log(videoDuration)
+        // console.log(buffered)
+        // console.log(videoDuration)
 
         //If finished buffering buffering quit calling it
         //call it anyway because firefox is weird as ass 2024-02-11
