@@ -1,6 +1,6 @@
 /**
  * 
- * @summary welcome to crazy wario's wario microgame emporium
+ * @summary 
  */
 function xmlhttpReq2(url)
 {
@@ -27,8 +27,12 @@ function xmlhttpReq2(url)
       
         //download link for videos (unused probably)
         downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-        var tagarr = getTagArray(getImageTagsFromDocument(xhr_received_page))
-        bcacher_save_file(downloadLink, false, undefined,)
+        var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page))
+        var chartag = tagarr[0]
+        var artisttag = tagarr[1]
+        var iptag = tagarr[2]
+        var uploadDate = $(this.responseXML.body).find("#stats").find("a")[0].title.substr(0, 10)
+        bcacher_save_file(downloadLink, false, uploadDate, chartag, artisttag, iptag)
       }
       else{
         
@@ -39,13 +43,23 @@ function xmlhttpReq2(url)
         if (y === undefined)
         {
           downloadLink = v
-          bcacher_save_file(downloadLink)
+          var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page))
+          var chartag = tagarr[0]
+          var artisttag = tagarr[1]
+          var iptag = tagarr[2]
+          var uploadDate = $(this.responseXML.body).find("#stats").find("a")[0].title.substr(0, 10)
+          bcacher_save_file(downloadLink, false, uploadDate, chartag, artisttag, iptag)
         }
       
         else
         {
           downloadLink = y
-          bcacher_save_file(downloadLink)
+          var tagarr = getArrayOfFormattedTagStrings(getImageTagsFromDocument(xhr_received_page))
+          var chartag = tagarr[0]
+          var artisttag = tagarr[1]
+          var iptag = tagarr[2]
+          var uploadDate = $(this.responseXML.body).find("#stats").find("a")[0].title.substr(0, 10)
+          bcacher_save_file(downloadLink, false, uploadDate, chartag, artisttag, iptag)
         }
       }
     }

@@ -154,7 +154,7 @@ function dlItem() {
 			}
 		});
 
-		tagarray=getTagArray(tag_array)
+		tagarray=getArrayOfFormattedTagStrings(tag_array)
 		var chartag = tagarray[0]
 		var artisttag = tagarray[1]
 		var iptag = tagarray[2]

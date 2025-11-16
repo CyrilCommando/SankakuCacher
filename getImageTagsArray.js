@@ -1,4 +1,4 @@
-function getTagArray(tag_array) {
+function getArrayOfFormattedTagStrings(tag_array) {
     //character tags
     var chartag = "";
     var ctlimit = 0;
