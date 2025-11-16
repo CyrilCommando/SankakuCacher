@@ -230,27 +230,42 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 					name = name + "m"
 				}
 
+				//if is webm/mp4
 				if (name[33] + name[34] + name[35] + name[36] === "webm" || name[33] + name[34] + name[35] === "mp4") {
 					if (newResult.mp4swebms == true && positiveinstance == false && enabled == true) {
-						chrome.downloads.download({ url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite" })
+						var jijeirjIE = getArrayOfFormattedTagStrings(getimageTagsFromDocument(documentObjectM))
+						var __chartag = jijeirjIE[0]
+						var __artisttag = jijeirjIE[1]
+						var __iptag = jijeirjIE[2]
+						bcacher_save_file(request.url, false, $(documentObjectM.body).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
 						positiveinstance = false;
 					}
 					else if (positiveinstance == true) {
 						if ((enabled == true) || (positiveinstance == true)) {
-							chrome.downloads.download({ url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite" })
+							var jijeirjIE = getArrayOfFormattedTagStrings(getimageTagsFromDocument(documentObjectM))
+							var __chartag = jijeirjIE[0]
+							var __artisttag = jijeirjIE[1]
+							var __iptag = jijeirjIE[2]
+							bcacher_save_file(request.url, false, $(documentObjectM.body).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
 							positiveinstance = false;
 						}
 						else { positiveinstance = false; }
 					}
 					else { }
-				} //if is webm/mp4
+				}
+
+				//other
 				else if (name[33] + name[34] + name[35] + name[36] != "webm" || name[33] + name[34] + name[35] != "mp4") {
 					if ((enabled == true) || (positiveinstance == true)) {
-						chrome.downloads.download({ url: "https:" + request.url, filename: svfld + name, saveAs: false, conflictAction: "overwrite" })
+						var jijeirjIE = getArrayOfFormattedTagStrings(getimageTagsFromDocument(documentObjectM))
+						var __chartag = jijeirjIE[0]
+						var __artisttag = jijeirjIE[1]
+						var __iptag = jijeirjIE[2]
+						bcacher_save_file(request.url, false, $(documentObjectM.body).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
 						positiveinstance = false;
 					}
 					else { positiveinstance = false; }
-				} //if not webm/mp4
+				} 
 			}) //chrome.storage.local.get
 			break;
 

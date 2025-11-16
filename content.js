@@ -1675,7 +1675,7 @@ function addDownloadButton()
   $("#post-content").after(lowerbutton)
 } 
 
-/**get the link to src image URL (on /post/show/*) */
+/**automatically download on load (on /post/show/*) */
 function getTheGodDamnLink()
 {
   var v = $("#image").attr("src");
@@ -1685,17 +1685,17 @@ function getTheGodDamnLink()
   {
     if (v != undefined)
     {
-      chrome.runtime.sendMessage({"message": "content_script_download", url: v})
+      chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document})
     }
   }
 
   else
   {
-    chrome.runtime.sendMessage({"message": "content_script_download", url: y})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document})
   }
 }
 
-  /**get the link to src image URL (on /post/show/* if image is maximized && || instance download) */
+  /**get the link to src image URL (on /post/show/* if image is maximized && || is instance (button) download) */
 function getTheGodDamnLink2()
 {
   var v = $("#image").attr("src");
@@ -1705,19 +1705,19 @@ function getTheGodDamnLink2()
   if (y === undefined)
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: v, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document})
   }
 
   else if ((v === undefined) && (y === undefined))
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: z, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: z, documentObjectM: document})
   }
 
   else
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: y, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document})
   }
 }
 
@@ -1730,7 +1730,7 @@ function getTheGodDamnLink3()
   console.log(downloadLink)
   
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, documentObjectM: document})
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

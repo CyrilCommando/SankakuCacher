@@ -28,7 +28,7 @@
       "css": ["fix_chans_css_again.css"]
     } ],
   "background": {
-    "scripts": ["jquery-3.4.1.min.js", "settingshelp.js", "saveFile.js", "background.js" ]
+    "scripts": ["jquery-3.4.1.min.js", "settingshelp.js", "getImageTagsFromDocument.js", "getImageTagsArray.js", "saveFile.js", "background.js" ]
   },
   "browser_specific_settings": {
   "gecko": {
