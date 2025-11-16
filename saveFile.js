@@ -1,6 +1,6 @@
 function bcacher_save_file(download_link, isMassDownload = false, date = "", charactertags ="", artisttags ="", iptags="")
 {
-	chrome.storage.local.get(["savefolder", "advanced_settings_object", "mass_download_prevtags", "date", "md5", "character", "artist", "IP"], function(newResult) { 
+	chrome.storage.local.get(["savefolder", "mass_download_prevtags", "date", "md5", "character", "artist", "IP"], function(newResult) { 
 
 		var includeshttps = download_link[0] + download_link[1] + download_link[2] + download_link[3] + download_link[4];
 		

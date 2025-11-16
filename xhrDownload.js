@@ -27,23 +27,8 @@ function xmlhttpReq2(url)
       
         //download link for videos (unused probably)
         downloadLink = $(this.responseXML.body).find("div#content").find("div#post-view").find("div.content").find("div#post-content").find("video").attr("src")
-        bcacher_save_file(downloadLink, false, undefined,  
-          function() {
-            var use = ""
-            getImageTags(xhr_received_page).forEach(tag => {
-              if (tag.type == "character_tag")
-              {
-                use = use.concat(tag.tag + " ")
-              }
-            });
-            use = use.trimEnd()
-            use = use.replaceAll(":", "_")
-            
-            return use;
-
-          }()
-          
-          )
+        var tagarr = getTagArray(getImageTagsFromDocument(xhr_received_page))
+        bcacher_save_file(downloadLink, false, undefined,)
       }
       else{
         

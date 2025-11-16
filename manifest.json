@@ -5,26 +5,26 @@
   "version_name": "2025-11-15-ffox-master",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
-    "resources": ["animation.css", "fs1.png", "dl.png", "autofavd.js", "autofave.js", "autofave2.js"],
+    "resources": ["animation.css", "img/fs1.png", "img/dl.png", "autofavd.js", "autofave.js", "autofave2.js"],
     "matches": ["https://chan.sankakucomplex.com/*", "https://idol.sankakucomplex.com/*"]
   }],
   "manifest_version": 3,
   "permissions": ["storage", "downloads", "tabs", "activeTab", "contextMenus", "unlimitedStorage"],
   "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'self';"},
   "icons": {
-    "16": "n16.png",
-    "48": "n48.png",
-    "128": "n128.png" 
+    "16": "img/n16.png",
+    "48": "img/n48.png",
+    "128": "img/n128.png" 
   },
   "action": {
-    "default_icon": "n48.png",
+    "default_icon": "img/n48.png",
     "default_title": "SankakuCacher",
     "default_popup": "popup.html"
   },
   "content_scripts": [ 
     {
       "matches": ["https://chan.sankakucomplex.com/post/*", "https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/", "https://s.sankakucomplex.com/data/*", "https://idol.sankakucomplex.com/post/*", "https://idol.sankakucomplex.com/*", "https://idol.sankakucomplex.com/"],
-      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTags.js", "content.js"],
+      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTagsFromDocument.js", "content.js"],
       "css": ["fix_chans_css_again.css"]
     } ],
   "background": {

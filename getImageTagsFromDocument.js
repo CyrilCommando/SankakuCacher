@@ -1,4 +1,4 @@
-function getImageTags(docu)
+function getImageTagsFromDocument(docu)
 {
   var charactertags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
   var seriestags = Array.prototype.slice.call(docu.getElementById("tag-sidebar").getElementsByClassName("tag-type-copyright"))

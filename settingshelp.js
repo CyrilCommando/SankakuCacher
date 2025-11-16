@@ -1,25 +1,16 @@
 function default_settings()
 {
-    var aso = new AdvancedSettingsObject();
     console.log("settings set default")
-    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false, "middleclickfav": true, "advanced_settings_object": aso, "mass_download_limit": 20, "mass_download_concurrentlimit": 5, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false, "resizecontent": true, "scrolltocontent": true, "mass_download_prevtags": "", "date": true, "md5": true, "character": true, "imgs": false, "artist": false, "IP": false, "character_tag_limit": 3, "artist_tag_limit": 1, "ip_tag_limit": 1})
+    chrome.storage.local.set({"enabled": false, "mp4swebms": false, "arrangefiles": false, "savefolder": "SankakuCacher", "autofav": false, "newwindow": false, "middleclickfav": true, "mass_download_limit": 20, "mass_download_concurrentlimit": 5, "mass_download_offset": 0, "HMenu_downloadanimatedgifs": false, "HMenu_downloadfullvideos": false, "resizecontent": true, "scrolltocontent": true, "mass_download_prevtags": "", "date": true, "md5": true, "character": true, "imgs": false, "artist": false, "IP": false, "character_tag_limit": 3, "artist_tag_limit": 1, "ip_tag_limit": 1})
     //chrome.runtime.sendMessage({"message": "alert", value: "Settings set to default"})
 }
 
 function delete_all_settings()
 {
-    chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "middleclickfav", "advanced_settings_object", "mass_download_limit", "mass_download_concurrentlimit", "mass_download_offset"])
+    chrome.storage.local.remove(["enabled", "mp4swebms", "arrangefiles", "savefolder", "prevsearch", "autofav", "newwindow", "middleclickfav", "mass_download_limit", "mass_download_concurrentlimit", "mass_download_offset"])
     //chrome.storage.local.clear()
     chrome.runtime.sendMessage({"message": "alert", value: "settings deleted"})
     default_settings()
-}
-
-class AdvancedSettingsObject
-{
-    constructor(param1 = false, param2 = false) {
-        this.character = param1;
-        this.date = param2;
-    }
 }
 
 function doc_onchanged(htmlelement){
