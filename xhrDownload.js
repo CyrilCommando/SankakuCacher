@@ -12,10 +12,11 @@ function xmlhttpReq2(url) {
 	xhr.open("GET", url);
 	xhr.responseType = "document";
 	xhr.send();
+	
 	xhr.onreadystatechange = function () {
 		if (this.readyState == 4) {
 
-			chrome.storage.local.get(["character_tag_limit", "artist_tag_limit", "IP_tag_limit"], function (newResult) {
+			chrome.storage.local.get(["character_tag_limit", "artist_tag_limit", "IP_tag_limit"], (newResult) => {
 
 				xhr_received_page = this.responseXML
 

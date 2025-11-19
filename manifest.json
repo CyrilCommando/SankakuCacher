@@ -1,8 +1,8 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Can mass download many images in a group of tags at once. Adds Download buttons above and below the content. History menu, & more.",
-  "version": "11.16.2025",
-  "version_name": "2025-11-16-ffox-master",
+  "version": "11.19.2025",
+  "version_name": "2025-11-19-ffox-master",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
     "resources": ["animation.css", "img/fs1.png", "img/dl.png", "autofavd.js", "autofave.js", "autofave2.js"],
