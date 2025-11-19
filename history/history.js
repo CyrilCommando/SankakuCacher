@@ -208,7 +208,7 @@ function updateAllImagesWithTags(limit = 15, concurrent = 5, offset = 0, menu)
 
             if (!xprval)
             {
-              operlist.list[index].tags = getImageTags(xhr_received_page)
+              operlist.list[index].tags = getImageTagsFromDocument(xhr_received_page)
           
               console.log("tags for "+ operlist.list[index].pid+" retrieved")
     
@@ -584,19 +584,19 @@ function createPreviewMenuBar(posturl)
 
 function createMenuBarDownloadButton(posturl)
 {
-  i = $("<img>").attr({"src": chrome.runtime.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(function(){xmlhttpReq2(posturl)})
+  i = $("<img>").attr({"src": chrome.runtime.getURL("img/dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(function(){xmlhttpReq2(posturl)})
   return i;
 }
 
 function createMenuBarFullscreenButton()
 {
-  i = $("<img>").attr({"src": chrome.runtime.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(console.log("thats a nice placeholder dude"))
+  i = $("<img>").attr({"src": chrome.runtime.getURL("img/fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(console.log("thats a nice placeholder dude"))
   return i
 }
 
 function createMenuBarOpenButton(posturl)
 {
-  i = $("<img>").attr({"src": chrome.runtime.getURL("open.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "open_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "open_button"})}).click(function(){chrome.tabs.create({url: posturl})})
+  i = $("<img>").attr({"src": chrome.runtime.getURL("img/open.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "open_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "open_button"})}).click(function(){chrome.tabs.create({url: posturl})})
   return i
 }
 

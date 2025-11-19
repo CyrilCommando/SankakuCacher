@@ -25,7 +25,7 @@ document.getElementById("autofavinclude").onchange = function() {doc_onchanged(d
 document.getElementById("date").onchange = function() {doc_onchanged(document.getElementById("date"))};
 document.getElementById("character").onchange = function() {doc_onchanged(document.getElementById("character"))};
 document.getElementById("artist").onchange = function() {doc_onchanged(document.getElementById("artist"))};
-// document.getElementById("md5").onchange = function() {doc_onchanged(document.getElementById("md5"))};
+document.getElementById("IP").onchange = function() {doc_onchanged(document.getElementById("IP"))};
 document.getElementById("imgs").onchange = function() {doc_onchanged(document.getElementById("imgs"))};
 
 /*limit onchange */ document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};

@@ -5,7 +5,7 @@ chrome.runtime.sendMessage({"message": "fuckgoogle"})
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message != "https://chan.sankakucomplex.com/")
   {
-    getImageTags();
+    getImageTagsFromDocument();
   }
 }
 )
@@ -440,7 +440,7 @@ function preventdefaultthumblink()
 
 
 /**get image tags (if url ==) */
-function getImageTags()
+function getImageTagsFromDocument()
 {
   elearr = Array.prototype.slice.call(document.getElementById("tag-sidebar").getElementsByClassName("tag-type-character"))
 

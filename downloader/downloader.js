@@ -145,7 +145,7 @@ function dlItem() {
 
 		thumbnail_title_tag_array = [];
 
-		tag_array = getImageTags(xhr_received_page)
+		tag_array = getImageTagsFromDocument(xhr_received_page)
 
 		//add arbitrarily selected tags to thumbnail tooltip
 		tag_array.forEach(tg => {
@@ -154,45 +154,10 @@ function dlItem() {
 			}
 		});
 
-
-		//character tags
-		var chartag = "";
-		var ctlimit = 0;
-		tag_array.forEach(tag => {
-			if ((tag.type == "character_tag") && (ctlimit < parseInt($("#character_tag_limit").val()))) {
-				chartag = chartag.concat(tag.tag + " ")
-				ctlimit++
-			}
-		});
-		chartag = chartag.trimEnd()
-		chartag = chartag.replaceAll(":", "_")
-		//end character tags
-
-		//artist tags
-		var artisttag = "";
-		var atlimit = 0;
-		tag_array.forEach(tag => {
-			if ((tag.type == "artist_tag") && (atlimit < parseInt($("#artist_tag_limit").val()))) {
-				artisttag = artisttag.concat(tag.tag + " ")
-				atlimit++
-			}
-		});
-		artisttag = artisttag.trimEnd()
-		artisttag = artisttag.replaceAll(":", "_")
-		//end artist tags
-
-		//IP tags
-		var iptag = "";
-		var iplimit = 0;
-		tag_array.forEach(tag => {
-			if ((tag.type == "copyright_tag") && (iplimit < parseInt($("#ip_tag_limit").val()))) {
-				iptag = iptag.concat(tag.tag + " ")
-				iplimit++
-			}
-		});
-		iptag = iptag.trimEnd()
-		iptag = iptag.replaceAll(":", "_")
-		//end IP tags
+		tagarray=getArrayOfFormattedTagStrings(tag_array)
+		var chartag = tagarray[0]
+		var artisttag = tagarray[1]
+		var iptag = tagarray[2]
 
 		// if (tag_array.length + 47 > 200)
 		// {
@@ -279,7 +244,7 @@ async function start()
 		"IP": document.getElementById("IP").checked,
 		"character_tag_limit": document.getElementById("character_tag_limit").value,
 		"artist_tag_limit": document.getElementById("artist_tag_limit").value,
-		"ip_tag_limit": document.getElementById("ip_tag_limit").value}
+		"IP_tag_limit": document.getElementById("IP_tag_limit").value}
 		, 
 	//callback so we can get the settings fresh
 	async function()
@@ -442,7 +407,7 @@ chrome.downloads.onChanged.addListener(downloaddelta =>
 	}
 })
 
-chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlimit", "mass_download_limit", "mass_download_offset", "imgs", "date", "character", "artist", "IP", "character_tag_limit", "artist_tag_limit", "ip_tag_limit"], function(rs){
+chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlimit", "mass_download_limit", "mass_download_offset", "imgs", "date", "character", "artist", "IP", "character_tag_limit", "artist_tag_limit", "IP_tag_limit"], function(rs){
 	document.getElementById("mass_download_concurrentlimit").value = rs.mass_download_concurrentlimit
 	document.getElementById("mass_download_limit").value = rs.mass_download_limit
 	document.getElementById("mass_download_offset").value = rs.mass_download_offset
@@ -453,7 +418,7 @@ chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlim
 	document.getElementById("tags").value = rs.mass_download_prevtags
 	document.getElementById("character_tag_limit").value = rs.character_tag_limit,
 	document.getElementById("artist_tag_limit").value = rs.artist_tag_limit,
- 	document.getElementById("ip_tag_limit").value = rs.ip_tag_limit
+ 	document.getElementById("IP_tag_limit").value = rs.IP_tag_limit
 	if (rs.imgs == true)
 	{
 		document.getElementsByTagName("body")[0].style.backgroundImage = `url("../settings/bg/9c9cc066d95471087060c66f163c2b35.png")`
@@ -464,9 +429,19 @@ chrome.storage.local.get(["mass_download_prevtags", "mass_download_concurrentlim
 	}
 })
 
-// document.getElementById("mass_download_concurrentlimit").value = BooruCacherState.concurrentlimit
-// document.getElementById("mass_download_limit").value = BooruCacherState.limit
-// document.getElementById("mass_download_offset").value = BooruCacherState.offset
+document.getElementById("date").onchange = function() {doc_onchanged(document.getElementById("date"))};
+document.getElementById("character").onchange = function() {doc_onchanged(document.getElementById("character"))};
+document.getElementById("artist").onchange = function() {doc_onchanged(document.getElementById("artist"))};
+document.getElementById("IP").onchange = function() {doc_onchanged(document.getElementById("IP"))};
+
+document.getElementById("mass_download_limit").onchange = function() {doc_onchanged(document.getElementById("mass_download_limit"))};
+document.getElementById("mass_download_concurrentlimit").onchange = function() {doc_onchanged(document.getElementById("mass_download_concurrentlimit"))};
+document.getElementById("mass_download_offset").onchange = function() {doc_onchanged(document.getElementById("mass_download_offset"))};
+
+document.getElementById("character_tag_limit").onchange = function() {doc_onchanged(document.getElementById("character_tag_limit"))};
+document.getElementById("artist_tag_limit").onchange = function() {doc_onchanged(document.getElementById("artist_tag_limit"))};
+document.getElementById("IP_tag_limit").onchange = function() {doc_onchanged(document.getElementById("IP_tag_limit"))};
+
 document.getElementById("downloadbutton").onclick = start;
 
 

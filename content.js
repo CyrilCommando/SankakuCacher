@@ -617,7 +617,7 @@ async function createHistoryMenuEntry(postid, menu, type, page)
   options[''+postid]= b64image;
   console.log(options)
   imagedataentry = new ImageDataEntry(b64image)
-  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/en/posts/"+postid, getImageTags(page))
+  entry = new ListEntry(postid, Date.parse(new Date()), "https://chan.sankakucomplex.com/en/posts/"+postid, getImageTagsFromDocument(page))
   chrome.storage.local.get([menu], function(result) {
     try {
       operlist = new History(result[menu].list);
@@ -963,8 +963,8 @@ function updateProgressBar(){
 
         // console.log("what the fuc")
 
-        console.log(buffered)
-        console.log(videoDuration)
+        // console.log(buffered)
+        // console.log(videoDuration)
 
         //If finished buffering buffering quit calling it
         //call it anyway because firefox is weird as ass 2024-02-11
@@ -1202,13 +1202,13 @@ function createPreviewMenuBar()
 
 function createMenuBarFullscreenButton()
 {
-  i = $("<img>").attr({"src": chrome.runtime.getURL("fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(toggleFullscreen)
+  i = $("<img>").attr({"src": chrome.runtime.getURL("img/fs1.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "fullscreen_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "fullscreen_button"})}).click(toggleFullscreen)
   return i
 }
 
 function createMenuBarDownloadButton()
 {
-  i = $("<img>").attr({"src": chrome.runtime.getURL("dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(getTheGodDamnLink3)
+  i = $("<img>").attr({"src": chrome.runtime.getURL("img/dl.png"), "style": "max-height: 20px; max-width: 34px; background-color: #dedede"}).hover(function(e){$(this).attr({"style": "max-height: 20px; max-width: 34px; background-color: #bdbdbd", "id": "download_button"})}, function(e){$(this).attr({"style": "background-color: #dedede; max-height: 20px; max-width: 34px;", "id": "download_button"})}).click(getTheGodDamnLink3)
   return i;
 }
 
@@ -1675,7 +1675,7 @@ function addDownloadButton()
   $("#post-content").after(lowerbutton)
 } 
 
-/**get the link to src image URL (on /post/show/*) */
+/**automatically download on load (on /post/show/*) */
 function getTheGodDamnLink()
 {
   var v = $("#image").attr("src");
@@ -1685,17 +1685,17 @@ function getTheGodDamnLink()
   {
     if (v != undefined)
     {
-      chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
+      chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML})
     }
   }
 
   else
   {
-    chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML})
   }
 }
 
-  /**get the link to src image URL (on /post/show/* if image is maximized && || instance download) */
+  /**get the link to src image URL (on /post/show/* if image is maximized && || is instance (button) download) */
 function getTheGodDamnLink2()
 {
   var v = $("#image").attr("src");
@@ -1705,19 +1705,19 @@ function getTheGodDamnLink2()
   if (y === undefined)
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "link", url: v, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML})
   }
 
   else if ((v === undefined) && (y === undefined))
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "link", url: z, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: z, documentObjectM: document.body.innerHTML})
   }
 
   else
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "link", url: y, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML})
   }
 }
 
@@ -1730,7 +1730,7 @@ function getTheGodDamnLink3()
   console.log(downloadLink)
   
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "link", url: downloadLink, character_tag: charactertag, date: dt})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, documentObjectM: document.body.innerHTML})
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
