@@ -1,8 +1,8 @@
 {
   "name": "SankakuCacher",
   "description": "Can automatically download all viewed media on chan.sankakucomplex.com. Adds Download buttons above and below the content. History menu, mass download, & QOL.",
-  "version": "3.1",
-  "version_name": "2025-11-15-chrome-master",
+  "version": "11.19.2025",
+  "version_name": "2025-11-19-chrome-master",
   "author": "CyrilCommando",
   "web_accessible_resources": [{
     "resources": ["animation.css", "img/fs1.png", "img/dl.png", "autofavd.js", "autofave.js", "autofave2.js"],
@@ -24,7 +24,7 @@
   "content_scripts": [ 
     {
       "matches": ["https://chan.sankakucomplex.com/post/*", "https://chan.sankakucomplex.com/*", "https://chan.sankakucomplex.com/", "https://s.sankakucomplex.com/data/*", "https://idol.sankakucomplex.com/post/*", "https://idol.sankakucomplex.com/*", "https://idol.sankakucomplex.com/"],
-      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTagsFromDocument.js", "content.js"],
+      "js": ["jquery-3.4.1.min.js", "httprequest.js", "getImageTagsFromDocument.js", "getImageTagsArray.js", "content.js"],
       "css": ["fix_chans_css_again.css"]
     } ],
     "background": {
