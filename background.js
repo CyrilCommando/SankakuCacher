@@ -3,6 +3,8 @@
 //thanks mf v3
 importScripts("settingshelp.js")
 importScripts("saveFile.js")
+importScripts("getImageTagsArray.js")
+importScripts("getImageTagsFromDocument_Chrome.js")
 
 //region defs
 
@@ -237,7 +239,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 						var __chartag = jijeirjIE[0]
 						var __artisttag = jijeirjIE[1]
 						var __iptag = jijeirjIE[2]
-						bcacher_save_file(request.url, false, $(request.documentObjectM).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
+						bcacher_save_file(request.url, false, request.___date, __chartag, __artisttag, __iptag)
 						positiveinstance = false;
 					}
 					else if (positiveinstance == true) {
@@ -246,7 +248,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 							var __chartag = jijeirjIE[0]
 							var __artisttag = jijeirjIE[1]
 							var __iptag = jijeirjIE[2]
-							bcacher_save_file(request.url, false, $(request.documentObjectM).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
+							bcacher_save_file(request.url, false, request.___date, __chartag, __artisttag, __iptag)
 							positiveinstance = false;
 						}
 						else { positiveinstance = false; }
@@ -261,7 +263,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 						var __chartag = jijeirjIE[0]
 						var __artisttag = jijeirjIE[1]
 						var __iptag = jijeirjIE[2]
-						bcacher_save_file(request.url, false, $(request.documentObjectM).find("#stats").find("a")[0].title.substr(0, 10), __chartag, __artisttag, __iptag)
+						bcacher_save_file(request.url, false, request.___date, __chartag, __artisttag, __iptag)
 						positiveinstance = false;
 					}
 					else { positiveinstance = false; }

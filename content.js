@@ -1685,13 +1685,13 @@ function getTheGodDamnLink()
   {
     if (v != undefined)
     {
-      chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML})
+      chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML, ___date: $(document.body.innerHTML).find("#stats").find("a")[0].title.substr(0, 10)})
     }
   }
 
   else
   {
-    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML, ___date: $(document.body.innerHTML).find("#stats").find("a")[0].title.substr(0, 10)})
   }
 }
 
@@ -1705,19 +1705,19 @@ function getTheGodDamnLink2()
   if (y === undefined)
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: v, documentObjectM: document.body.innerHTML, ___date: $(document.body.innerHTML).find("#stats").find("a")[0].title.substr(0, 10)})
   }
 
   else if ((v === undefined) && (y === undefined))
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: z, documentObjectM: document.body.innerHTML})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: z, documentObjectM: document.body.innerHTML, ___date: $(document.body.innerHTML).find("#stats").find("a")[0].title.substr(0, 10)})
   }
 
   else
   {
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: y, documentObjectM: document.body.innerHTML, ___date: $(document.body.innerHTML).find("#stats").find("a")[0].title.substr(0, 10)})
   }
 }
 
@@ -1730,7 +1730,7 @@ function getTheGodDamnLink3()
   console.log(downloadLink)
   
     chrome.runtime.sendMessage({message: "settoinstance"})
-    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, documentObjectM: document.body.innerHTML})
+    chrome.runtime.sendMessage({"message": "content_script_download", url: downloadLink, documentObjectM: document.body.innerHTML, ___date: $(document.body.innerHTML).find("#stats").find("a")[0].title.substr(0, 10)})
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
