@@ -60,6 +60,9 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
         # Create an HttpClient to fetch the HTML content
         $httpClient = New-Object System.Net.Http.HttpClient
         foreach ($header in $request_headers.GetEnumerator()) {
+            if ($header.Value -eq "") {
+                continue
+            }
             $httpClient.DefaultRequestHeaders.Add($header.Key, $header.Value)
         }
     
@@ -164,3 +167,4 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
     $fileName = ""
 
 }
+
