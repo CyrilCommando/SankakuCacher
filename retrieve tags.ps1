@@ -7,7 +7,7 @@
 
 param (
     [string]$inputDirectory,
-    [string]$cookie,
+    [string]$cookie = "",
     [string]$maxArtistTags = 1,
     [string]$maxCharacterTags = 3,
     [string]$maxIpTags = 1,
@@ -162,4 +162,5 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
     $newFilePath = Join-Path -Path $file.DirectoryName -ChildPath $fileName
     Rename-Item -Path $file.FullName -NewName $newFilePath
     $fileName = ""
+
 }
