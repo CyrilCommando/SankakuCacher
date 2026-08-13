@@ -43,8 +43,25 @@ class Booru
 
 	};
 	getPostHtmlElementsOn_IndexPage = function () {
-		var thumbs = Array.prototype.slice.call(this.currentIndexPageHtml.getElementsByClassName("post-preview-link"))
-		return thumbs;
+		var thumbs = Array.prototype.slice.call($(this.currentIndexPageHtml).find("template"))
+		var working = [];
+		var working2 = [];
+		thumbs.forEach(template => {
+			working.push(template.content.children);
+		});
+		$.each(working, function(i, el) {
+			working2.push($(el).find("a.post-preview-link"))
+		})
+		working = [];
+		$.each(working2, function(i, el) {
+			if (el.length > 0)
+			{
+				$.each(el, function(i2, el2) {
+					working.push(el2)
+				})
+			}
+		})
+		return working;
 	}
 	findThumbnailUrlOn_IndexPageHtmlElement = function (thumb) {
 		return $(thumb).find("img")[0].src
