@@ -133,7 +133,7 @@ var thumbnail_title_tag_array = [];
 function adthumbnail(thumbel)
 {
 	var parent_div = $("<div></div>").attr({"id": postId+"_parent", "class": "preview-parent_div"})
-	$(parent_div).append(`<img title="${thumbnail_title_tag_array}" id="${postId}" src="https:${booru_.findThumbnailUrlOn_IndexPageHtmlElement(thumbel).substring(17)}">`)
+	$(parent_div).append(`<img title="${thumbnail_title_tag_array}" id="${postId}" src="https:${booru_.findThumbnailUrlOn_IndexPageHtmlElement(thumbel)}">`)
 	$("#mppane").prepend(parent_div)
 	$("#"+postId+"_parent").append("<div class=\"preview-menu_bar\"><div class=\"progress-menu_bar\" style=\"width: 10%;\"></div></div>")
 	createReflection(postId)
