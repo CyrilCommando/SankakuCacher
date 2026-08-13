@@ -7,7 +7,7 @@
 
 param (
     [string]$inputDirectory,
-    [string]$cookie,
+    [string]$cookie = "",
     [string]$maxArtistTags = 1,
     [string]$maxCharacterTags = 3,
     [string]$maxIpTags = 1,
@@ -60,6 +60,9 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
         # Create an HttpClient to fetch the HTML content
         $httpClient = New-Object System.Net.Http.HttpClient
         foreach ($header in $request_headers.GetEnumerator()) {
+            if ($header.Value -eq "") {
+                continue
+            }
             $httpClient.DefaultRequestHeaders.Add($header.Key, $header.Value)
         }
     
@@ -162,4 +165,6 @@ foreach ($file in Get-ChildItem -Path $inputDirectory -File) {
     $newFilePath = Join-Path -Path $file.DirectoryName -ChildPath $fileName
     Rename-Item -Path $file.FullName -NewName $newFilePath
     $fileName = ""
+
 }
+
